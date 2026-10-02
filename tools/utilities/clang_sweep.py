@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###
-# Runs a syntax-only pass of a modern compiler (default: clang++ -std=c++17)
+# Runs a syntax-only pass of a modern compiler (default: clang++ -std=c++20)
 # over every game/JSystem translation unit, WITHOUT the Metrowerks headers, and
 # summarises what still fails. This measures how far the tree is from building
 # with a stock toolchain (the first milestone of a port), and can be re-run to
@@ -14,7 +14,7 @@
 # Usage (from anywhere):
 #   python3 tools/utilities/clang_sweep.py                       # summary on stdout
 #   python3 tools/utilities/clang_sweep.py --report docs/port/compile-sweep.md
-#   python3 tools/utilities/clang_sweep.py --cxx arm-vita-eabi-g++ --std gnu++17
+#   python3 tools/utilities/clang_sweep.py --cxx arm-vita-eabi-g++ --std gnu++20
 #   python3 tools/utilities/clang_sweep.py --define DEBUG=1 --version 12
 ###
 
@@ -83,7 +83,7 @@ def collect_files():
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cxx", default="clang++")
-    ap.add_argument("--std", default="c++17")
+    ap.add_argument("--std", default="c++20")
     ap.add_argument("--version", type=int, default=0, help="VERSION define (0 = GCN USA)")
     ap.add_argument("--asset-version", default="GZ2E01")
     ap.add_argument("--define", action="append", default=[], help="extra -D (repeatable), e.g. DEBUG=1")

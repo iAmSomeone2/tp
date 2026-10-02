@@ -175,7 +175,7 @@ static const float INF = 2000000000.0f;
 
 #ifndef __MWERKS__
 #if __cplusplus
-#include <cmath>
+#include "nightfall/compat/globals.hpp"
 using std::isnan;
 #endif
 #endif

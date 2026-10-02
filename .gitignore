@@ -29,9 +29,11 @@ ctx.*
 # Generated configs
 objdiff.json
 compile_commands.json
+CMakeUserPresets.json
 
 # Miscellaneous
 /*.txt
+!CMakeLists.txt
 *.exe
 
 # MacOS

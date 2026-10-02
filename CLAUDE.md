@@ -8,11 +8,17 @@ A fork of the [zeldaret/tp](https://github.com/zeldaret/tp) matching decompilati
 
 ## Working agreement
 
-The user does the development work themselves. **Edit source files only when explicitly asked.** Keeping `docs/` (and the generator scripts under `tools/utilities/`) up to date is always fine. Commit and push only when asked.
+The user does the development work themselves. **Edit source files only when explicitly asked.** Only assume the user wants you to make edits if you can determine their intention beyond a reasonable doubt; otherwise, ask! Keeping `docs/` (and the generator scripts under `tools/utilities/`) up to date is always fine. Commit and push only when asked.
+
+## New code: Nightfall (`nf`)
+
+New modules of this fork are namespaced `nf` (Nightfall) and kept apart from the decompiled `tp`/`d_*` code. Name them `nf_<module>`: the CMake target `nf_<module>` with alias `nf::<module>`, the directory `src/nf_<module>/`, and tests under `tests/nf_<module>/`. The C++ namespace is `nf`.
+
+New code should be modern C++; targets may require C++20 or newer (e.g. `nightfall` uses `cxx_std_20`) and need not match the legacy style. Legacy code will be updated as needed too, and those updates will often raise the language standard to 20 or newer. `tp::config`'s `cxx_std_17` is only a minimum: CMake compiles a target at the highest standard requested by anything it links, so linking an `nf` library into a legacy library raises that library's standard.
 
 ## Commands
 
-Everything is driven by `configure.py` (generates `build.ninja` + `objdiff.json`) and `ninja`. Building requires `orig/<version>/` to contain a disc image; without it only the analysis scripts below work. There is no test suite and no linter beyond optional `clang-format` (`.clang-format`) and `.flake8` for the Python tools.
+There are two independent builds. `configure.py` + `ninja` is the Metrowerks **matching** build (upstream's). The **CMake** build is this fork's host build with stock Clang/GCC and is the basis for the port; see the CMake section below. Building the matching build requires `orig/<version>/` to contain a disc image; without it only the analysis scripts below work. There is no test suite and no linter beyond optional `clang-format` (`.clang-format`) and `.flake8` for the Python tools.
 
 ```sh
 python configure.py [--version GZ2E01]   # default GZ2E01 (GCN USA); also GZ2P01 GZ2J01 RZDE01_00 RZDE01_02 RZDP01 RZDJ01 DZDE01 Shield ShieldD
@@ -23,6 +29,20 @@ python tools/decompctx.py src/d/<file>.cpp   # single-file context for a decomp.
 ```
 
 Useful `configure.py` flags: `--map`, `--non-matching`, `--debug`, `--warn all|off|error`, `--reghio`. Diff objects with objdiff (loads the generated `objdiff.json`).
+
+### CMake build (host Clang/GCC, GameCube only)
+
+Needs CMake 4.0+ and Ninja; no disc image or Metrowerks tools. Targets GameCube USA by default; Wii/Shield-only features (widescreen, `DEBUG`, HostIO, `Z2AudioCS`, ...) are deliberately not part of it. Details in `docs/port/cmake.md`.
+
+```sh
+cmake --preset default                    # also: debug, release; output in build/cmake/<preset>
+cmake --build --preset default -- -k 0    # -k 0 keeps going past files that still fail
+cmake -S . -B build/cmake/pal -G Ninja -DTP_VERSION=GZ2P01   # GZ2E01 (default) / GZ2P01 / GZ2J01
+cmake --preset default -DTP_BUILD_TESTS=ON && ctest --test-dir build/cmake/default   # unit tests (GoogleTest)
+python3 tools/utilities/gen_cmake_sources.py [--check]       # regenerate / verify the sources.cmake lists
+```
+
+Status: 1,215 of 1,280 TUs compile with clang; the 65 failures are the punch list in `docs/port/compiler-fixes.md`. Nothing links yet (no SDK implementation or entry point). GCC is untested.
 
 Port-analysis scripts (host clang, no disc image needed); each takes a minute or two and rewrites a generated page under `docs/port/`:
 
@@ -42,7 +62,7 @@ Read `docs/README.md` first; it indexes a full orientation guide. The essentials
 - **Layers:** `m_Do_*` (machine glue) → `f_pc`/`f_op`/`f_ap` (the "framework": process scheduler and typed processes) → `d_*` ("dolzel" game logic, `d_a_*` = actors) on top of `SSystem` (`c_*` math/collision/lists), `libs/JSystem` (Nintendo middleware: J3D/J2D/JKernel/JAudio2/JStudio…), `Z2AudioLib`, and the Dolphin/Revolution SDKs under `libs/`.
 - **Everything alive is a process** created from a `g_profile_*` descriptor (name in `include/f_pc/f_pc_name.h`, listed in `src/f_pc/f_pc_profile_lst.cpp`). Each frame `fpcM_Management` runs delete → create (multi-frame `cPhs_*` phases) → execute (16 ordered "lines") → draw handlers. Scenes own a layer of child processes; changing stage deletes the old scene's layer. See `docs/03-engine-architecture.md`.
 - **Actors are ~750 separate REL modules** (`ActorRel(...)` in `configure.py`, name table in `src/c/c_dylink.cpp`) loaded on demand; the player (`d_a_alink`), NPC/object base classes and core systems are in the DOL. Placement data comes from stage/room files on the disc; `l_objectName[]` in `src/d/d_stage.cpp` maps editor names to process names.
-- **`configure.py` is the project manifest**: per-library compiler flags and every `Object(Matching|NonMatching|Equivalent, "file.cpp")`. `config/<ver>/{splits,symbols}.txt` define translation-unit boundaries and names for decomp-toolkit.
+- **`configure.py` is the project manifest**: per-library compiler flags and every `Object(Matching|NonMatching|Equivalent, "file.cpp")`. `config/<ver>/{splits,symbols}.txt` define translation-unit boundaries and names for decomp-toolkit. The CMake build derives its source lists from these (via `gen_cmake_sources.py`), so it stays in sync only if you regenerate.
 - **One source tree builds all versions** via `VERSION`/`PLATFORM_*`/`DEBUG` conditionals (`include/global.h`). Enum values and struct offsets can differ per version.
 - **Global state** lives in `g_dComIfG_gameInfo` (`dComIfG_inf_c`): `dComIfGs_*` = save data, `dComIfGp_*` = play state, `dComIfGd_*` = draw lists.
 
@@ -53,3 +73,6 @@ Read `docs/README.md` first; it indexes a full orientation guide. The essentials
 - Misspellings in names (`cPhs_COMPLEATE_e`, `d_resorce`, `d_tresure`) are original and canonical.
 - Community names in `@brief` comments and `field_0x…` members are guesses; confirm against sound IDs (`Z2SE_*`), resource names and debug strings.
 - Switching file formats to little-endian, GX → GXM, DSP audio replacement and static-linking the RELs are the major port topics; the plan and measured numbers are in `docs/port/`.
+- **CMake source lists are generated.** `sources.cmake` files (in `src/`, `src/*/`, `src/d/actor/`, `libs/JSystem/`) are written by `tools/utilities/gen_cmake_sources.py`; don't hand-edit them. Re-run it after adding, removing or moving a source file or changing a library in `configure.py`. The CMake build compiles every file present in the GameCube splits regardless of matching status.
+- **The CMake build omits the Dolphin SDK implementation, Metrowerks libs (MSL, Runtime, TRK) and the REL loader** on purpose; only SDK headers (`tp::dolphin`) are used and the host's standard library replaces MSL. It does not define `__GEKKO__`, `DEBUG`, `WIDESCREEN_SUPPORT` or `ENABLE_REGHIO`.
+- `.gitignore` ignores root-level `*.txt`; `CMakeLists.txt` is explicitly re-included.

@@ -976,7 +976,7 @@ static u8 mainThreadStack[MAIN_THREAD_STACK_SIZE];
 
 OSThread mainThread;
 
-void main(int argc, const char* argv[]) {
+int main(int argc, const char* argv[]) {
     OSThread* current_thread = OSGetCurrentThread();
 #if PLATFORM_GCN
     u8* stack = mainThreadStack;
@@ -1051,6 +1051,8 @@ void main(int argc, const char* argv[]) {
     OS_REPORT("メインスレッドを起動しました <%x>\n", &mainThread);
     OSSetThreadPriority(current_thread, 0x1F);
     OSSuspendThread(current_thread);
+
+    return EXIT_SUCCESS;
 }
 
 // hack to fix JKRHeap::dump_sort placement in .text

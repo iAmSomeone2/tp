@@ -73,7 +73,7 @@ def strong_symbols(obj):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cxx", default="clang++")
-    ap.add_argument("--std", default="c++17")
+    ap.add_argument("--std", default="c++20")
     ap.add_argument("--version", type=int, default=0)
     ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     ap.add_argument("--report")
