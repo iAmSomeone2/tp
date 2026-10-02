@@ -14,6 +14,7 @@ High-level documentation for people (and coding agents) who are new to this code
 | 4 | [04-game-systems.md](04-game-systems.md) | Get a one-section overview of each subsystem: player, collision, camera, targeting, events/cutscenes, stages/rooms, save data, environment, rendering, UI, messages, audio, input… |
 | 5 | [05-glossary.md](05-glossary.md) | Decode an internal name: prefixes and suffixes, Japanese/romaji words, actor abbreviations (`e_ba`, `npc_ins`, `lv4…`), stage codes (`F_SP103`), file extensions. |
 | 6 | [06-exploring.md](06-exploring.md) | Follow worked examples ("how do I find where X happens?"), grep recipes, and a list of good questions to ask next. |
+| 7 | [port/README.md](port/README.md) | Plan a native PS Vita port of this fork: SDK/hardware surface, endianness, graphics (GX → GXM), toolchain, roadmap and risks. Includes generated survey data. |
 | – | [actor-index.md](actor-index.md) | Look up any of the ~770 actor source files: process name, DOL/REL, in-game name. (Generated.) |
 
 Existing notes that pre-date this guide: [re_notes.md](re_notes.md) (class sizes and naming TODOs) and [rels_sha1.md](rels_sha1.md) (hashes of the original RELs). [mainpage.h](mainpage.h) feeds the Doxygen site.
