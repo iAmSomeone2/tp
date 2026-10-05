@@ -9,6 +9,7 @@
 #include "JSystem/JKernel/JKRFileCache.h"
 #include "JSystem/JUtility/JUTConsole.h"
 #include <cstdio>
+#include <limits>
 #include "m_Do/m_Do_dvd_thread.h"
 #include "m_Do/m_Do_ext.h"
 
@@ -331,10 +332,10 @@ BOOL DynamicModuleControl::do_link() {
         OSGetTime();
         OSGetTime();
         if (mModule->info.version >= 3) {
-            u32 fixSizePtr;
+            uintptr_t fixSizePtr;
             u32 fixSize = mModule->fixSize;
             u32 fixSize2 = (fixSize + 0x1f) & ~0x1f;
-            fixSizePtr = (u32)mModule + fixSize2;
+            fixSizePtr = reinterpret_cast<uintptr_t>(mModule) + fixSize2;
             s32 size = JKRGetMemBlockSize(NULL, mModule);
             if (size < 0) {
                 void* bss = JKRAlloc(mModule->bssSize, 0x20);
@@ -352,7 +353,7 @@ BOOL DynamicModuleControl::do_link() {
                 }
             } else {
                 if (fixSize2 + mModule->bssSize < size) {
-                    BOOL linkResult = OSLinkFixed(&mModule->info, (void*)fixSizePtr);
+                    BOOL linkResult = OSLinkFixed(&mModule->info, reinterpret_cast<void*>(fixSizePtr));
                     if (linkResult == FALSE) {
                         // "link failed\n"
                         OSReport_Error("リンク失敗\n");
@@ -366,7 +367,7 @@ BOOL DynamicModuleControl::do_link() {
                 } else {
                     s32 result = JKRResizeMemBlock(NULL, mModule, fixSize2 + mModule->bssSize);
                     if (result > 0) {
-                        BOOL linkResult = OSLinkFixed(&mModule->info, (void*)fixSizePtr);
+                        BOOL linkResult = OSLinkFixed(&mModule->info, reinterpret_cast<void*>(fixSizePtr));
                         if (linkResult == FALSE) {
                             // "link failed\n"
                             OSReport_Error("リンク失敗\n");
@@ -466,10 +467,10 @@ extern "C" void ModuleUnresolved() {
     OSReport_Error("\nError: リンクされていない関数が呼び出されました.\n");
     OSReport_Error("Address:      Back Chain    LR Save\n");
     u32 i = 0;
-    u32* stackPtr = (u32*)OSGetStackPointer();
-    while ((stackPtr != NULL) && ((u32)stackPtr != 0xFFFFFFFF) && (i++ < 0x10)) {
+    auto* stackPtr = reinterpret_cast<uintptr_t*>(OSGetStackPointer());
+    while ((stackPtr != nullptr) && (reinterpret_cast<uintptr_t>(stackPtr) != std::numeric_limits<uintptr_t>::max()) && (i++ < 0x10)) {
         OSReport_Error("0x%08x:   0x%08x    0x%08x\n", stackPtr, *stackPtr, *(stackPtr + 1));
-        stackPtr = (u32*)*stackPtr;
+        stackPtr = reinterpret_cast<uintptr_t*>(*stackPtr);
     }
     OSReport_Error("\n");
 }

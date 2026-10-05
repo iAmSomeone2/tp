@@ -62,7 +62,7 @@ public:
 
     static void initSystem(u32, u32);
     JASAramStream();
-    void init(u32, u32, StreamCallback, void*);
+    void init(uintptr_t, u32, StreamCallback, void*);
     bool prepare(s32, int);
     bool start();
     bool stop(u16);
@@ -160,7 +160,7 @@ public:
     /* 0x12C */ int field_0x12c;
     /* 0x130 */ s16 mpLasts[CHANNEL_MAX];
     /* 0x13C */ s16 mpPenults[CHANNEL_MAX];
-    /* 0x148 */ int mAramAddress;
+    /* 0x148 */ uintptr_t mAramAddress;
     /* 0x14C */ u32 mAramSize;
     /* 0x150 */ StreamCallback mCallback;
     /* 0x154 */ void* mCallbackData;

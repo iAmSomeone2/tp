@@ -147,7 +147,7 @@ namespace JASDsp {
     void boot(void (*)(void*));
     void releaseHalt(u32);
     void finishWork(u16);
-    void syncFrame(u32, u32, u32);
+    void syncFrame(u32, uintptr_t, uintptr_t);
     void setDSPMixerLevel(f32);
     f32 getDSPMixerLevel();
     TChannel* getDSPHandle(int);

@@ -13,10 +13,10 @@ cmake --build --preset default    # add `-- -k 0` to keep going past failing fil
 
 ## Current status
 
-Measured with Apple clang 21, `debug` preset, GameCube USA:
+Measured with Apple clang 21, `debug` preset (C++20), GameCube USA:
 
 * **1,280 translation units** are compiled (1,281 for PAL/JPN).
-* **1,215 compile; 65 do not.** The 65 are exactly the files an independent syntax sweep of the same sources predicts (same set, none extra, none missing), so the CMake setup itself adds no failures. Each is covered by the punch list in [compiler-fixes.md](compiler-fixes.md): mainly the missing `DEG_TO_RAD`/`RAD_TO_DEG` macros, the `JUTConsole.h` template narrowing, `switch` jumps past initialisation, and five files that need generated `assets/*.h`.
+* **313 compile; 967 do not.** The count was 1,275 of 1,280 compiling (only the five files that need generated `assets/*.h` failing) until `libs/dolphin/include/dolphin/types.h` was switched to `<cstdint>` types, which made `u32`/`s32` 32-bit on 64-bit hosts. The 967 come from 85 distinct error sites, 79 of them pointer casts, tracked as section F of [compiler-fixes.md](compiler-fixes.md); two headers account for nearly all the failing files. Earlier history: 1,215, then 1,248, then 1,265 compiling.
 * **Nothing is linked yet.** There is no executable target: the SDK implementation is missing and the libraries have not been checked for duplicate symbols ([duplicate-symbols.md](duplicate-symbols.md)).
 * **GCC is untested** (not installed on the machine this was written on). The flags are all standard GCC options and are probed with `check_compiler_flag`, but expect the GCC-only diagnostics listed in `compiler-fixes.md`.
 
@@ -57,6 +57,7 @@ libs/dolphin/              tp::dolphin (headers)
 libs/JSystem/              tp::JSystem_headers + one library per module
 src/                       framework, profile table, DynamicLink; subdirectories below
 src/{m_Do,c,SSystem,Z2AudioLib,d,d/actor}/
+src/nightfall/             nf_platform: host definitions of SDK globals (platform layer)
 ```
 
 Each directory with sources has a hand-written `CMakeLists.txt` and a **generated** `sources.cmake` that defines explicit source lists (no globbing).
@@ -113,5 +114,25 @@ Objects are included by *existence in the GameCube splits*, regardless of their 
 * **Linking and a platform layer.** Needs an SDK implementation for `tp::dolphin`, an entry point (`m_Do_main.cpp` has `void main`), and a check of cross-library duplicate symbols. `tp::engine` already uses a rescanned link group where the linker supports one, because the libraries reference each other freely.
 * **Precompiled headers.** The Metrowerks build uses `d/dolzel.pch` and friends; on stock compilers those are ordinary includes. CMake `target_precompile_headers` on `dolzel` would speed up builds but has not been tried.
 * **Generated asset headers.** Five TUs (`d_a_grass`, `d_a_mant`, `d_a_player`, `d_error_msg`, `m_Do_ext`) need `assets/*.h` extracted from a disc image by the existing decomp-toolkit flow. CMake only exposes the include path; it does not generate them.
-* **`u32` is `unsigned long`** (`libs/dolphin/include/dolphin/types.h`), so it is 64-bit on LP64 hosts. See `compiler-fixes.md` before depending on this for anything but compile checks.
+* **`u32`/`s32` are now fixed-width** (`<cstdint>`) on every compiler, so they are 32-bit on 64-bit Linux. Finishing the pointer-cast fallout is the current work item; see section F of `compiler-fixes.md`.
 * **Per-REL libraries.** All actors share one library. Keeping the REL boundaries would mean ~750 targets and is not useful once RELs are linked statically.
+
+## Tests
+
+Unit tests use GoogleTest and are off by default (`-DTP_BUILD_TESTS=ON`, then `ctest --test-dir <build dir>`). They mirror the source tree, leaving out the `src`/`include` levels: tests for `libs/JSystem/src/JMessage/resource.cpp` live in `tests/JSystem/JMessage/resource_test.cpp`, and each directory has its own `CMakeLists.txt` that calls `tp_add_test()` (defined in `tests/CMakeLists.txt`). Shared stand-ins for SDK functions and data are in `tests/support/`.
+
+* **Linking the real code.** Every test links the real engine libraries (the JSystem tests use the group `tp_test_jsystem_libs`: JAudio2, JKernel, JMessage, JSupport, JUtility, JGadget), not copies of the sources. They only link what they need, not `tp::engine`, so they build even where unrelated engine files cannot (for example the ones that need generated assets). Earlier versions `#include`d the `.cpp` files to avoid duplicate symbols from header-defined globals; that stopped being necessary when the Dolphin headers stopped defining them (see "Platform layer" below).
+* **Lenient linking.** Because the SDK implementation is not built, tests link with `LENIENT_LINK`: symbols they never call stay unresolved (`-undefined dynamic_lookup` on macOS, `--unresolved-symbols=ignore-all` on Linux). A call that does reach one crashes, so tests stub whatever they execute. References that the loader resolves at start-up (data, and functions whose address is taken) cannot be left unresolved, so they get stand-ins in `tests/support/load_time_stubs.hpp`. Windows has no equivalent here, so those tests are skipped there.
+* **Current tests (75):**
+  * `JMessage`: message-ID lookup, including a guard against walking the 32-bit ID table as 64-bit words.
+  * `JAudio2`: `JASHeap` allocation (with a comparison against the original algorithm) and the ARAM chunk manager at 32-bit and 64-bit addresses.
+  * `JUtility`: the `JUTCacheFont` page list.
+  * `JKernel`: `JKRArchive::check_mount_already` (including mount keys that differ only above bit 31), the `JKRDecomp` thread loop with its callback, and the type contract of the async-load callback. The callback call inside `JKRDvdAramRipper::loadToAram_Async` is not executed, because it needs the DVD/ARAM stack; the test file says so.
+* Each group was checked against deliberately broken versions of the code to confirm that it fails.
+
+## Platform layer
+
+The first pieces of the host platform layer exist as `nf_platform` (`src/nightfall/platform/`, alias `nf::platform`, linked by `tp::engine` and by every test):
+
+* `os_globals.cpp` defines the Dolphin SDK globals that the headers only declare outside the Metrowerks build: `__OSExecParams`, `__OSAppLoaderOffset` and the console's clocks `__OSBusClock` (162 MHz) and `__OSCoreClock` (486 MHz). With Metrowerks these are variables pinned to low memory (`type name : (address)`), unchanged. Everywhere else the headers used to *define* two of them in every translation unit (duplicate symbols) and to turn the clocks into reads of a fixed address (a crash in any global initialiser that uses `OS_TIMER_CLOCK`).
+* `libs/JSystem/src/JKernel/JKRHeap.cpp`: the global `operator new`/`new[]` and `operator delete`/`delete[]` fall back to the standard allocator while no JKR heap is current, and delete frees any pointer no JKR heap owns. On the console a heap always exists first, so nothing changes there (the change is `#ifndef __MWERKS__`); on a host the process would otherwise crash on its first `new`, even inside the standard library.

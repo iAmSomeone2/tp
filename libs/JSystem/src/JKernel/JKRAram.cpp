@@ -195,7 +195,7 @@ JKRAramBlock* JKRAram::mainRamToAram(u8* buf, u32 bufSize, u32 alignedSize,
     return block;
 }
 
-u8* JKRAram::aramToMainRam(u32 address, u8* buf, u32 p3, JKRExpandSwitch expandSwitch, u32 p5,
+u8* JKRAram::aramToMainRam(uintptr_t address, u8* buf, u32 p3, JKRExpandSwitch expandSwitch, u32 p5,
                            JKRHeap* heap, int id, u32* pSize) {
     JKRCompression compression = COMPRESSION_NONE;
     if (pSize != NULL)

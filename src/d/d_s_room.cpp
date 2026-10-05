@@ -89,7 +89,7 @@ static bool setArchiveBank(int i_roomNo) {
         }
 
         if (strcmp(name, "") != 0) {
-            if (strnicmp(name, "pack", 4) == 0) {
+            if (strncasecmp(name, "pack", 4) == 0) {
                 #if DEBUG
                 if (fapGm_HIO_c::mPackArchiveMode)
                 #endif

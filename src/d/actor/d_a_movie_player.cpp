@@ -521,7 +521,7 @@ static u8 __THPReadHuffmanTableSpecification() {
     u16 length, num_Vij;
 
     __THPHuffmanSizeTab = __THPWorkArea;
-    __THPHuffmanCodeTab = (u16*)((u32)__THPWorkArea + 256 + 1);
+    __THPHuffmanCodeTab = reinterpret_cast<u16*>(reinterpret_cast<uintptr_t>(__THPWorkArea) + 256 + 1);
     length = (u16)((__THPInfo->c)[0] << 8 | (__THPInfo->c)[1]);
     __THPInfo->c += 2;
 #if PLATFORM_SHIELD
@@ -627,8 +627,8 @@ static void __THPPrepBitStream() {
     u32* ptr;
     u32 offset, i, j, k;
 
-    ptr = (u32*)((u32)__THPInfo->c & 0xFFFFFFFC);
-    offset = (u32)__THPInfo->c & 3;
+    ptr = reinterpret_cast<u32*>(reinterpret_cast<uintptr_t>(__THPInfo->c) & ~static_cast<uintptr_t>(3));
+    offset = reinterpret_cast<uintptr_t>(__THPInfo->c) & 3;
     ASSERTLINE(3799, __THPInfo->cnt <= 33);
 
     if (__THPInfo->cnt != 33) {

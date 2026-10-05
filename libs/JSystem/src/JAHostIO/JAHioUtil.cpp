@@ -16,7 +16,7 @@ static char* dummy(JORDir* dir) {
 
 char* JAHioUtil::getString(const char* msg, ...) {
     va_list args;
-    va_start(msg, args);
+    va_start(args, msg);
     vsprintf(mStringBuffer, msg, args);
     va_end(args);
     return mStringBuffer;

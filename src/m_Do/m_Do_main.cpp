@@ -1134,6 +1134,7 @@ template<>
 JASDefaultBankTable* JASGlobalInstance<JASDefaultBankTable>::sInstance JAS_GLOBAL_INSTANCE_INIT;
 
 #ifndef __MWERKS__
+#include <JSystem/JAudio2/JAUSectionHeap.h>
 template<>
 JAUSectionHeap* JASGlobalInstance<JAUSectionHeap>::sInstance JAS_GLOBAL_INSTANCE_INIT;
 #endif

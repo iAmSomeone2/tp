@@ -35,7 +35,7 @@ s32 TStreamBuffer::xsputn(const char* param_0, s32 param_1) {
     if (var_r29 > 0) {
         const char* var_r27 = param_0 + var_r29;
         JUT_ASSERT(70, pCurrent_put_!=NULL);
-        pCurrent_put_ = std::copy<char>(param_0, var_r27, pCurrent_put_);
+        pCurrent_put_ = std::copy(param_0, var_r27, pCurrent_put_);
         param_0 = var_r27;
         param_1 -= var_r29;
     }

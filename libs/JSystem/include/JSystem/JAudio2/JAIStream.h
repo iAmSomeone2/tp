@@ -36,7 +36,7 @@ public:
     JAIStream* asStream();
     JAITempoMgr* getTempoMgr();
 
-    void* JAIStreamMgr_getAramAddr_() const { return streamAramAddr_; }
+    [[nodiscard]] uintptr_t JAIStreamMgr_getAramAddr_() const { return reinterpret_cast<uintptr_t>(streamAramAddr_); }
 
     static const int NUM_CHILDREN = 6;
 

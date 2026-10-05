@@ -1,11 +1,14 @@
 #include "JSystem/JSystem.h" // IWYU pragma: keep
 
 #include "JSystem/JUtility/JUTDbPrint.h"
+
+#include <cstdarg>
+
+#include <cstdio>
+#include <cstring>
 #include "JSystem/J2DGraph/J2DOrthoGraph.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTVideo.h"
-#include <cstdio>
-#include <cstring>
 
 JUTDbPrint::JUTDbPrint(JUTFont* pFont, JKRHeap* pHeap) {
     mFont = pFont;

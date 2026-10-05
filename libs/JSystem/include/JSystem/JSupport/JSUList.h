@@ -232,6 +232,9 @@ public:
 
     operator int() { return (int)mTree; }
 
+    bool operator ==(JSUTreeIterator<T> const& other) const { return this->mTree == other.mTree; }
+    bool operator !=(JSUTreeIterator<T> const& other) const { return this->mTree != other.mTree; }
+
     T* getObject() const { return this->mTree->getObject(); }
 
     bool operator==(const JSUTree<T>* other) const { return this->mTree == other; }

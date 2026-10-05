@@ -87,7 +87,7 @@ private:
     /* 0x9C */ TGlyphCacheInfo* field_0x9c;
     /* 0xA0 */ TGlyphCacheInfo* field_0xa0;
     /* 0xA4 */ TGlyphCacheInfo* field_0xa4;
-    /* 0xA8 */ u32 field_0xa8;
+    /* 0xA8 */ uintptr_t field_0xa8;
     /* 0xAC */ JKRAramBlock* field_0xac;
     /* 0xB0 */ u8 field_0xb0;
     /* 0xB4 */ int field_0xb4;

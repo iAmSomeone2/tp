@@ -15,18 +15,18 @@
 
 JASHeap::JASHeap(JASDisposer* disposer) : mTree(this) {
     mDisposer = disposer;
-    mBase = NULL;
+    mBase = nullptr;
     mSize = 0;
-    field_0x40 = 0;
+    field_0x40 = nullptr;
     OSInitMutex(&mMutex);
 }
 
-void JASHeap::initRootHeap(void* param_0, u32 param_1) {
+void JASHeap::initRootHeap(void* param_0, uintptr_t param_1) {
     JUT_ASSERT(97, ! isAllocated());
     JASMutexLock lock(&mMutex);
-    mBase = (u8*)OSRoundUp32B(param_0);
+    mBase = reinterpret_cast<u8*>(OSRoundUp32B(param_0));
     field_0x40 = NULL;
-    mSize = param_1 - (u32(mBase) - u32(param_0));
+    mSize = param_1 - (reinterpret_cast<uintptr_t>(mBase) - reinterpret_cast<uintptr_t>(param_0));
 }
 
 bool JASHeap::alloc(JASHeap* mother, u32 param_1) {
@@ -34,29 +34,28 @@ bool JASHeap::alloc(JASHeap* mother, u32 param_1) {
     JASMutexLock lock(&mMutex);
     if (isAllocated()) {
         OS_REPORT("[JASHeap::alloc] すでにヒープは確保されています。初期化してからにしてください。\n");
-        return 0;
+        return false;
     }
     if (!mother->isAllocated()) {
-        return 0;
+        return false;
     }
     param_1 = OSRoundUp32B(param_1);
     u32 local_28 = mother->getCurOffset();
     u32 local_2c = mother->getTailOffset();
     if (local_28 + param_1 <= local_2c) {
         mother->insertChild(this, mother->getTailHeap(), mother->mBase + local_28, param_1, false);
-        return 1;
+        return true;
     }
-    s32 r27 = -1;
+    uintptr_t r27 = std::numeric_limits<uintptr_t>::max();
     u8* r29 = mother->mBase;
     bool local_43 = false;
-    JASHeap* local_30 = NULL;
+    JASHeap* local_30 = nullptr;
     void* local_34;
-    JSUTreeIterator<JASHeap> it;
-    for (it = mother->mTree.getFirstChild(); it != mother->mTree.getEndChild(); it++) {
+    for (JSUTreeIterator it = mother->mTree.getFirstChild(); it != mother->mTree.getEndChild(); it++) {
         if (r29 >= mother->mBase + local_2c) {
             break;
         }
-        u32 local_3c = u32(it->mBase) - u32(r29);
+        auto local_3c = reinterpret_cast<uintptr_t>(it->mBase) - reinterpret_cast<uintptr_t>(r29);
         if (local_3c >= param_1 && local_3c < r27) {
             local_30 = *it;
             local_34 = r29;
@@ -69,7 +68,7 @@ bool JASHeap::alloc(JASHeap* mother, u32 param_1) {
     if (r29 != mother->mBase && r29 < mother->mBase + local_2c) {
         u32 local_40 = mother->mBase + mother->mSize - r29;
         if (local_40 >= param_1 && local_40 < r27) {
-            local_30 = NULL;
+            local_30 = nullptr;
             local_34 = r29;
             r27 = local_40;
             local_43 = true;
@@ -77,10 +76,10 @@ bool JASHeap::alloc(JASHeap* mother, u32 param_1) {
     }
     if (!local_43) {
         OS_REPORT("[JASHeap::alloc] マザーメモリが足りないので確保できません。\n");
-        return 0;
+        return false;
     }
     mother->insertChild(this, local_30, local_34, param_1, false);
-    return 1;
+    return true;
 }
 
 bool JASHeap::allocTail(JASHeap* mother, u32 size) {
@@ -314,13 +313,13 @@ JASMemChunkPool<1024, JASThreadingModel::ObjectLevelLockable>* JASKernel::getCom
 
 JASHeap JASKernel::audioAramHeap;
 
-void JASKernel::setupAramHeap(uintptr_t param_0, u32 param_1) {
+void JASKernel::setupAramHeap(uintptr_t param_0, uintptr_t param_1) {
 #if !PLATFORM_GCN
     OSReport("setupAramHeap %x, %x, %x\n", param_0, ARGetBaseAddress(), param_1);
     param_0 = ARGetBaseAddress();
 #endif
     sAramBase = param_0;
-    audioAramHeap.initRootHeap((void*)sAramBase, param_1);
+    audioAramHeap.initRootHeap(reinterpret_cast<void*>(sAramBase), param_1);
 }
 
 JASHeap* JASKernel::getAramHeap() {

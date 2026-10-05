@@ -73,8 +73,12 @@ OSThread* __gUnkThread1 AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 int __gUnknown800030C0[2] AT_ADDRESS(OS_BASE_CACHED | 0x30C0);
 u8 __gUnknown800030E3 AT_ADDRESS(OS_BASE_CACHED | 0x30E3);
 #else
-#define __OSBusClock  (*(u32 *)(OS_BASE_CACHED | 0x00F8))
-#define __OSCoreClock (*(u32 *)(OS_BASE_CACHED | 0x00FC))
+// With MWCC these live at fixed addresses in low memory. Elsewhere a pointer to that address would
+// fault, and global initialisers use them (OS_TIMER_CLOCK is derived from the bus clock), so they
+// are ordinary variables defined once by the platform layer
+// (src/nightfall/platform/os_globals.cpp), which supplies the console's values.
+extern u32 __OSBusClock;
+extern u32 __OSCoreClock;
 #endif
 
 #define OS_BUS_CLOCK   __OSBusClock
@@ -223,8 +227,8 @@ extern u8 __OSReport_Warning_disable;
 extern u8 __OSReport_System_disable;
 extern u8 __OSReport_enable;
 
-#define OSRoundUp32B(x)   (((u32)(x) + 32 - 1) & ~(32 - 1))
-#define OSRoundDown32B(x) (((u32)(x)) & ~(32 - 1))
+#define OSRoundUp32B(x)   (((uintptr_t)(x) + 32 - 1) & ~(32 - 1))
+#define OSRoundDown32B(x) (((uintptr_t)(x)) & ~(32 - 1))
 
 void* OSPhysicalToCached(u32 paddr);
 void* OSPhysicalToUncached(u32 paddr);
@@ -234,10 +238,10 @@ void* OSCachedToUncached(void* caddr);
 void* OSUncachedToCached(void* ucaddr);
 
 #if !DEBUG
-#define OSPhysicalToCached(paddr)    ((void*) ((u32)(OS_BASE_CACHED   + (u32)(paddr))))
-#define OSPhysicalToUncached(paddr)  ((void*) ((u32)(OS_BASE_UNCACHED + (u32)(paddr))))
-#define OSCachedToPhysical(caddr)    ((u32)   ((u32)(caddr)  - OS_BASE_CACHED))
-#define OSUncachedToPhysical(ucaddr) ((u32)   ((u32)(ucaddr) - OS_BASE_UNCACHED))
+#define OSPhysicalToCached(paddr)    ((void*) ((uintptr_t)(OS_BASE_CACHED   + (uintptr_t)(paddr))))
+#define OSPhysicalToUncached(paddr)  ((void*) ((uintptr_t)(OS_BASE_UNCACHED + (uintptr_t)(paddr))))
+#define OSCachedToPhysical(caddr)    ((uintptr_t)   ((uintptr_t)(caddr)  - OS_BASE_CACHED))
+#define OSUncachedToPhysical(ucaddr) ((uintptr_t)   ((uintptr_t)(ucaddr) - OS_BASE_UNCACHED))
 #define OSCachedToUncached(caddr)    ((void*) ((u8*)(caddr)  + (OS_BASE_UNCACHED - OS_BASE_CACHED)))
 #define OSUncachedToCached(ucaddr)   ((void*) ((u8*)(ucaddr) - (OS_BASE_UNCACHED - OS_BASE_CACHED)))
 #endif

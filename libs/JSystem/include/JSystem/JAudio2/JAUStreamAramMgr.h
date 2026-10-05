@@ -59,12 +59,12 @@ public:
         }
         return NULL;
     }
-    virtual bool deleteStreamAram(u32 param_0) {
+    virtual bool deleteStreamAram(uintptr_t param_0) {
         for (u32 i = 0; i < field_0x4c; i++) {
             if (!this->field_0x4.test(i)) {
                 continue;
             }
-            if ((uintptr_t)this->mHeaps[i].getBase() != param_0) {
+            if (reinterpret_cast<uintptr_t>(this->mHeaps[i].getBase()) != param_0) {
                 continue;
             }
             this->field_0x4.reset(i);

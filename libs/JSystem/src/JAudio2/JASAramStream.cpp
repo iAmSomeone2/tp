@@ -75,7 +75,7 @@ JASAramStream::JASAramStream() {
     mVolume = 1.0f;
     mPitch = 1.0f;
     for (int i = 0; i < 6; i++) {
-        mChannels[i] = NULL;
+        mChannels[i] = nullptr;
         mpLasts[i] = 0;
         mpPenults[i] = 0;
         mChannelVolume[i] = 1.0f;
@@ -88,7 +88,7 @@ JASAramStream::JASAramStream() {
     }
 }
 
-void JASAramStream::init(u32 aramAddress, u32 aramSize, StreamCallback i_callback, void* i_callbackData) {
+void JASAramStream::init(uintptr_t aramAddress, u32 aramSize, StreamCallback i_callback, void* i_callbackData) {
     JUT_ASSERT(153, sReadBuffer != NULL);
     mAramAddress = aramAddress;
     mAramSize = aramSize;
@@ -135,7 +135,7 @@ bool JASAramStream::prepare(s32 param_0, int param_1) {
 }
 
 bool JASAramStream::start() {
-    if (!OSSendMessage(&field_0x000, (OSMessage)0, OS_MESSAGE_NOBLOCK)) {
+    if (!OSSendMessage(&field_0x000, nullptr, OS_MESSAGE_NOBLOCK)) {
         JUT_WARN(273, "%s", "OSSendMessage Failed")
         return false;
     }
@@ -583,7 +583,7 @@ void JASAramStream::updateChannel(u32 i_callbackType, JASChannel* i_channel,
 s32 JASAramStream::channelProc() {
     OSMessage msg;
     while (OSReceiveMessage(&field_0x020, &msg, OS_MESSAGE_NOBLOCK)) {
-        switch ((u32)msg) {
+        switch (reinterpret_cast<uintptr_t>(msg)) {
         case 4:
             field_0x0ac = true;
             break;
@@ -598,12 +598,12 @@ s32 JASAramStream::channelProc() {
     }
 
     while (OSReceiveMessage(&field_0x000, &msg, OS_MESSAGE_NOBLOCK)) {
-        switch ((u32)msg & 0xff) {
+        switch (reinterpret_cast<uintptr_t>(msg) & 0xff) {
         case 0:
             channelStart();
             break;
         case 1:
-            channelStop(JSUHiHalf((u32)msg));
+            channelStop(JSUHiHalf(static_cast<u32>(reinterpret_cast<uintptr_t>(msg))));
             break;
         case 2:
             field_0x0ae |= 1;

@@ -21,8 +21,8 @@ public:
     JGadget_outMessage& operator<<(u8 param_1) { return *this << (char)param_1; }
     JGadget_outMessage& operator<<(const char* str);
     JGadget_outMessage& operator<<(char);
-    JGadget_outMessage& operator<<(s32);
-    JGadget_outMessage& operator<<(u32);
+    // JGadget_outMessage& operator<<(s32);
+    // JGadget_outMessage& operator<<(u32);
     JGadget_outMessage& operator<<(const void*);
 
     static const int BUFFER_SIZE = 256;

@@ -58,7 +58,7 @@ bool JAIStream::prepare_prepareStream_() {
 
         streamAramAddr_ = streamAramMgr->newStreamAram(&size);
         if (streamAramAddr_ != NULL) {
-            inner_.aramStream_.init((u32)streamAramAddr_, size, &JAIStream_JASAramStreamCallback_, this);
+            inner_.aramStream_.init(reinterpret_cast<uintptr_t>(streamAramAddr_), size, &JAIStream_JASAramStreamCallback_, this);
             field_0x290 = 1;
             prepareCount_ = 0;
         } else {

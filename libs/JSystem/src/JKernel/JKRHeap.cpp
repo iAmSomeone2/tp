@@ -9,6 +9,8 @@
 #include "JSystem/JUtility/JUTAssert.h"
 #include "JSystem/JUtility/JUTException.h"
 #include <stdint.h>
+#include <cstddef>
+#include <cstdlib>
 #include <cstring>
 
 #if DEBUG
@@ -468,11 +470,41 @@ bool JKRHeap::isSubHeap(JKRHeap* heap) const {
     return false;
 }
 
+#ifndef __MWERKS__
+// On the console a JKR heap always exists before the first allocation, so these operators can hand
+// everything to it. On a host there is none during static initialisation (and in unit tests that
+// link the real JKernel code), where JKRHeap::alloc() would return null and the process would
+// crash on its first `new`, including inside the standard library. So when no JKR heap is current
+// the standard allocator is used instead, and operator delete releases any pointer that no JKR heap
+// owns with std::free. Neither changes what happens once a heap is in use.
+static void* HostAllocate(size_t size, int alignment) {
+    size_t align = alignment < 0 ? static_cast<size_t>(-alignment) : static_cast<size_t>(alignment);
+    if (align < alignof(std::max_align_t)) {
+        align = alignof(std::max_align_t);
+    }
+    while ((align & (align - 1)) != 0) {  // round up to a power of two
+        align += align & ~(align - 1);
+    }
+    return std::aligned_alloc(align, ((size == 0 ? 1 : size) + align - 1) / align * align);
+}
+
+#endif
+
 void* operator new(size_t size) {
+#ifndef __MWERKS__
+    if (JKRHeap::getCurrentHeap() == NULL) {
+        return HostAllocate(size, 4);
+    }
+#endif
     return JKRHeap::alloc(size, 4, NULL);
 }
 
 void* operator new(size_t size, int alignment) {
+#ifndef __MWERKS__
+    if (JKRHeap::getCurrentHeap() == NULL) {
+        return HostAllocate(size, alignment);
+    }
+#endif
     return JKRHeap::alloc(size, alignment, NULL);
 }
 
@@ -481,10 +513,20 @@ void* operator new(size_t size, JKRHeap* heap, int alignment) {
 }
 
 void* operator new[](size_t size) {
+#ifndef __MWERKS__
+    if (JKRHeap::getCurrentHeap() == NULL) {
+        return HostAllocate(size, 4);
+    }
+#endif
     return JKRHeap::alloc(size, 4, NULL);
 }
 
 void* operator new[](size_t size, int alignment) {
+#ifndef __MWERKS__
+    if (JKRHeap::getCurrentHeap() == NULL) {
+        return HostAllocate(size, alignment);
+    }
+#endif
     return JKRHeap::alloc(size, alignment, NULL);
 }
 
@@ -493,10 +535,22 @@ void* operator new[](size_t size, JKRHeap* heap, int alignment) {
 }
 
 void operator delete(void* ptr) {
+#ifndef __MWERKS__
+    if (ptr != NULL && JKRHeap::findFromRoot(ptr) == NULL) {
+        std::free(ptr);
+        return;
+    }
+#endif
     JKRHeap::free(ptr, NULL);
 }
 
 void operator delete[](void* ptr) {
+#ifndef __MWERKS__
+    if (ptr != NULL && JKRHeap::findFromRoot(ptr) == NULL) {
+        std::free(ptr);
+        return;
+    }
+#endif
     JKRHeap::free(ptr, NULL);
 }
 

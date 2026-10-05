@@ -4,23 +4,23 @@ The code was written for Metrowerks CodeWarrior (`mwcceppc`) targeting 32-bit bi
 
 ## How far is the tree from a stock compiler?
 
-`tools/utilities/clang_sweep.py` runs `clang++ -std=c++17 -fsyntax-only` over every translation unit under `src/` and `libs/JSystem/src`, **without any Metrowerks or MSL headers** (GameCube USA configuration, `DEBUG` off, host pointer size). Result, from [compile-sweep.md](compile-sweep.md):
+`tools/utilities/clang_sweep.py` runs `clang++ -std=c++20 -fsyntax-only` over every translation unit under `src/` and `libs/JSystem/src`, **without any Metrowerks or MSL headers** (GameCube USA configuration, `DEBUG` off, host pointer size). Result, from [compile-sweep.md](compile-sweep.md):
 
-* **1,293 of 1,383 TUs (93.5%) parse cleanly with no changes.**
-* The 90 failures fall into a handful of mechanical categories:
+* **1,346 of 1,383 TUs (97.3%) parse cleanly.** (This was 1,293 before the `DEG_TO_RAD`/`RAD_TO_DEG` macros moved into `include/nightfall/compat/globals.hpp`, which `global.h` includes on non-Metrowerks compilers and which needs C++20, and the narrowing, `case`-label and `main` fixes that followed.)
+* The 37 remaining failures fall into a handful of mechanical categories:
 
 | Cause | Files | Fix |
 |---|---|---|
-| `DEG_TO_RAD` / `RAD_TO_DEG` missing (provided by MSL `<cmath>`) | 37 | Define once in a shared header (`(x) * (M_PI / 180.0f)`; note the MSL macro uses `float` `180.0f`). |
+| ~~`DEG_TO_RAD` / `RAD_TO_DEG` missing (provided by MSL `<cmath>`)~~ | ~~37~~ 0 | Fixed: defined in `include/nightfall/compat/globals.hpp` using `std::numbers::pi_v<float>`. |
 | `switch` jumps past initialisation (`cannot jump from switch statement to this case label`) | 4 (38 errors, mostly `d_a_mg_rod.cpp`) | Wrap the case bodies in braces. |
-| Narrowing in template arguments/case labels, e.g. `-offsetof(...)` in `JUTConsole.h` | 21 | Cast explicitly. |
+| ~~Narrowing in template arguments/case labels, e.g. `-offsetof(...)` in `JUTConsole.h`~~ | ~~21~~ 0 | Fixed with explicit casts. |
 | Wii/Shield-only SDK headers (`revolution/…`) | 14 | Not part of a GameCube configuration: `Z2AudioCS` (8 files, Wii-remote speaker), `m_Re` (remote pad), `d_cursor_mng`, `d_home_button`, `Z2SoundPlayer`, and 2 HostIO/MCC files. Exclude, or reimplement if you want touch/gyro-driven equivalents. |
 | Debug-only HostIO classes (`JORReflexible`, `getJORServer`, …) | ~8 | Compile out (`DEBUG` off) or drop HostIO entirely. |
-| `va_start`/`va_end`, `stricmp`/`strnicmp`, `main` return type, `asm` in `m_Do_printf.cpp` | 8 | Include `<cstdarg>`, provide the two string helpers, fix `main`, port the `asm`. |
+| `va_start`/`va_end`, `stricmp`/`strnicmp`, `JAUSectionHeap` declaration, `asm` in `m_Do_printf.cpp` (the last only because the sweep forces `-D__GEKKO__`) | 6 | Include `<cstdarg>`, provide the two string helpers, include or forward-declare `JAUSectionHeap`. (`main`'s return type is fixed.) |
 | Generated asset headers missing (`assets/…`) | 5 | Produced from your disc image by the build (see [../01-project-overview.md](../01-project-overview.md)). |
 | Pointer cast to a smaller integer | 2 | Only fails on 64-bit hosts; fine on 32-bit ARM. Use `uintptr_t`. |
 
-A deeper check confirms the picture: compiling all actor TUs to **object code** (`-c -O0`) succeeds for 752 of 765 files (the same failure list), so the game-object layer is very close to building.
+A deeper check confirms the picture: compiling all actor TUs to **object code** (`-c -O0`) succeeds for 758 of 765 files (the same failure list), so the game-object layer is very close to building.
 
 This is not evidence that the game *works*: it is a syntax/codegen pass on a 64-bit host. It does say the remaining language-level work is small compared with the platform work (graphics, audio, I/O, data).
 
@@ -45,7 +45,7 @@ The original build flags (`configure.py`) encode assumptions the source relies o
 ## Type sizes and layout
 
 * **Pointers and `long` are 4 bytes on both** the PowerPC EABI and 32-bit ARM. Structs annotated `/* 0x.. */` and file-embedded pointer-sized fields (e.g. `ResTIMG::imageOffset` is a `uintptr_t`) keep their layout. A 64-bit desktop build would break these; the Vita build does not. This is a genuine advantage of the target.
-* `u32` is `unsigned long` in `libs/dolphin/include/dolphin/types.h`. Both are 32 bits on ARM EABI, but `unsigned long` and `unsigned int` are distinct types for overloads, templates and `printf` format checks. Consider switching the `u32`/`s32` typedefs to `<cstdint>` and fixing what falls out; upstream has started replacing `u32` with `uintptr_t`/`intptr_t` where pointers are involved.
+* `u32`/`s32` (and the other integer typedefs) are now defined from `<cstdint>` in `libs/dolphin/include/dolphin/types.h`, so they are 32-bit on 64-bit Linux as well as on ARM; before, `unsigned long`/`long` made them 64-bit on LP64. Fixing the pointer casts that fell out of this is in progress; see section F of [compiler-fixes.md](compiler-fixes.md).
 * **Bit-fields** (62 in 7 files, mostly JAudio2 `JAISound.h`, `JASTrack.h`, `Z2SeqMgr.h`) allocate from the most significant bit on big-endian and from the least significant on little-endian. Fine for purely in-memory state, wrong if the struct overlays file/hardware data. See [endianness.md](endianness.md).
 * **Pointer-to-member** types appear in ~610 places (336 files), mostly state-machine tables such as `typedef void (dFoo_c::*procFunc)()`. Their size differs between MWCC (12 bytes) and the Itanium ABI used on ARM (8 bytes). It only matters where code depends on absolute offsets into such classes; the many `/* 0x… */` offset comments and `STATIC_ASSERT(sizeof(X) == 0x..)` (788 of them) will not hold for classes containing member pointers.
 * **Virtual tables and multiple inheritance** follow different ABIs; nothing in the game depends on vtable layout, but decomp-era hacks that reorder or force vtable/`weak` emission are irrelevant on a new toolchain.

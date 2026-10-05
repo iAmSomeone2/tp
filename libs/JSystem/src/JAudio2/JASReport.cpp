@@ -5,10 +5,13 @@
 #include "JSystem/JSystem.h" // IWYU pragma: keep
 
 #include "JSystem/JAudio2/JASReport.h"
+
+#include <cstdarg>
+
+#include <cstdio>
 #include "JSystem/JAudio2/JASCalc.h"
 #include "JSystem/JAudio2/JASMutex.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include <cstdio>
 
 static OSMutex sMutex;
 

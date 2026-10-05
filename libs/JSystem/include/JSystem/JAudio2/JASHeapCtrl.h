@@ -18,7 +18,7 @@ class JKRSolidHeap;
 class JASHeap {
 public:
     JASHeap(JASDisposer* param_0 = NULL);
-    void initRootHeap(void*, u32);
+    void initRootHeap(void*, uintptr_t);
     bool alloc(JASHeap*, u32);
     bool allocTail(JASHeap*, u32);
     bool free();
@@ -268,13 +268,13 @@ namespace JASKernel {
     void setupRootHeap(JKRSolidHeap*, u32);
     JKRHeap* getSystemHeap();
     JASMemChunkPool<1024, JASThreadingModel::ObjectLevelLockable>* getCommandHeap();
-    void setupAramHeap(u32, u32);
+    void setupAramHeap(uintptr_t, uintptr_t);
     JASHeap* getAramHeap();
     u32 getAramFreeSize();
     u32 getAramSize();
 
     extern JASHeap audioAramHeap;
-    extern u32 sAramBase;
+    extern uintptr_t sAramBase;
     extern JKRHeap* sSystemHeap;
     extern JASMemChunkPool<1024, JASThreadingModel::ObjectLevelLockable>* sCommandHeap;
 };

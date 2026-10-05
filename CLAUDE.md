@@ -12,9 +12,9 @@ The user does the development work themselves. **Edit source files only when exp
 
 ## New code: Nightfall (`nf`)
 
-New modules of this fork are namespaced `nf` (Nightfall) and kept apart from the decompiled `tp`/`d_*` code. Name them `nf_<module>`: the CMake target `nf_<module>` with alias `nf::<module>`, the directory `src/nf_<module>/`, and tests under `tests/nf_<module>/`. The C++ namespace is `nf`.
+New modules of this fork are called Nightfall and kept apart from the decompiled `tp`/`d_*` code. The C++ namespace is `nf`. Layout: public headers in `include/nightfall/<module>/` (e.g. `nightfall/compat/globals.hpp`), sources in `src/nightfall/`, tests in `tests/nf_<module>/`. CMake targets are `nf_<module>` with alias `nf::<module>`.
 
-New code should be modern C++; targets may require C++20 or newer (e.g. `nightfall` uses `cxx_std_20`) and need not match the legacy style. Legacy code will be updated as needed too, and those updates will often raise the language standard to 20 or newer. `tp::config`'s `cxx_std_17` is only a minimum: CMake compiles a target at the highest standard requested by anything it links, so linking an `nf` library into a legacy library raises that library's standard.
+New code should be modern C++ and need not match the legacy style. The whole project is built as C++20 (`tp::config` requires `cxx_std_20`, because `global.h` includes `nightfall/compat/globals.hpp`, which uses `std::numbers`), and a target may require something newer. Legacy code will be updated as needed too, and those updates will often raise the standard further. CMake compiles a target at the highest standard requested by anything it links, so linking an `nf` library that needs a newer standard into a legacy library raises that library's standard.
 
 ## Commands
 
@@ -42,7 +42,9 @@ cmake --preset default -DTP_BUILD_TESTS=ON && ctest --test-dir build/cmake/defau
 python3 tools/utilities/gen_cmake_sources.py [--check]       # regenerate / verify the sources.cmake lists
 ```
 
-Status: 1,215 of 1,280 TUs compile with clang; the 65 failures are the punch list in `docs/port/compiler-fixes.md`. Nothing links yet (no SDK implementation or entry point). GCC is untested.
+Status: 313 of 1,280 TUs compile with clang. The typedefs in `types.h` were just made fixed-width (32-bit `u32`/`s32`, needed for 64-bit Linux), and the 85 remaining error sites, mostly pointer casts, are section F of `docs/port/compiler-fixes.md` (1,275 compiled before that change). Nothing links yet (no SDK implementation or entry point). GCC is untested.
+
+Tests (GoogleTest, `-DTP_BUILD_TESTS=ON`) mirror the source tree without the `src`/`include` levels, e.g. `tests/JSystem/JMessage/` for `libs/JSystem/src/JMessage/`; add new ones with `tp_add_test()` in that directory's `CMakeLists.txt`. They link the real engine libraries, leniently, since the SDK implementation is not built (stand-ins for what they execute are in `tests/support/`). `src/nightfall/platform/` (`nf_platform`) holds the host definitions of SDK globals that the Dolphin headers only declare outside Metrowerks. See `docs/port/cmake.md`.
 
 Port-analysis scripts (host clang, no disc image needed); each takes a minute or two and rewrites a generated page under `docs/port/`:
 

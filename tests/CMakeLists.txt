@@ -33,25 +33,59 @@ if (TARGET gtest)
     endforeach ()
 endif ()
 
-# tp_add_test(<name> SOURCES <file>... [LIBRARIES <target>...])
+# tests/ is on every test's include path so tests can reach tests/support/ ("support/os_stubs.hpp").
+#
+# Tests link the real engine libraries. The Dolphin SDK implementation is not built on the host, so
+# the linked code mentions SDK (and other) functions that a test never calls. LENIENT_LINK lets the
+# link succeed with those symbols unresolved. A call that does reach one crashes, so tests stub
+# whatever they execute (tests/support). References the loader resolves at start-up (data, and
+# functions whose address is taken) cannot be left unresolved; tests/support/load_time_stubs.hpp
+# covers those.
+#
+#   LENIENT_LINK is supported on macOS and on GNU-style ELF linkers. Elsewhere the target is not
+#   created and a status message says so.
+add_library(tp_test_lenient_link INTERFACE)
+if (APPLE)
+    target_link_options(tp_test_lenient_link INTERFACE LINKER:-undefined,dynamic_lookup)
+    set(TP_TEST_LENIENT_LINK_SUPPORTED TRUE)
+elseif (CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|NetBSD|OpenBSD")
+    target_link_options(tp_test_lenient_link INTERFACE LINKER:--unresolved-symbols=ignore-all)
+    set(TP_TEST_LENIENT_LINK_SUPPORTED TRUE)
+else ()
+    set(TP_TEST_LENIENT_LINK_SUPPORTED FALSE)
+    message(STATUS "TP tests: lenient linking is not available on ${CMAKE_SYSTEM_NAME}; "
+                   "tests that need it are skipped")
+endif ()
+
+# tp_add_test(<name> SOURCES <file>... [LIBRARIES <target>...] [INCLUDE_DIRS <dir>...] [LENIENT_LINK])
 #
 # Creates the test executable `<name>` from SOURCES (relative to the calling directory), links it
 # against GoogleTest + GoogleMock with a main(), and registers each test case with CTest. The
 # project configuration (tp::config), the JSystem and Dolphin SDK headers are always available;
-# list the engine libraries under test in LIBRARIES, e.g. `LIBRARIES tp::SSystem`.
+# list the engine libraries under test in LIBRARIES, e.g. `LIBRARIES tp::SSystem`. INCLUDE_DIRS
+# adds extra include directories; LENIENT_LINK is described above.
 function(tp_add_test name)
-    cmake_parse_arguments(PARSE_ARGV 1 ARG "" "" "SOURCES;LIBRARIES")
+    cmake_parse_arguments(PARSE_ARGV 1 ARG "LENIENT_LINK" "" "SOURCES;LIBRARIES;INCLUDE_DIRS")
     if (NOT ARG_SOURCES)
         message(FATAL_ERROR "tp_add_test(${name}): no SOURCES given")
     endif ()
+    if (ARG_LENIENT_LINK AND NOT TP_TEST_LENIENT_LINK_SUPPORTED)
+        message(STATUS "TP tests: skipping ${name} (needs lenient linking)")
+        return()
+    endif ()
 
     add_executable(${name} ${ARG_SOURCES})
+    target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_FUNCTION_LIST_DIR}" ${ARG_INCLUDE_DIRS})
+    if (ARG_LENIENT_LINK)
+        target_link_libraries(${name} PRIVATE tp_test_lenient_link)
+    endif ()
     set_target_properties(${name} PROPERTIES CXX_EXTENSIONS OFF)
     target_link_libraries(${name} PRIVATE
             tp::config
             tp::JSystem_headers
             tp::dolphin
             tp::warnings
+            nf::platform
             ${ARG_LIBRARIES}
             GTest::gtest_main
             GTest::gmock
@@ -62,14 +96,17 @@ function(tp_add_test name)
     gtest_discover_tests(${name} DISCOVERY_MODE PRE_TEST)
 endfunction()
 
-# Test executables are declared below, one per library under test, e.g.:
+# The tests mirror the source tree, minus the "src"/"include" levels: tests for
+# libs/JSystem/src/JMessage/resource.cpp live in tests/JSystem/JMessage/. Each directory declares
+# its own executables, e.g.:
 #
 #   tp_add_test(test_SSystem
 #       SOURCES SSystem/c_math_test.cpp
 #       LIBRARIES tp::SSystem
 #   )
+add_subdirectory(JSystem)
 
-add_executable(nf_compat_test nf_compat/nf_compat_test.cpp)
+add_executable(nf_compat_test nightfall/nf_compat_test.cpp)
 set_target_properties(nf_compat_test PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(nf_compat_test PRIVATE cxx_std_20)
 target_include_directories(nf_compat_test PRIVATE ../include)
