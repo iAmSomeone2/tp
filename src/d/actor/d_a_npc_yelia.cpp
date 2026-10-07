@@ -383,7 +383,7 @@ cPhs_Step daNpc_Yelia_c::create() {
 
     cPhs_Step step = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

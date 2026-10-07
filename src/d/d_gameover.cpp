@@ -128,7 +128,7 @@ int dGameover_c::_create() {
         return 0;
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (dMeter2Info_getGameOverType() == 0) {
             mDoGph_gInf_c::setFadeColor(*(JUtility::TColor*)&g_blackColor);
             dComIfGs_addDeathCount();
@@ -184,7 +184,7 @@ int dGameover_c::_create() {
     }
 
     (this->*init_process[mProc])();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 
     return phase;
 }

@@ -369,33 +369,33 @@ int daNpcCd_c::setAttention(int i_idx) {
 }
 
 int daNpcCd_c::loadResrc(int param_0, int param_1) {
-    int result = cPhs_COMPLEATE_e;
+    int result = cPhs_COMPLETE_e;
 
     if (mIsDarkWorld) {
         result = dComIfG_resLoad(&mPhase1, l_resNameTbl[param_0][1]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
         result = dComIfG_resLoad(&mPhase4, l_resNameTbl[param_0][5]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
     } else {
         result = dComIfG_resLoad(&mPhase1, l_resNameTbl[param_0][0]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
         result = dComIfG_resLoad(&mPhase4, l_resNameTbl[param_0][4]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
     }
     result = dComIfG_resLoad(&mPhase2, l_resNameTbl[param_0][2]);
-    if (result != cPhs_COMPLEATE_e) {
+    if (result != cPhs_COMPLETE_e) {
         return result;
     }
     result = dComIfG_resLoad(&mPhase3, l_resNameTbl[param_0][3]);
-    if (result != cPhs_COMPLEATE_e) {
+    if (result != cPhs_COMPLETE_e) {
         return result;
     }
 

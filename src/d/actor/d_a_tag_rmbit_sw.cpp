@@ -62,7 +62,7 @@ int daTagRmbitSw_c::create() {
         JUT_WARN(165, "%s", " VisitedRoomNo == -1 !!!!!\n");
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagRmbitSw_c::Delete() {

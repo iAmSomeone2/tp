@@ -495,7 +495,7 @@ static cPhs_Step daSq_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, sq_class);
     cPhs_Step step = dComIfG_resLoad(&_this->mPhaseReq, "Sq");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mParam0 = fopAcM_GetParam(_this) & 0xff;
         if (_this->mParam0 == 1) {
             fopAcM_create(fpcNm_NPC_SQ_e, fopAcM_GetParam(_this), &_this->home.pos,

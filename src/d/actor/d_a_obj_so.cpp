@@ -1000,7 +1000,7 @@ static int daObj_So_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, obj_so_class);
 
     int phase = dComIfG_resLoad(&i_this->mPhase, "Obj_so");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_SO PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x570 = fopAcM_GetParam(a_this);
         i_this->field_0x571 = fopAcM_GetParam(a_this) >> 8;

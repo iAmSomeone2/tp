@@ -63,7 +63,7 @@ int daTag_ShopItem_c::create() {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_ShopItem_c::Delete() {

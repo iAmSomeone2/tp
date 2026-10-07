@@ -10,7 +10,7 @@
 
 int daTagEscape_c::create() {
     fopAcM_ct(this, daTagEscape_c);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagEscape_Create(fopAc_ac_c* i_this) {

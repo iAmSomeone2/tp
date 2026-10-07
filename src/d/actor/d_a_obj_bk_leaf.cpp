@@ -76,7 +76,7 @@ int daBkLeaf_c::CreateHeap() {
 int daBkLeaf_c::create() {
     fopAcM_ct(this, daBkLeaf_c);
     int retVal = dComIfG_resLoad(&mPhase, l_arcName);
-    if (retVal == cPhs_COMPLEATE_e) {
+    if (retVal == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x980)) {
             return cPhs_ERROR_e;
         } else {

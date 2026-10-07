@@ -20,7 +20,7 @@ int daTag_BottleItem_c::create() {
     }
 
     initialize();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 

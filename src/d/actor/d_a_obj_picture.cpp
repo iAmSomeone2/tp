@@ -117,7 +117,7 @@ int daObjPicture_c::create() {
     fopAcM_ct(this, daObjPicture_c);
 
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         field_0xd26 = 0;
         if (fopAcM_isSwitch(this, getSW_0())) {
             field_0xd26 = 1;

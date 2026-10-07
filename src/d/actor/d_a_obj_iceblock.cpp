@@ -345,7 +345,7 @@ int daObjIceBlk_c::CreateHeap() {
 
 int daObjIceBlk_c::create1st() {
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 heap_size = 0xC40;
         if (getSwbit2() != 0xFF && !fopAcM_isSwitch(this, getSwbit2())) {
             heap_size = 0x2940;

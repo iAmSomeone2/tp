@@ -65,7 +65,7 @@ int daOnsTaru_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, "maroTaru");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0xF00)) {
             return cPhs_ERROR_e;
         }

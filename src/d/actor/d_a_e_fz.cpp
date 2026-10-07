@@ -935,7 +935,7 @@ s32 daE_FZ_c::create() {
     fopAcM_ct(this, daE_FZ_c);
 
     s32 phase = dComIfG_resLoad(&mPhaseReq, "E_FZ");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 6480)) {
             return cPhs_ERROR_e;
         }

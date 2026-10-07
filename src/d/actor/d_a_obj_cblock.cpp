@@ -194,7 +194,7 @@ daObjCBlk_c::chain_s::chain_s() {
 int daObjCBlk_c::create() {
     fopAcM_ct(this, daObjCBlk_c);
     int rv = dComIfG_resLoad(&phase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 9, dBgS_MoveBGProc_TypicalRotY, 0x1000, NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

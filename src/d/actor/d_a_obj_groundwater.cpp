@@ -95,7 +95,7 @@ int daGrdWater_c::CreateHeap() {
 int daGrdWater_c::create() {
     fopAcM_ct(this, daGrdWater_c);
     int rv = dComIfG_resLoad(&mPhase, "Water");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (MoveBGCreate("Water", 29, dBgS_MoveBGProc_Typical, 0x4030, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         } else {

@@ -73,7 +73,7 @@ int daObj_Suisya_c::create() {
     fopAcM_ct(this, daObj_Suisya_c);
 
     int phase = dComIfG_resLoad(&mPhase, "Obj_sui");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x800)) {
             return cPhs_ERROR_e;
         }

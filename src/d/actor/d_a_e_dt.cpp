@@ -2460,15 +2460,15 @@ cPhs_Step daE_DT_c::create() {
     fopAcM_ct(this, daE_DT_c);
 
     cPhs_Step step = dComIfG_resLoad(&mPhase[0], "E_DT");
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return step;
     }
     step = dComIfG_resLoad(&mPhase[1], "Dalways");
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return step;
     }
     step = dComIfG_resLoad(&mPhase[2], "E_OT");
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return step;
     }
 

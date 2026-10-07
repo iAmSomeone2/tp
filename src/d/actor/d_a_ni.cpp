@@ -1889,7 +1889,7 @@ static int daNi_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, ni_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "Ni");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("NI PARAM %x\n", fopAcM_GetParam(a_this));
 
         a_this->field_0x5b4 = fopAcM_GetParam(a_this);

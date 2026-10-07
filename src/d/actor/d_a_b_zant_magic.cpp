@@ -261,7 +261,7 @@ int daB_ZANTM_c::create() {
     mTgCollider.SetStts(&mCcStts);
 
     gravity = 0.0f;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daB_ZANTM_Create(daB_ZANTM_c* i_this) {

@@ -1518,7 +1518,7 @@ int daE_HM_c::Create() {
     fopAcM_ct(this, daE_HM_c);
 
     s32 loadResult = dComIfG_resLoad(&mPhase, "E_HM");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("E_HM PARAM %x\n", fopAcM_GetParam(this));
         field_0x5ae = fopAcM_GetParam(this) >> 24;
         if (field_0x5ae != 0xff) {

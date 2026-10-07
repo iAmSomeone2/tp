@@ -220,7 +220,7 @@ int daObjTobyHouse_c::create1st() {
         mType = TYPE_0;
     }
     int rv = dComIfG_resLoad(&mPhase, l_arcName[mType]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         int heapSize;
         if (mType == TYPE_0) {
             heapSize = 0x12820;

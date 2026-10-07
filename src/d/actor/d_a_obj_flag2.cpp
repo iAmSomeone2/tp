@@ -411,13 +411,13 @@ int daObjFlag2_c::create() {
         mFlagValid = true;
         sprintf(mFlagName, "FlagObj%02d", flagNum);
         int rv = dComIfG_resLoad(&mFlagPhase, mFlagName);
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
     }
 
     int rv = dComIfG_resLoad(&mArcPhase, daSetBgObj_c::getArcName(this));
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, createSolidHeap, 0x820) == 0) {
             return cPhs_ERROR_e;
         } else {

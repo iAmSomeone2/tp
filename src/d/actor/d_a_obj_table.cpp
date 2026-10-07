@@ -31,7 +31,7 @@ int daObjTable_c::create() {
     fopAcM_ct(this, daObjTable_c);
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName, 8, NULL, 0x4000, NULL);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;
@@ -135,7 +135,7 @@ int daObjTable_c::Create() {
     initBaseMtx();
     mEventID = -1;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjTable_c::Execute(Mtx** i_mtx) {

@@ -123,7 +123,7 @@ int daObjSmgDoor_c::create1st() {
     mType = getType();
     int phase = dComIfG_resLoad(&mPhase, l_arcName[mType]);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName[mType], l_dzb[mType]);
         JUT_ASSERT(287, dzb_id != -1);
 

@@ -1734,7 +1734,7 @@ cPhs_Step daE_GM_c::create() {
         phase = dComIfG_resLoad(&mPhase, "E_gm");
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("e_gm PARAM %x\n", fopAcM_GetParam(this));
         OS_REPORT("e_gm or e_mg//////////////E_GM SET 1 !!\n");
 

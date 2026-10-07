@@ -315,12 +315,12 @@ cPhs_Step daNpcTks_c::Create() {
     cPhs_Step phase = cPhs_ERROR_e;
     for (int i = 0; l_loadRes_list[mTksTsubo.mTsuboType][i] >= 0; i++) {
         phase = dComIfG_resLoad(&mPhases[i], l_arcNames[l_loadRes_list[mTksTsubo.mTsuboType][i]]);
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
             return phase;
         }
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x3870)) {
             return cPhs_ERROR_e;
         }

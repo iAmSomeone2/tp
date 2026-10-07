@@ -262,7 +262,7 @@ cPhs_Step daObj_GrA_c::create() {
         return cPhs_ERROR_e;
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         uVar1 += 1;
     }
 
@@ -272,7 +272,7 @@ cPhs_Step daObj_GrA_c::create() {
             return cPhs_ERROR_e;
         }
 
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             uVar1++;
         }
     }

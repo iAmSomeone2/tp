@@ -321,7 +321,7 @@ cPhs_Step daTagWaterFall_c::create() {
         mFrameCountdown = 30;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagWaterFall_Create(daTagWaterFall_c* i_this) {

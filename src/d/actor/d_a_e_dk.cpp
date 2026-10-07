@@ -995,7 +995,7 @@ int daE_DK_c::create() {
     fopAcM_ct(this, daE_DK_c);
 
     s32 loadRes = dComIfG_resLoad(&mPhaseReq, "E_DK");
-    if (loadRes == cPhs_COMPLEATE_e) {
+    if (loadRes == cPhs_COMPLETE_e) {
         OS_REPORT("E_DK PARAM %x\n", fopAcM_GetParam(this));
         field_0x6a4 = fopAcM_GetParam(this);
 

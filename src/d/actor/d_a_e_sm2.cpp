@@ -1474,7 +1474,7 @@ static int daE_SM2_Create(fopAc_ac_c* i_this) {
     OS_REPORT("E_SM2//////////////E_SM2 SET 0 !!\n");
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_sm2");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_SM2 PARAM %x\n", fopAcM_GetParam(i_this));
         int swbit = (fopAcM_GetParam(i_this) & 0xFF000000) >> 0x18;
         if (swbit != 0xFF && dComIfGs_isSwitch(swbit, fopAcM_GetRoomNo(i_this))) {

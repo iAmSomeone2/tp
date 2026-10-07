@@ -75,7 +75,7 @@ int daCrod_c::create() {
     if (fopAcM_GetParam(this) == 6) {
         fopAcM_setStageLayer(this);
         mCcStts.Init(200, 0, this);
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     if (!fopAcM_entrySolidHeap(this, daCrod_createHeap, 0x10C0)) {
@@ -119,7 +119,7 @@ int daCrod_c::create() {
     setLightPower();
     dKy_plight_set(&mLight);
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daCrod_Create(fopAc_ac_c* i_this) {

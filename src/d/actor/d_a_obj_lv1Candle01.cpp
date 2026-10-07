@@ -54,7 +54,7 @@ int daLv1Cdl01_c::CreateHeap() {
 cPhs_Step daLv1Cdl01_c::create() {
     fopAcM_ct(this, daLv1Cdl01_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, "lv1cdl01");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (MoveBGCreate("lv1cdl01", -1, NULL, 0x820, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

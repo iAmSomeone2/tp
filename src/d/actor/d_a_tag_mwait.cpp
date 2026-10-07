@@ -50,7 +50,7 @@ int daTagMwait_c::create() {
 
     attention_info.distances[fopAc_attn_TALK_e] = 54;
     attention_info.flags = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagMwait_Create(fopAc_ac_c* i_this) {

@@ -1480,7 +1480,7 @@ int daBoomerang_c::create() {
     m_lineChk.OnWaterGrp();
 
     m_shippuSize = 1.0f;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 daBoomerang_c::daBoomerang_c() {}

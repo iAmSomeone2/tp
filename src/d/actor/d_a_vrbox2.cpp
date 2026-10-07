@@ -439,7 +439,7 @@ static int daVrbox2_solidHeapCB(fopAc_ac_c* i_this) {
 static int daVrbox2_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, vrbox2_class);
 
-    int phase = cPhs_COMPLEATE_e;
+    int phase = cPhs_COMPLETE_e;
     if (!fopAcM_entrySolidHeap(i_this, daVrbox2_solidHeapCB, 0x80004340)) {
         phase = cPhs_ERROR_e;
     }

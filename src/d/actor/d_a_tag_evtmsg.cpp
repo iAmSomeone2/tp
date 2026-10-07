@@ -48,7 +48,7 @@ int daTag_EvtMsg_c::create() {
     mEventID = -1;
     field_0x572 = 0;
 
-    return isDelete() == TRUE ? cPhs_ERROR_e : cPhs_COMPLEATE_e;
+    return isDelete() == TRUE ? cPhs_ERROR_e : cPhs_COMPLETE_e;
 }
 
 int daTag_EvtMsg_c::Delete() {

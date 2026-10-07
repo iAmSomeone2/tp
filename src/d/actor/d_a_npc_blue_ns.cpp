@@ -139,12 +139,12 @@ int daNpcBlueNS_c::Create() {
     int phase_state = cPhs_ERROR_e;
     for (int i = 0; i < ARRAY_SIZE(l_arcNames); i++) {
         phase_state = dComIfG_resLoad(&mPhase[i], l_arcNames[i]);
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             return phase_state;
         }
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1F20)) {
             return cPhs_ERROR_e;
         }

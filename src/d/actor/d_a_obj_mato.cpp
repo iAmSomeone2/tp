@@ -326,7 +326,7 @@ int daObjMATO_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_ling");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("MATO PARAM %x\n", fopAcM_GetParam(this));
         OS_REPORT("MATO SET 1\n");
 

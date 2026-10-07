@@ -917,7 +917,7 @@ cPhs_Step daE_FB_c::create() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhaseReq, "E_FL");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (mType == 10 || mType == 11) {
             fopAcM_OffStatus(this, 0);
             attention_info.flags &= ~fopAc_AttnFlag_BATTLE_e;

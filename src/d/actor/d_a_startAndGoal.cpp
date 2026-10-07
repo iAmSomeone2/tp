@@ -53,7 +53,7 @@ int daStartAndGoal_c::Create() {
     fopAcM_ct(this, daStartAndGoal_c);
 
     init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 daStartAndGoal_Path_c::~daStartAndGoal_Path_c() {}

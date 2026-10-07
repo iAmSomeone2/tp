@@ -88,7 +88,7 @@ int daObj_Roten_c::create() {
         return cPhs_ERROR_e;
     }
     int rv = dComIfG_resLoad(&mPhase, getResName());
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (MoveBGCreate(getResName(), l_dzbFileIdx, dBgS_MoveBGProc_TypicalRotY, 0x1430, NULL) ==
             cPhs_ERROR_e)
         {

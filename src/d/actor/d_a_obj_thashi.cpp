@@ -210,7 +210,7 @@ int daObjTHASHI_c::CreateHeap() {
 int daObjTHASHI_c::create() {
     fopAcM_ct(this, daObjTHASHI_c);
     int phase_state = dComIfG_resLoad(&unk11A8, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         unk10A0 = -9.0f;
         gravity = -0.0f;
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "S_thashi00.dzb");
@@ -266,7 +266,7 @@ actor_process_profile_definition g_profile_Obj_THASHI = {
 
 int daObjTHASHI_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjTHASHI_c::Execute(Mtx** i_pMtx) {

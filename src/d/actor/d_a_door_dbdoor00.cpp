@@ -152,18 +152,18 @@ int daDbDoor00_c::create() {
     fopAcM_ct(this, daDbDoor00_c);
 
     int phase = dComIfG_resLoad(&mPhaseReq2, getAlwaysArcName());
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
     phase = dComIfG_resLoad(&mPhaseReq, getBmdArcName());
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
     if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x8200)) {
         return cPhs_ERROR_e;
     }
     CreateInit();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daDbDoor00_c::getDemoAction() {

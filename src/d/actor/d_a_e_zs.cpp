@@ -502,7 +502,7 @@ static int useHeapInit(fopAc_ac_c* i_this) {
 int daE_ZS_c::create() {
     fopAcM_ct(this, daE_ZS_c);
     int phase = dComIfG_resLoad(&mPhase, "E_ZS");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_ZS PARAM %x\n", fopAcM_GetParam(this));
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0xFC0)) {
             return cPhs_ERROR_e;

@@ -545,7 +545,7 @@ cPhs_Step daMidna_c::create() {
     fopAcM_ct(this, daMidna_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (dStage_roomControl_c::getDemoArcName()[0] != '\0' &&
                     dComIfG_syncObjectRes(dStage_roomControl_c::getDemoArcName()) > 0) {
             return cPhs_INIT_e;

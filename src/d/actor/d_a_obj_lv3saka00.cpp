@@ -89,7 +89,7 @@ static int const l_heap_size[] = {0x00004E00, 0x00002900};
 
 int daObjLv3saka_c::create1st() {
     int phase = dComIfG_resLoad(&mPhase, l_arcName[getType()]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName[getType()], l_dzbIdx[getType()], dBgS_MoveBGProc_TypicalRotY,
                              l_heap_size[getType()], NULL);
         if (phase == cPhs_ERROR_e) {

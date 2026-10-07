@@ -96,7 +96,7 @@ int daItemKantera_c::create() {
         return cPhs_ERROR_e;
     }
     int phase = dComIfG_resLoad(&mPhase, dItem_data::getFieldArc(m_itemNo));
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckFieldItemCreateHeap, 0x1940)) {
             return cPhs_ERROR_e;
         }

@@ -29,7 +29,7 @@ int daSetBgObj_c::create() {
     sprintf(mArcName, "%s", getArcName(this));
 
     int phase = dComIfG_resLoad(&mPhase, mArcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         CreateInit();
         phase = cPhs_ERROR_e;
     }

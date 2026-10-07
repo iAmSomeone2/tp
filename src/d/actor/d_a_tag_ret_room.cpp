@@ -60,7 +60,7 @@ int daTagRetRm_c::create() {
     l_TAG_RET_ROOM_HIO.showTag = FALSE;
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagRetRm_c::Delete() {

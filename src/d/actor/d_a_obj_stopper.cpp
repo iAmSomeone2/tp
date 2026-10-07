@@ -75,7 +75,7 @@ int daObjStopper_c::create() {
         shape_angle.x = shape_angle.z = 0;
         field_0x9fc = 1;
     }
-    cPhs_Step phase = cPhs_COMPLEATE_e;
+    cPhs_Step phase = cPhs_COMPLETE_e;
     phase = MoveBGCreate(NULL, -1, dBgS_MoveBGProc_TypicalRotY, 0x810, NULL);
     if (phase == cPhs_ERROR_e) {
         return phase;

@@ -196,7 +196,7 @@ static int daE_Ga_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_ga_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_Ga");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_GA PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->prm0 = fopAcM_GetParam(i_this);
         a_this->prm1 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;

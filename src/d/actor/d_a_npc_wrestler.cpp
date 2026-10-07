@@ -681,11 +681,11 @@ cPhs_Step daNpcWrestler_c::Create() {
     field_0xe04 = l_anmList[mType];
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_resALink);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = dComIfG_resLoad(&mPhase2, l_resName[mType]);
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 i_size = mType == 0 ? 0x49B0 : 0x3A40;
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, i_size)) {
             return cPhs_ERROR_e;

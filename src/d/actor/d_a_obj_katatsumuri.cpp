@@ -721,7 +721,7 @@ inline int daObjKAT_c::create() {
     fopAcM_ct(this, daObjKAT_c);
 
     s32 loadResult = dComIfG_resLoad(&mPhase, "Kat");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("KAT PARAM %x\n", fopAcM_GetParam(this));
         field_0x808 = fopAcM_GetParam(this) & 0xf;
         if (field_0x808 == 2) {

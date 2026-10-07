@@ -46,7 +46,7 @@ int daAndsw_c::create() {
     l_HIO.entryHIO("ＳＷ監視");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daAndsw_c::execute() {

@@ -34,7 +34,7 @@ int daLv4HsTarget_c::create() {
     fopAcM_ct(this, daLv4HsTarget_c);
 
     int phase = dComIfG_resLoad(&mPhase, "L4HsMato");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L4HsMato", 7, dBgS_MoveBGProc_TypicalRotY, 0x1200, NULL) == cPhs_ERROR_e)
         {
             return cPhs_ERROR_e;

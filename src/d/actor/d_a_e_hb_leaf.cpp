@@ -63,7 +63,7 @@ static int daE_HB_LEAF_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, e_hb_leaf_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "E_HB");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_HB_LEAF//////////////E_HB_LEAF SET 1 !!\n");
 
         if (!fopAcM_entrySolidHeap(a_this, useHeapInit, 0xB00)) {

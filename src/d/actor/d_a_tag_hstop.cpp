@@ -62,7 +62,7 @@ int daTagHstop_c::create() {
         field_0x574 = 0;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagHstop_Create(fopAc_ac_c* i_this) {

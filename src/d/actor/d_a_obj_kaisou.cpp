@@ -253,7 +253,7 @@ cPhs_Step daObjKaisou_c::create() {
     fopAcM_ct(this, daObjKaisou_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (dComIfGs_isStageBossEnemy() && dComIfGp_getStartStageRoomNo() == 50) {
             if (strcmp("D_MN01A", dComIfGp_getStartStageName()) == 0) {
                 return cPhs_ERROR_e;

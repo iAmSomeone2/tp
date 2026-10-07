@@ -44,7 +44,7 @@ int daTagKagoFall_c::create() {
         m_master_id = fopAcM_GetID(this);
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagKagoFall_c::execute() {

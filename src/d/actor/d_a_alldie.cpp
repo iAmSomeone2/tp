@@ -172,7 +172,7 @@ int daAlldie_c::create() {
     eventInfo.setEventId(mEventIdx);
     eventInfo.setMapToolId(getEventNo());
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daAlldie_Create(fopAc_ac_c* i_this) {

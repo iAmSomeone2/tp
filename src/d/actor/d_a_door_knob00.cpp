@@ -139,7 +139,7 @@ int daKnob20_c::CreateInit() {
 int daKnob20_c::create() {
     fopAcM_ct(this, daKnob20_c);
     int phase = dComIfG_resLoad(&mPhase2, getAlwaysArcName());
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
     phase = dComIfG_resLoad(&mPhase1, getEvArcName());

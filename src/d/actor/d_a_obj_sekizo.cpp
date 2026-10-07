@@ -47,7 +47,7 @@ cPhs_Step daObj_Sekizo_c::create() {
     field_0x5b0 = 0;
     cPhs_Step step =
         dComIfG_resLoad(&mPhaseReq, l_resNameList[l_bmdData[field_0x5b0].resIdx]);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_resNameList[l_dzbData[field_0x5b0].resIdx],
                                         l_dzbData[field_0x5b0].dzbIdx, dBgS_MoveBGProc_TypicalRotY,
                                         0x4000, NULL);

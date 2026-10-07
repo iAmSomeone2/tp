@@ -974,7 +974,7 @@ static int daBd_Create(fopAc_ac_c* i_act_this) {
     fopAcM_ct(&i_this->enemy, bd_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "Bd");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("BD PARAM %x\n", fopAcM_GetParam(i_act_this));
         i_this->field_0x5B4 = fopAcM_GetParam(i_act_this);
         i_this->field_0x5B5 = (fopAcM_GetParam(i_act_this) & 0xFF00) >> 8;

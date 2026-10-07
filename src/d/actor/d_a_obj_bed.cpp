@@ -50,7 +50,7 @@ cPhs_Step daObj_Bed_c::create() {
     fopAcM_ct(this, daObj_Bed_c);
     mType = getType();
     cPhs_Step step = dComIfG_resLoad(&mPhase, getResName());
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

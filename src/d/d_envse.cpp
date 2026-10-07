@@ -227,7 +227,7 @@ static int dEnvSe_Create(dEnvSe_c* i_this) {
     i_this->mRoomNo = 0xFF;
     i_this->field_0x108 = 0;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dEnvSe_Method = {

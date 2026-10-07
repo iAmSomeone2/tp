@@ -1037,7 +1037,7 @@ int daE_GI_c::create() {
     mSwbit2 = (fopAcM_GetParam(this) >> 0x10);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_GI");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x30A0)) {
             return cPhs_ERROR_e;
         }

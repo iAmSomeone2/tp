@@ -105,7 +105,7 @@ static int daObj_Ndoor_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, obj_ndoor_class);
     cPhs_Step phase = dComIfG_resLoad(&a_this->mPhase, "Obj_ndoor");
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_NDOOR PARAM %x\n", fopAcM_GetParam(a_this));
         OS_REPORT("OBJ_NDOOR//////////////OBJ_NDOOR SET 1 !!\n");
 

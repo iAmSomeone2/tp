@@ -53,7 +53,7 @@ cPhs_Step daWtGate_c::create() {
     fopAcM_ct(this, daWtGate_c);
 
     const cPhs_Step resPhase = static_cast<cPhs_Step>(dComIfG_resLoad(&mPhase, "S_Zsuimon"));
-    if(resPhase == cPhs_COMPLEATE_e) {
+    if(resPhase == cPhs_COMPLETE_e) {
         if(MoveBGCreate("S_Zsuimon", 7, dBgS_MoveBGProc_TypicalRotY, 0xE00, NULL) == cPhs_ERROR_e)
             return cPhs_ERROR_e;
         

@@ -1666,7 +1666,7 @@ static cPhs_Step daE_DD_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, e_dd_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_dd");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_DD PARAM %x\n", fopAcM_GetParam(a_this));
 
         u8 uVar1 = fopAcM_GetParam(a_this) >> 16 & 0xFF;

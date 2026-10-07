@@ -163,7 +163,7 @@ int daNpc_grS_c::create() {
         if (loadResult == cPhs_ERROR_e || loadResult == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (loadResult == cPhs_COMPLEATE_e) {
+        if (loadResult == cPhs_COMPLETE_e) {
             loadedCount++;
         }
 
@@ -208,7 +208,7 @@ int daNpc_grS_c::create() {
         reset();
         Execute();
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
     return cPhs_INIT_e;
 }

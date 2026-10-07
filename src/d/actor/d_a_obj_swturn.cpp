@@ -143,7 +143,7 @@ int daObjSwTurn_c::create1st() {
         field_0x5d0 = 1;
     }
     int rv = dComIfG_resLoad(&mPhase, l_arcName[mModelType]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName[mModelType], l_dzb[mModelType],
              dBgS_MoveBGProc_TypicalRotY, l_heap_size[mModelType], NULL);
          if (rv == cPhs_ERROR_e) {

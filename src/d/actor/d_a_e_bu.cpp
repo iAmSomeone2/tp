@@ -1028,7 +1028,7 @@ static int daE_BU_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_bu_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_BU");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_BU PARAM %x\n", fopAcM_GetParam(i_this));
         
         int swbit = (fopAcM_GetParam(i_this) & 0xFF000000) >> 0x18;

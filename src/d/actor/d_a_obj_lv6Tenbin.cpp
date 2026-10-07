@@ -101,7 +101,7 @@ int daTenbin_c::CreateHeap() {
 int daTenbin_c::create() {
     fopAcM_ct(this, daTenbin_c);
     int phase = dComIfG_resLoad(&mPhase, "L6Tenbin");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L6Tenbin", 8, dBgS_MoveBGProc_Typical, 0x6a00, 0) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

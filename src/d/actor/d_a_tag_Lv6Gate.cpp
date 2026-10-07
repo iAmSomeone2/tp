@@ -305,7 +305,7 @@ int daTagLv6Gate_c::create() {
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x7800)) {
             return cPhs_ERROR_e;
         } else {

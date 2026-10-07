@@ -1900,7 +1900,7 @@ cPhs_Step daE_SM_c::Create() {
     fopAcM_ct(this, daE_SM_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, "E_SM");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_SM PARAM %x\n", fopAcM_GetParam(this));
 
         mSwBit = fopAcM_GetParam(this) >> 8;

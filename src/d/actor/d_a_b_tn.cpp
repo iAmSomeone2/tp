@@ -5050,10 +5050,10 @@ int daB_TN_c::create() {
     }
 
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq1, "B_tn");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = dComIfG_resLoad(&mPhaseReq2, mArcName);
 
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             mBrkAnmFrame = fopAcM_GetParamBit(this, 16, 16);
             if (mBrkAnmFrame > 4) {
                 mBrkAnmFrame = 4;

@@ -469,7 +469,7 @@ static int daObj_Kbox_Create(fopAc_ac_c* a_this) {
     obj_kbox_class* i_this = (obj_kbox_class*)a_this;
     fopAcM_ct(a_this, obj_kbox_class);
     int rv = dComIfG_resLoad(&i_this->mPhase, "Obj_kbox");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_KBOX PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x570 = fopAcM_GetParam(a_this) & 0xff;
         if (i_this->field_0x570 == 0xff) {

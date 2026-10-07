@@ -682,7 +682,7 @@ static int daE_NZ_Create(fopAc_ac_c* a_this) {
     e_nz_class* i_this = (e_nz_class*)a_this;
     fopAcM_ct(a_this, e_nz_class);
     int phase = dComIfG_resLoad(&i_this->mPhase, "E_NZ");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_NZ PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x5b6 = fopAcM_GetParam(a_this) & 0xff;
         i_this->field_0x5b7 = (fopAcM_GetParam(a_this) & 0xff00) >> 8;

@@ -1199,7 +1199,7 @@ static int daE_TH_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(i_this, e_th_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "E_th");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_th PARAM %x\n", fopAcM_GetParam(a_this));
 
         i_this->field_0x5b6 = fopAcM_GetParam(a_this);

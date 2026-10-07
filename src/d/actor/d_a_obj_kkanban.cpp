@@ -92,7 +92,7 @@ int daObjKKanban_c::CreateHeap() {
 
 int daObjKKanban_c::create1st() {
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 7, NULL, 0x1950, NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;

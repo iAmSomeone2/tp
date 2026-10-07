@@ -91,7 +91,7 @@ cPhs_Step daLv2Candle_c::create() {
         mModelType = 0;
     }
     cPhs_Step step = dComIfG_resLoad(&mPhase, l_resNameIdx[mModelType]);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1000)) {
             return cPhs_ERROR_e;
         }

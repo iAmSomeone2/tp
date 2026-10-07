@@ -179,7 +179,7 @@ int daNpc_Kakashi_c::create() {
     mTwilight = FALSE;
 
     int phase_state = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, SWBit:%02x, SWBit2:%02x<%08x> ",
                   fopAcM_getProcNameString(this), mType, mFlowNodeNo, getBitSW(), getBitSW2(), fopAcM_GetParam(this), fopAcM_GetRoomNo(this));
 

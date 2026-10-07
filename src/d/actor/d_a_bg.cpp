@@ -622,7 +622,7 @@ int daBg_c::create() {
 
     dComIfGp_roomControl_onStatusFlag(roomNo, 0x10);
     OS_REPORT("<BG> room%d\n", roomNo);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daBg_Method = {

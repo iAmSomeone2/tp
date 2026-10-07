@@ -96,7 +96,7 @@ int daRotBridge_c::create() {
     mType = (fopAcM_GetParam(this) & 0xF00) >> 8;
 
     int phase_state = dComIfG_resLoad(&mPhase, l_resNameIdx[mType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mType], l_dzbIdx[mType], dBgS_MoveBGProc_TypicalRotY, 0x2C80, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

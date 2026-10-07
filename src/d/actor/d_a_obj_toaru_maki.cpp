@@ -59,7 +59,7 @@ int daObjToaruMaki_c::create() {
     fopAcM_ct(this, daObjToaruMaki_c);
     u32 nameArg = getNameArg_0();
     int rv = dComIfG_resLoad(this, l_arcName[nameArg]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, daObjToaruMaki_c_createHeap, l_heapSize[nameArg]) == 0) {
             return cPhs_ERROR_e;
         }

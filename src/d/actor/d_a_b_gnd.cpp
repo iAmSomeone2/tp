@@ -4769,11 +4769,11 @@ static int daB_GND_Create(fopAc_ac_c* a_this) {
     int h_phase_state = dComIfG_resLoad(&i_this->mHorsePhaseReq, "B_hg");
     i_this->field_0x5be = fopAcM_GetParam(a_this);
 
-    if (h_phase_state != cPhs_COMPLEATE_e) {
+    if (h_phase_state != cPhs_COMPLETE_e) {
         phase_state = h_phase_state;
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("b_gnd PARAM %x\n", fopAcM_GetParam(a_this));
 
         if (!fopAcM_entrySolidHeap(a_this, useHeapInit, 0x2B1A0)) {

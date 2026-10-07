@@ -155,7 +155,7 @@ int daObjBossWarp_c::CreateHeap() {
 cPhs_Step daObjBossWarp_c::create() {
     fopAcM_ct(this, daObjBossWarp_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x18e0)) {
             return cPhs_ERROR_e;
         }

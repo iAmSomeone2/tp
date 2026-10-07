@@ -3148,7 +3148,7 @@ static cPhs_Step daNpc_Ne_Create(fopAc_ac_c* i_this) {
     }
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, _this->mResName);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mBehavior = (u8)fopAcM_GetParam(_this);
         _this->mTexture = (u8)(fopAcM_GetParam(_this) >> 8) & 0xf;
         _this->mSize = (u8)(fopAcM_GetParam(_this) >> 0xc) & 0xf;

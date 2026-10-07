@@ -96,7 +96,7 @@ static int daObj_Kage_Create(fopAc_ac_c* actor) {
     obj_kage_class* i_this = (obj_kage_class*)actor;
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "Obj_kage");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_KAGE PARAM %x\n", fopAcM_GetParam(actor));
         i_this->field_0x574 = fopAcM_GetParam(actor);
 

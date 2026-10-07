@@ -73,7 +73,7 @@ Read `docs/README.md` first; it indexes a full orientation guide. The essentials
 
 - `src/d/actor/*.inc` files (e.g. `d_a_alink_*.inc`, `d_grass.inc`) are `#include`d into one big TU, not compiled separately; `d_a_npc2.cpp` and `d_a_npc4.cpp` are included into `d_a_npc.cpp`.
 - Many oddities exist only to match the original binary: `dummy()` functions, PCH include order (`d/dolzel.h`, `d/dolzel_rel.h`), weak-function ordering, `AUDIO_INSTANCES;`, `IS_REF_NULL`. `JUT_ASSERT(line, …)` line numbers are literal; don't renumber them.
-- Misspellings in names (`cPhs_COMPLEATE_e`, `d_resorce`, `d_tresure`) are original and canonical.
+- Misspellings in names (`d_resorce`, `d_tresure`, `cPhs_Compleate()`) are original and canonical. Exception: this fork renamed the enum value `cPhs_COMPLEATE_e` to `cPhs_COMPLETE_e` (names don't affect codegen).
 - Community names in `@brief` comments and `field_0x…` members are guesses; confirm against sound IDs (`Z2SE_*`), resource names and debug strings.
 - Switching file formats to little-endian, GX → GXM, DSP audio replacement and static-linking the RELs are the major port topics; the plan and measured numbers are in `docs/port/`.
 - **CMake source lists are generated.** `sources.cmake` files (in `src/`, `src/*/`, `src/d/actor/`, `libs/JSystem/`) are written by `tools/utilities/gen_cmake_sources.py`; don't hand-edit them. Re-run it after adding, removing or moving a source file or changing a library in `configure.py`. The CMake build compiles every file present in the GameCube splits regardless of matching status.

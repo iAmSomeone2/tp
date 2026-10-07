@@ -190,7 +190,7 @@ cPhs_Step daObjIta_c::create() {
     fopAcM_ct(this, daObjIta_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_FloatingDust00.dzb");
         JUT_ASSERT(763, dzb_id != -1);
         phase = MoveBGCreate(l_arcName, dzb_id, dBgS_MoveBGProc_TypicalRotY, 0x1320, NULL);
@@ -217,7 +217,7 @@ int daObjIta_c::Create() {
     initBaseMtx();
     mpBgW->SetRideCallback(rideCallBack);
     fopAcM_wt_c::waterCheck(&current.pos);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjIta_c::Execute(Mtx** mtx) {

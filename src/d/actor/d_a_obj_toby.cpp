@@ -502,7 +502,7 @@ static int daObj_Toby_Create(fopAc_ac_c* a_this) {
     }
 
     int rv = dComIfG_resLoad(&i_this->mPhase, i_this->mArcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_TOBY PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x574 = fopAcM_GetParam(a_this) & 0xff;
         i_this->field_0x575 = (fopAcM_GetParam(a_this) & 0xff00) >> 8;

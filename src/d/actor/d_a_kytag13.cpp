@@ -377,7 +377,7 @@ static int daKytag13_Create(fopAc_ac_c* i_this) {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag13_Method = {

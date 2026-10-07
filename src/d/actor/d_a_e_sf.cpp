@@ -1745,7 +1745,7 @@ static cPhs_Step daE_SF_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, e_sf_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_sf");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         i_this->mSwBit = a_this->current.angle.z & 0xFF;
         if (i_this->mSwBit != 0xFF) {
             if (dComIfGs_isSwitch(i_this->mSwBit, fopAcM_GetRoomNo(a_this))) {

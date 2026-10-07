@@ -90,7 +90,7 @@ int daObjPDoor_c::CreateHeap() {
 
 int daObjPDoor_c::create1st() {
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 8, NULL, 0x4230, NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

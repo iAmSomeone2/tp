@@ -844,7 +844,7 @@ int daObjYOUSEI_c::create() {
     CheckGround();
     field_0x61a = 0;
     daObjYOUSEI_Execute(this);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daObjYOUSEI_IsDelete(daObjYOUSEI_c* i_this) {

@@ -7,7 +7,7 @@
 # for LENIENT_LINK and the stand-ins in tests/support/.
 set(_tp_test_jsystem_libs tp_JAudio2 tp_JKernel tp_JMessage tp_JSupport tp_JUtility tp_JGadget)
 add_library(tp_test_jsystem_libs INTERFACE)
-if (CMAKE_CXX_LINK_GROUP_USING_RESCAN_SUPPORTED)
+if (CMAKE_CXX_LINK_GROUP_USING_RESCAN_SUPPORTED OR CMAKE_LINK_GROUP_USING_RESCAN_SUPPORTED)
     string(REPLACE ";" "," _tp_test_jsystem_libs_csv "${_tp_test_jsystem_libs}")
     target_link_libraries(tp_test_jsystem_libs INTERFACE
         "$<LINK_GROUP:RESCAN,${_tp_test_jsystem_libs_csv}>")

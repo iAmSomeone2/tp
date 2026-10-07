@@ -3011,7 +3011,7 @@ static cPhs_Step daE_ST_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(&i_this->actor, e_st_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_st");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_st PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->arg0 = fopAcM_GetParam(a_this) & 0xF;
         if (i_this->arg0 == 0xF) {

@@ -2469,7 +2469,7 @@ static int daE_Yr_Create(fopAc_ac_c* i_this) {
     s32 loadResult = dComIfG_resLoad(&yr->mPhaseReq, "E_Yr");
     fopAcM_ct(i_this, e_yr_class);
 
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         int dummy; // force stack pointer into r31 for debug
 
         // "It won't reset because it's already been defeated"

@@ -92,7 +92,7 @@ cPhs_Step daTag_EvtArea_c::create() {
     }
 
     field_0x56c = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 BOOL daTag_EvtArea_c::Delete() {

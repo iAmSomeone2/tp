@@ -476,7 +476,7 @@ cPhs_Step daNpc_Grz_c::create() {
             return cPhs_ERROR_e;
         }
 
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             iVar1++;
         }
     }
@@ -514,7 +514,7 @@ cPhs_Step daNpc_Grz_c::create() {
         reset();
         Execute();
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return cPhs_INIT_e;

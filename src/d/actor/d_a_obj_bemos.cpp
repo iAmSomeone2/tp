@@ -517,7 +517,7 @@ int daObjBm_c::create1st() {
 
     cPhs_Step phase_state = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state =
             MoveBGCreate(l_arcName, 0x1E, dBgS_MoveBGProc_TypicalRotY, 0x5500, NULL);
         if (phase_state == cPhs_ERROR_e) {

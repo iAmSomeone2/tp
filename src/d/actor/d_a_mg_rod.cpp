@@ -6324,7 +6324,7 @@ static int dmg_rod_Create(fopAc_ac_c* i_this) {
     #endif
 
     int phase_state = dComIfG_resLoad(&rod->phase, rod->arcname);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("MG_ROD PARAM %x\n", fopAcM_GetParam(i_this));
         OS_REPORT("MG_ROD//////////////MG_ROD SET 1 !!\n");
 

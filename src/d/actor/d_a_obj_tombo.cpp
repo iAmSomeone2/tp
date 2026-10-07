@@ -611,7 +611,7 @@ bool daObjTOMBO_c::CreateChk() {
 int daObjTOMBO_c::create() {
     fopAcM_ct(this, daObjTOMBO_c);
     int phase = dComIfG_resLoad(&mPhase, "Tombo");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("TOMBO PARAM %x\n", fopAcM_GetParam(this));
         field_0x75c = fopAcM_GetParam(this) & 0xf;
         if (field_0x75c == 2) {

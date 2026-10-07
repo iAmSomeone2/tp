@@ -438,7 +438,7 @@ int daB_ZANTZ_c::create() {
     fopAcM_ct(this, daB_ZANTZ_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_oh");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x3220)) {
             return cPhs_ERROR_e;
         }

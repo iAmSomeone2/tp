@@ -18,7 +18,7 @@ int daTagGstart_c::create() {
     field_0x56a = (fopAcM_GetParam(this) >> 0x10) & 0xFF;
     mType = (fopAcM_GetParam(this) >> 0x18) & 0xF;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagGstart_Create(fopAc_ac_c* i_this) {

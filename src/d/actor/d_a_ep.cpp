@@ -884,7 +884,7 @@ static int daEp_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, ep_class);
 
     rv = dComIfG_resLoad(&i_this->mPhase, "Ep");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_GetParam(i_this) & 8) {
             i_this->field_0x60c = fopAcM_GetParam(i_this) & 7;
             i_this->field_0x60c += 1;

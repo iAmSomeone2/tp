@@ -874,7 +874,7 @@ static int daE_Warpappear_Create(fopAc_ac_c* actor) {
     e_warpappear_class* i_this = (e_warpappear_class*)actor;
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "Kytag04");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_Warpappear PARAM %x\n", fopAcM_GetParam(i_this));
         OS_REPORT("E_Warpappear YP %d\n", i_this->home.pos.y);
 

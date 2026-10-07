@@ -62,7 +62,7 @@ int daTag_Push_c::create() {
     if (isDelete()) {
         return cPhs_ERROR_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 

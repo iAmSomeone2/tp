@@ -149,7 +149,7 @@ int daObjIBone_c::create() {
 
     int result = dComIfG_resLoad(&mPhase, l_arcName);
             
-    if (result == cPhs_COMPLEATE_e) {
+    if (result == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x860)) {
             return cPhs_ERROR_e;
         } else if (!Create()) {

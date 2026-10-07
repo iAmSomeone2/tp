@@ -42,7 +42,7 @@ int daLv5SwIce_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, "L5SwIce");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L5SwIce", 7, dBgS_MoveBGProc_Typical, 0x14B0, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

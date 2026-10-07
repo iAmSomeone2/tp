@@ -1544,7 +1544,7 @@ int dMw_c::_create() {
     field_0x144 = 3;
 
     dMeter2Info_setWindowStatus(0);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMw_c::_execute() {

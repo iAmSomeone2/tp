@@ -721,7 +721,7 @@ static int daObj_Sw_Create(fopAc_ac_c* a_this) {
         i_size = 0x1B00;
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_SW PARAM %x\n", fopAcM_GetParam(a_this));
         OS_REPORT("OBJ_SW//////////////OBJ_SW SET 1 !!\n");
 

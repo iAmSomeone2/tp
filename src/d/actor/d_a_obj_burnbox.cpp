@@ -101,7 +101,7 @@ int daObjBurnBox_c::CreateHeap() {
 
 cPhs_Step daObjBurnBox_c::create1st() {
     cPhs_Step phaseStep = dComIfG_resLoad(&mPhaseReq, l_arcName[getType()]);
-    if (phaseStep == cPhs_COMPLEATE_e) {
+    if (phaseStep == cPhs_COMPLETE_e) {
         int dzb_id = -1;
         u8 type = getType();
 

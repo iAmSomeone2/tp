@@ -49,7 +49,7 @@ int dalv4CandleDemoTag_c::create() {
         init_modeWatch();
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dalv4CandleDemoTag_c::Execute() {

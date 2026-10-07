@@ -756,7 +756,7 @@ static int daB_OH_Create(fopAc_ac_c* i_this) {
     b_oh_class* this_ = (b_oh_class*)i_this;
 
     int phase = dComIfG_resLoad(&this_->mPhase, "B_oh");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         this_->field_0x5c8 = fopAcM_GetParam(this_) & 0xFF;
 
         if (!fopAcM_entrySolidHeap(this_, useHeapInit, 0x23E0)) {

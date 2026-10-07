@@ -1652,7 +1652,7 @@ static cPhs_Step daE_GB_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, e_gb_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->phase, "E_gb");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_gb PARAM %x\n", fopAcM_GetParam(actor));
         u8 sw_bit = (fopAcM_GetParam(actor) & 0xFF0000) >> 16;
         if (sw_bit != 0xFF) {

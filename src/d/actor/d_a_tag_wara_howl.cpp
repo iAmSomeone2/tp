@@ -17,7 +17,7 @@ daTagWrHowl_c::~daTagWrHowl_c() {}
 int daTagWrHowl_c::create() {
     fopAcM_ct(this, daTagWrHowl_c);
     init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagWrHowl_c::Delete() {

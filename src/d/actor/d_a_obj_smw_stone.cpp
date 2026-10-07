@@ -33,7 +33,7 @@ cPhs_Step daSmWStone_c::create() {
     fopAcM_ct(this, daSmWStone_c);
     cPhs_Step step = dComIfG_resLoad(this, l_arcName);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daSmWStone_c_createHeap, 0x1000)) {
             return cPhs_ERROR_e;
         }

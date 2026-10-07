@@ -14,7 +14,7 @@ s32 daTagMyna2_c::create() {
     mSwitchNo = getSwBit();
     mMode = getMode();
     mTimer = 5;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 s32 daTagMyna2_c::execute() {

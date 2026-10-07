@@ -81,7 +81,7 @@ int daFireWood_c::create() {
     mFlameType = fopAcM_GetParam(this) >> 8;
     mSwWaitTime = 0;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daFireWood_c::lightInit() {

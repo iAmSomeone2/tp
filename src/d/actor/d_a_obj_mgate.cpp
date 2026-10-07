@@ -117,12 +117,12 @@ int daObjMGate_c::create1st() {
     mType = getType();
 
     int phase = dComIfG_resLoad(&mKeyPhase, l_keyArcName);
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
 
     phase = dComIfG_resLoad(&mPhase, l_arcName[mKind]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName[mKind], l_dzbName[mKind]);
 
         phase =

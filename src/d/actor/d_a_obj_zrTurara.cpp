@@ -78,7 +78,7 @@ int daZrTurara_c::CreateHeap() {
 cPhs_Step daZrTurara_c::create() {
     fopAcM_ct(this, daZrTurara_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, "M_DrpRock");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         cPhs_Step bg_step = MoveBGCreate("M_DrpRock", 9, dBgS_MoveBGProc_TypicalRotY,
                                                       0x2800, NULL);
         if (bg_step == cPhs_ERROR_e) {

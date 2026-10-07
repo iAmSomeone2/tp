@@ -757,7 +757,7 @@ static cPhs_Step daE_YC_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_yc_class);
 
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, "E_yc");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mParam = (u8)fopAcM_GetParam(_this);
 
         if (!fopAcM_entrySolidHeap(_this, useHeapInit, 0x23a0)) {

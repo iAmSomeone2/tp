@@ -124,7 +124,7 @@ static cPhs_Step daObj_Udoor_Create(fopAc_ac_c* i_this) {
     obj_udoor_class* a_this = static_cast<obj_udoor_class*>(i_this);
     
     cPhs_Step phase_state = dComIfG_resLoad(&a_this->mPhase, "Obj_udoor");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         a_this->field_0x570 = fopAcM_GetParam(a_this);
         if (a_this->field_0x570 == 0xff) {
             a_this->field_0x570 = 0;

@@ -38,7 +38,7 @@ int daTagWljump_c::create() {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagWljump_Create(fopAc_ac_c* i_this) {

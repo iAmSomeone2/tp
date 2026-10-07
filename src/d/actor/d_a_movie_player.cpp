@@ -4621,7 +4621,7 @@ int daMP_c::daMP_c_Init() {
     mpTHPPause = daMP_THPPlayerPause;
 
     m_myObj = this;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 /**

@@ -651,7 +651,7 @@ int daE_DF_c::Create() {
     fopAcM_ct(this, daE_DF_c);
 
     cPhs_Step rv = dComIfG_resLoad(&mPhaseReq, "E_DF");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("E_DF PARAM %x\n", fopAcM_GetParam(this));
         mArg0 = (u8)fopAcM_GetParam(this);
 

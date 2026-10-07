@@ -110,7 +110,7 @@ int daTurara_c::create() {
         return cPhs_ERROR_e;
     }
     int phase = dComIfG_resLoad(&mPhaseReq,"M_Turara");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u8 r26 = 0;
         field_0x98c = getState();
         if (field_0x98c != 0) {

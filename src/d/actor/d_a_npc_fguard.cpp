@@ -43,7 +43,7 @@ cPhs_Step daNpcFgd_c::create() {
     mObjNum = getObjNum();
 
     cPhs_Step phase = loadResrc(m_type, mObjNum);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1910)) {
             OS_REPORT("隊列兵士アクター生成失敗しました！\n"); // Failed to generate the squad soldier actor!
 

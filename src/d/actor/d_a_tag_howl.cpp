@@ -13,7 +13,7 @@
 int daTag_Howl_c::create() {
     fopAcM_ct(this, daTag_Howl_c);
     getParam();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_Howl_c::destroy() {

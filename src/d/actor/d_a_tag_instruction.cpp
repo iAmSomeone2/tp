@@ -11,7 +11,7 @@
 static int daTagInst_Create(fopAc_ac_c* i_this) {
     int id = fopAcM_GetID(i_this);
     fopAcM_ct(i_this, daTagInst_c);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagInst_Delete(daTagInst_c* i_this) {

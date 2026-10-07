@@ -18,7 +18,7 @@ daTagSmkEmt_c::~daTagSmkEmt_c() {}
 int daTagSmkEmt_c::create() {
     fopAcM_ct(this, daTagSmkEmt_c);
     createSmkEmt();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagSmkEmt_c::Delete() {

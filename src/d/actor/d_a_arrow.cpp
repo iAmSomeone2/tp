@@ -1190,7 +1190,7 @@ cPhs_Step daArrow_c::create() {
     field_0x5dc.OffFullGrp();
     field_0x5dc.OnWaterGrp();
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daArrow_create(daArrow_c* i_this) {

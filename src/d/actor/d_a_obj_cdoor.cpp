@@ -56,7 +56,7 @@ cPhs_Step daObjCdoor_c::create() {
     fopAcM_ct(this, daObjCdoor_c);
     mType = (fopAcM_GetParam(this) >> 8) & 0xf;
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName[mType]);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_arcName[mType], l_dzbIdx[mType], NULL, 0xc00, NULL);
         if (step == cPhs_ERROR_e) {
             return cPhs_ERROR_e;

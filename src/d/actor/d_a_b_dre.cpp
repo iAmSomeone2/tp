@@ -869,7 +869,7 @@ int daB_DRE_c::create() {
     fopAcM_ct(this, daB_DRE_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_DR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("B_DRE PARAM %x\n", fopAcM_GetParam(this));
         mAction = fopAcM_GetParam(this) & 0xFF;
 

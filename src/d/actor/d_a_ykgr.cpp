@@ -170,7 +170,7 @@ inline int daYkgr_c::_create() {
     OS_REPORT(" alpha = %d\n", m_emitter->getGlobalAlpha());
     OS_REPORT(" rate  = %3.3f\n", m_emitter->getRate());
     OS_REPORT("\n\nfopAcM_GetParam = %x\n\n\n", fopAcM_GetParam(this));
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daYkgrCreate(void* i_this) {

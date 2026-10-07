@@ -165,7 +165,7 @@ static int daE_CR_EGG_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&a_this->enemy, e_cr_egg_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_CR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_CR_EGG PARAM %x\n", fopAcM_GetParam(i_this));
     
         a_this->field_0x5b4 = fopAcM_GetParam(i_this);

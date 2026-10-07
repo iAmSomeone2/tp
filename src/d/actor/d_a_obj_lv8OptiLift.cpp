@@ -60,7 +60,7 @@ int daOptiLift_c::create() {
     fopAcM_ct(this, daOptiLift_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "Lv8Lift");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate("Lv8Lift", 11, dBgS_MoveBGProc_TypicalRotY, 0xD20, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

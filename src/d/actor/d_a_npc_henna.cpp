@@ -2691,7 +2691,7 @@ static int daNpc_Henna_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&a_this->actor, npc_henna_class);
 
     cPhs_Step loadResult = dComIfG_resLoad(&a_this->phase, "Henna");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_HENNA PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->arg0 = fopAcM_GetParam(i_this);
         OS_REPORT("NPC_HENNA//////////////NPC_HENNA SET 1 !!\n");

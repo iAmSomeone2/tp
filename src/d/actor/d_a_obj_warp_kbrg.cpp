@@ -241,12 +241,12 @@ int daObjWarpKBrg_c::create1st() {
     }
 
     int phase_state = dComIfG_resLoad(&mEvPhase, l_evArcName);
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
     phase_state = dComIfG_resLoad(&mPhase, l_arcName[getNameArg()]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName[getNameArg()], l_dzb_idx[getNameArg()], dBgS_MoveBGProc_TypicalRotY, l_heap_size[getNameArg()], NULL);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;

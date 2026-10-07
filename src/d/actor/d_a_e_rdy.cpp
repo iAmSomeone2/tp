@@ -4884,7 +4884,7 @@ static cPhs_Step daE_RDY_Create(fopAc_ac_c* i_this) {
 
     _this->mpArcName = "E_rdy";
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, _this->mpArcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         OS_REPORT("E_RDY PARAM %x\n", fopAcM_GetParam(i_this));
         if (_this->field_0x5b8 != 3) {
             int swbit = (fopAcM_GetParam(i_this) & 0xff000000) >> 0x18;

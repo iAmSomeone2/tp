@@ -29,7 +29,7 @@ int dTimer_c::_create() {
     int phase_state = dComIfG_resLoad(&m_phase, "Timer");
 
     fopMsg_prm_timer* appen;
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         appen = (fopMsg_prm_timer*)fopMsgM_GetAppend(this);
         if (appen == NULL) {
             return cPhs_ERROR_e;
@@ -158,7 +158,7 @@ int dTimer_c::_create() {
     field_0x160 = 0;
 
     OS_REPORT("\n\n\nm_se_idx = %d\n\n\n", m_se_idx);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dTimer_c::_execute() {

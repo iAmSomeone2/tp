@@ -1003,7 +1003,7 @@ static int daE_MS_Create(fopAc_ac_c* actor) {
     fopAcM_ct(i_this, e_ms_class);
 
     int phase = dComIfG_resLoad(&i_this->mPhaseReq, "E_MS");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int params = fopAcM_GetParam(i_this) >> 0x10 & 0xff;
         if (params != 0xff && dComIfGs_isSwitch(params, fopAcM_GetRoomNo(i_this))) {
             return cPhs_ERROR_e;

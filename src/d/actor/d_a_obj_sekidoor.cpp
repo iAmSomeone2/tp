@@ -48,7 +48,7 @@ int daObj_SekiDoor_c::create() {
     mBitSW = 0;
 
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_resNameList[l_bmdData[mBitSW].resIdx]);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (getBitSW() != 0xff){
             if (dComIfGs_isSwitch(getBitSW(), fopAcM_GetRoomNo(this))) {
                 return cPhs_ERROR_e;

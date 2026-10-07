@@ -3588,7 +3588,7 @@ int daE_YM_c::create() {
         phase = dComIfG_resLoad(&mPhase, "E_YM");
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_YM PARAM %x %x %x \n", fopAcM_GetParam(this), current.angle.z, current.angle.x);
         current.angle.x = current.angle.z = 0;
         shape_angle.x = shape_angle.z = 0;

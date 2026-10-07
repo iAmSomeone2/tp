@@ -76,7 +76,7 @@ int daObjSCannonTen_c::create() {
     fopAcM_ct(this, daObjSCannonTen_c);
 
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daObjSCannonTen_c_createHeap, 0x9500)) {
             return cPhs_ERROR_e;
         }

@@ -32,7 +32,7 @@ int daTag_KMsg_c::create() {
 
     if (getType() == KMSG_TYPE_3) {
         int rv = dComIfG_resLoad(&mPhase, "Lv6Gate");
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
     }
@@ -61,7 +61,7 @@ int daTag_KMsg_c::create() {
     if (isDelete()) {
         return cPhs_ERROR_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 

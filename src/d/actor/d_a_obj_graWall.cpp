@@ -24,7 +24,7 @@ int daObjGraWall_c::Create() {
     }
     col_init();
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjGraWall_c::Execute() {

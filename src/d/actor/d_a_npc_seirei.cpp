@@ -237,7 +237,7 @@ cPhs_Step daNpc_Seirei_c::create() {
     arg0 = fopAcM_GetParam(this) >> 28;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (arg0 != 0 && !fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             return cPhs_ERROR_e;
         }

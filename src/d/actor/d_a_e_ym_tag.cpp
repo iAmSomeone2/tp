@@ -53,7 +53,7 @@ int daE_YM_TAG_c::create() {
     if ((u8)fopAcM_GetParam(this) == 0xFF) {
         return cPhs_ERROR_e;
     }
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daE_YM_TAG_Create(daE_YM_TAG_c* i_this) {

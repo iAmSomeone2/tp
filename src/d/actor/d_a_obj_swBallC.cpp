@@ -115,7 +115,7 @@ int daObjSwBallC_c::CreateHeap() {
 int daObjSwBallC_c::create() {
     fopAcM_ct(this, daObjSwBallC_c);
     int res = dComIfG_resLoad(&field_0x568, l_arcName);
-    if (res == cPhs_COMPLEATE_e) {
+    if (res == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x960) == 0) {
             return cPhs_ERROR_e;
         } else if (Create() == 0) {

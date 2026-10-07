@@ -364,7 +364,7 @@ BOOL daNpc_grA_c::create() {
         if (phase == cPhs_ERROR_e || phase == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             i++;
         }
     }
@@ -404,7 +404,7 @@ BOOL daNpc_grA_c::create() {
         setRoomNo();
         reset();
         Execute();
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
     return cPhs_INIT_e;
 }

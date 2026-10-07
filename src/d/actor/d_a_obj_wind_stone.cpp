@@ -51,7 +51,7 @@ int daWindStone_c::create() {
     fopAcM_ct(this, daWindStone_c);
 
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daWindStone_c_createHeap, 0x1000)) {
             return cPhs_ERROR_e;
         }

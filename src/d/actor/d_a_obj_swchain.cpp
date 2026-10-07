@@ -274,7 +274,7 @@ int daObjSwChain_c::create1st() {
 #endif
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 size = 0x4000;
         size |= 0x80000000;
 

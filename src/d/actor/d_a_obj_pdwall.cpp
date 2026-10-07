@@ -20,7 +20,7 @@ static char* l_arcName = "P_Dwall";
 
 int daObjPDwall_c::create1st() {
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         setMtx();
 
         phase_state = MoveBGCreate(l_arcName, l_dzbidx, dBgS_MoveBGProc_TypicalRotY, 0xB1C0, &field_0x5a8);

@@ -61,7 +61,7 @@ daTag_Lantern_c::~daTag_Lantern_c() {
 int daTag_Lantern_c::create() {
     fopAcM_ct(this, daTag_Lantern_c);
     initialize();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_Lantern_c::Delete() {

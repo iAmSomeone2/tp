@@ -31,7 +31,7 @@ int daTagPati_c::create() {
     mCyl.Set(l_sph_src);
     mCyl.SetStts(&mStts);
     field_0x6E4 = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagPati_c::Execute() {

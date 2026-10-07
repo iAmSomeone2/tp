@@ -178,7 +178,7 @@ int daObj_Sekizoa_c::create() {
     mTwilight = 0;
 
     int ret = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

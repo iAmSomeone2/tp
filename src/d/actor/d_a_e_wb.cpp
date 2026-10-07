@@ -5574,7 +5574,7 @@ static int daE_WB_Create(fopAc_ac_c* actor) {
         lbl_244_bss_46 = 1;
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         i_this->action = ACT_WAIT;
 
         if (i_this->arg0 == 0xff) {

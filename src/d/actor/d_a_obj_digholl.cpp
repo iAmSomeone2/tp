@@ -26,7 +26,7 @@ int daObjDigholl_c::create() {
     attention_info.position = current.pos;
     eyePos = attention_info.position;
     attention_info.distances[fopAc_attn_ETC_e] = 0x20;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daObjDigholl_Create(fopAc_ac_c* i_this) {

@@ -1358,7 +1358,7 @@ int daE_BG_c::create() {
     }
 
     s32 loadResult = dComIfG_resLoad(&this->mPhaseReq, "E_BG");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("E_BG PARAM %x\n", fopAcM_GetParam(this));
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1100)) {
             return cPhs_ERROR_e;

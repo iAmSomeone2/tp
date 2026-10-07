@@ -189,13 +189,13 @@ cPhs_Step daTagStatue_c::create() {
     if (l_evArcName[mSkyCharacterEventBitIdIndex]) {
         phase = dComIfG_resLoad(&mEvArcPhase, l_evArcName[mSkyCharacterEventBitIdIndex]); 
 
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
             return static_cast<cPhs_Step>(phase);
         }
     }
 
     phase = dComIfG_resLoad(&mArcPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x1100)) {
             return cPhs_ERROR_e;
         }

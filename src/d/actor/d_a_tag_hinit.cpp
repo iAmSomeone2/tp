@@ -21,7 +21,7 @@ int daTagHinit_c::create() {
     field_0x56c = fopAcM_GetParam(this);
     field_0x56e = (fopAcM_GetParam(this) >> 0x10);
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagHinit_Create(fopAc_ac_c* i_this) {

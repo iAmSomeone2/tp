@@ -234,7 +234,7 @@ daBalloon2D_c* daBalloon2D_c::myclass;
 
 int daBalloon2D_c::create() {
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daBalloon2D_createHeap, 0)) {
             return cPhs_ERROR_e;
         }

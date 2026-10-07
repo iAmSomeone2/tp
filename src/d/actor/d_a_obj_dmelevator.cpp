@@ -243,11 +243,11 @@ int daObjDmElevator_c::create1st() {
     }
 
     int ret = dComIfG_resLoad(&mPhaseReq2, l_sw_arcName);
-    if (ret != cPhs_COMPLEATE_e) {
+    if (ret != cPhs_COMPLETE_e) {
         return ret;
     }
     ret = dComIfG_resLoad(&mPhaseReq, l_el_arcName);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         ret = MoveBGCreate(l_el_arcName, 8, dBgS_MoveBGProc_TypicalRotY, 0x2280, NULL);
         if (ret == cPhs_ERROR_e) {
             return ret;

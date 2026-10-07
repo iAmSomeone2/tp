@@ -4929,13 +4929,13 @@ int daAlink_c::create() {
 
         setArcName(checkWolf());
         setOriginalHeap(&mpArcHeap, 0xA2800);
-        if (dComIfG_resLoad(&mPhaseReq, mArcName, mpArcHeap) != cPhs_COMPLEATE_e) {
+        if (dComIfG_resLoad(&mPhaseReq, mArcName, mpArcHeap) != cPhs_COMPLETE_e) {
             return cPhs_INIT_e;
         }
 
         setShieldArcName();
         setOriginalHeap(&mpShieldArcHeap, 0x7000);
-        if (dComIfG_resLoad(&mShieldPhaseReq, mShieldArcName, mpShieldArcHeap) != cPhs_COMPLEATE_e) {
+        if (dComIfG_resLoad(&mShieldPhaseReq, mShieldArcName, mpShieldArcHeap) != cPhs_COMPLETE_e) {
             return cPhs_INIT_e;
         }
         
@@ -5077,7 +5077,7 @@ int daAlink_c::create() {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daAlink_Create(fopAc_ac_c* actor) {

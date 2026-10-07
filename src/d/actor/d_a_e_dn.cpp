@@ -3379,7 +3379,7 @@ static cPhs_Step daE_DN_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, e_dn_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->phase, "E_dn");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int swBit = (fopAcM_GetParam(actor) & 0xFF000000) >> 24;
         if (swBit != 0xFF) {
             if (dComIfGs_isSwitch(swBit, fopAcM_GetRoomNo(actor))) {

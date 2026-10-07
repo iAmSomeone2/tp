@@ -327,7 +327,7 @@ cPhs_Step daObjCRVFENCE_c::create() {
     fopAcM_ct(this, daObjCRVFENCE_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("Obj_Fence PARAM %x\n", fopAcM_GetParam(this));
 
         field_0x5a8 = fopAcM_GetParam(this);
@@ -378,7 +378,7 @@ static int daObjCRVFENCE_IsDelete(daObjCRVFENCE_c* i_this) {
 
 int daObjCRVFENCE_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjCRVFENCE_c::Execute(Mtx** mtx) {

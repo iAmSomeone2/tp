@@ -71,7 +71,7 @@ int dkWpillar_c::create() {
     mpModel->setBaseScale(scale);
     mDoMtx_stack_c::transS(pos.x, pos.y, pos.z);
     mpModel->setBaseTRMtx(mDoMtx_stack_c::get());
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int dkWpillar_Create(kankyo_class* i_this) {

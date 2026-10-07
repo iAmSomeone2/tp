@@ -72,7 +72,7 @@ About 770 actor files under `src/d/actor/`; the [actor-index](actor-index.md) li
 | `d_a_tbox*`, `d_a_shop_item`, `d_a_obj_item`, `d_a_itembase` | Items & chests | |
 | `d_a_mg_*` | Minigames | Fishing (`mg_rod`, `mg_fish`, `mg_fshop`). Other minigames are spread across `obj_*`/`npc_*` actors. |
 
-**Anatomy of a typical actor `.cpp`** (open `d_a_obj_swpush.cpp` as an example, top to bottom): includes `d/dolzel_rel.h` → class `Act_c`/`daXxx_c` methods: `Create` (parameters → `resLoad` phase → `fopAcM_entrySolidHeap` → create model/colliders → `fopAcM_SetMtx`/`fopAcM_SetMin/Max` cull → return `cPhs_COMPLEATE_e`), `Execute` (logic, hit checks, `setBaseMtx`), `Draw` (env light setup → `dComIfGd_setList…` → `mDoExt_modelUpdateDL`), `Delete` (release resources: `dComIfG_resDelete`) → a static method table → `g_profile_*` at the bottom.
+**Anatomy of a typical actor `.cpp`** (open `d_a_obj_swpush.cpp` as an example, top to bottom): includes `d/dolzel_rel.h` → class `Act_c`/`daXxx_c` methods: `Create` (parameters → `resLoad` phase → `fopAcM_entrySolidHeap` → create model/colliders → `fopAcM_SetMtx`/`fopAcM_SetMin/Max` cull → return `cPhs_COMPLETE_e`), `Execute` (logic, hit checks, `setBaseMtx`), `Draw` (env light setup → `dComIfGd_setList…` → `mDoExt_modelUpdateDL`), `Delete` (release resources: `dComIfG_resDelete`) → a static method table → `g_profile_*` at the bottom.
 
 **Actor parameters.** The map editor stores a 32-bit `parameters` word, an `argument` byte, position/rotation/scale, and an event/switch binding per placed actor. Each actor decodes its own bit fields (`getSwNo()`, `prm_get_type()`, `fopAcM_GetParamBit(actor, shift, bits)`). To learn what a map value does, find the `getXxx()`/`prm_get_*` helpers near the top of the actor's `.cpp`/`.h`.
 

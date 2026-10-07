@@ -201,7 +201,7 @@ daObjCwall_c::chain_s::chain_s() {
 int daObjCwall_c::create1st() {
     mType = getType();
     int rv = dComIfG_resLoad(&mPhase, l_arcName[mType]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName[mType], l_dzb[mType], NULL, l_heap_size[mType], NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

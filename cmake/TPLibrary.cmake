@@ -37,7 +37,7 @@ function(tp_add_engine_target)
     add_library(tp_engine INTERFACE)
     add_library(tp::engine ALIAS tp_engine)
 
-    if(CMAKE_CXX_LINK_GROUP_USING_RESCAN_SUPPORTED)
+    if(CMAKE_CXX_LINK_GROUP_USING_RESCAN_SUPPORTED OR CMAKE_LINK_GROUP_USING_RESCAN_SUPPORTED)
         string(REPLACE ";" "," libraries_csv "${libraries}")
         target_link_libraries(tp_engine INTERFACE "$<LINK_GROUP:RESCAN,${libraries_csv}>")
     else()

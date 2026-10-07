@@ -37,7 +37,7 @@ int daObj_SSDrink_c::create() {
     mLeftHandPosY = daPy_getPlayerActorClass()->getLeftHandPos().y;
     int phase = dComIfG_resLoad(&mPhase, getResName());
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2000)) {
             return cPhs_ERROR_e;
         }

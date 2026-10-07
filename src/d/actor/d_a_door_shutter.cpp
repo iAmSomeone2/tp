@@ -800,12 +800,12 @@ void daDoor20_c::setKey() {
 
 int daDoor20_c::create() {
     int rv = dComIfG_resLoad(&mPhase1, getAlwaysArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     if (getArcName() != NULL) {
         rv = dComIfG_resLoad(&mPhase2, getArcName());
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
     }
@@ -814,7 +814,7 @@ int daDoor20_c::create() {
         rv = cPhs_ERROR_e;
     } else {
         CreateInit();
-        rv = cPhs_COMPLEATE_e;
+        rv = cPhs_COMPLETE_e;
     }
     return rv;
 }

@@ -321,7 +321,7 @@ static int daSwc00_Create(fopAc_ac_c* a_this) {
                                 a_this->current.pos.z + 50.0f * a_this->scale.z);
     }
     i_this->mEventID = dComIfGp_getEventManager().getEventIdx(a_this, daSwc00_getEvID(i_this));
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daSwc00_Method = {

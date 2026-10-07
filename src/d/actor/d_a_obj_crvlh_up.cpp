@@ -99,7 +99,7 @@ int daObjCRVLH_UP_c::create() {
     fopAcM_ct(this, daObjCRVLH_UP_c);
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         gravity = nREG_F(0) + -9.0f;
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "U_CrvLH_Up.dzb");
         if (dzb_id == -1) {

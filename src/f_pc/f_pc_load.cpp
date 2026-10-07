@@ -8,7 +8,7 @@
 #include "SSystem/SComponent/c_phase.h"
 
 BOOL fpcLd_Use(s16 i_procName) {
-    if (fpcLd_IsLoaded(i_procName) == TRUE && fpcLd_Load(i_procName) == cPhs_COMPLEATE_e)
+    if (fpcLd_IsLoaded(i_procName) == TRUE && fpcLd_Load(i_procName) == cPhs_COMPLETE_e)
         return TRUE;
     return FALSE;
 }
@@ -23,8 +23,8 @@ void fpcLd_Free(s16 i_procName) {
 
 int fpcLd_Load(s16 i_procName) {
     switch (cDyl_LinkASync((s16)i_procName)) {
-    case cPhs_COMPLEATE_e:
-        return cPhs_COMPLEATE_e;
+    case cPhs_COMPLETE_e:
+        return cPhs_COMPLETE_e;
     case cPhs_INIT_e:
         return cPhs_INIT_e;
     default:

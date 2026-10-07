@@ -159,7 +159,7 @@ int daGraveStone_c::CreateHeap() {
 cPhs_Step daGraveStone_c::create() {
     fopAcM_ct(this, daGraveStone_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "H_Haka.dzb");
         step = MoveBGCreate(l_arcName, dzb_id,
                                         dBgS_MoveBGProc_TypicalRotY, 0x29A0, NULL);

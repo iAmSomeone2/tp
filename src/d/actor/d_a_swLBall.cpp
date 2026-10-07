@@ -110,7 +110,7 @@ int daSwLBall_c::create() {
     if (!Create()) {
         return cPhs_ERROR_e;
     }
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daSwLBall_c::execute() {

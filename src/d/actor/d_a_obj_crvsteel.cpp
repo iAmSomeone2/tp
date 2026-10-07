@@ -84,7 +84,7 @@ int daObjCRVSTEEL_c::CreateHeap() {
 int daObjCRVSTEEL_c::create() {
     fopAcM_ct(this, daObjCRVSTEEL_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         gravity = -9.0f;
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "U_CrvSteelGate.dzb");
         if (dzb_id == -1) {
@@ -117,7 +117,7 @@ static int daObjCRVSTEEL_IsDelete(daObjCRVSTEEL_c* param_0) {
 
 int daObjCRVSTEEL_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjCRVSTEEL_c::Execute(Mtx** param_1) {

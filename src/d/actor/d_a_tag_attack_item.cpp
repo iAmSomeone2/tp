@@ -79,7 +79,7 @@ int daTagAtkItem_c::create() {
     l_HIO.entryHIO("攻撃反応アイテム");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagAtkItem_c::execute() {

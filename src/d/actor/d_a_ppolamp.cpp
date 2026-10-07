@@ -22,7 +22,7 @@ daPPolamp_c::~daPPolamp_c() {
 
 int daPPolamp_c::create() {
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, daPPolamp_c_createHeap, 0x1010) == 0) {
             return cPhs_ERROR_e;
         }

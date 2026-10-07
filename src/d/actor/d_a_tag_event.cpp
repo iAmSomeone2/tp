@@ -123,7 +123,7 @@ int daTag_Event_c::create() {
         scale.z *= 10.0f;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_Event_c::actionNext() {

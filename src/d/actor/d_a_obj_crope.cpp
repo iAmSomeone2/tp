@@ -39,7 +39,7 @@ static dCcD_SrcSph l_sphSrc = {
 int daObjCrope_c::create() {
     fopAcM_ct(this, daObjCrope_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, daObjCrope_createHeap, 0x2900) == 0) {
             return cPhs_ERROR_e;
         }

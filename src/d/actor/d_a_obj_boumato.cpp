@@ -75,7 +75,7 @@ int daObj_BouMato_c::create() {
     fopAcM_ct(this, daObj_BouMato_c);
     field_0xa32 = getType();
     int rv = dComIfG_resLoad(&mPhase, getResName());
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) onSWBit:%02x, offSWBit:%02x<%08x>\n", fopAcM_getProcNameString(this), getType(), getOnSwBit(),
                               getOffSwBit(), fopAcM_GetParam(this));
         OS_REPORT("\n");

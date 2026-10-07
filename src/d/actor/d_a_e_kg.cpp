@@ -688,7 +688,7 @@ static int daE_KG_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_kg_class);
     e_kg_class* a_this = (e_kg_class*) i_this;
     int phase = dComIfG_resLoad(&a_this->mPhase, "E_kg");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_kg PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->field_0x5b4 = fopAcM_GetParam(i_this);
         a_this->field_0x5b5 = (fopAcM_GetParam(i_this) >> 8) & 0xf;

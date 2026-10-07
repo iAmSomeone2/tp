@@ -66,7 +66,7 @@ int dkWmark_c::create() {
 
     mAlphaFactor = 1.0f;
     dKy_tevstr_init(&mTevstr, dComIfGp_roomControl_getStayNo(), 0xFF);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int dkWmark_Create(kankyo_class* i_this) {

@@ -1153,7 +1153,7 @@ int daE_PH_c::create() {
     fopAcM_ct(this, daE_PH_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_PH");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         mAction = fopAcM_GetParam(this) & 0xF;
 
         if (dComIfGs_isZoneSwitch(2, fopAcM_GetRoomNo(this)) && mAction == 4) {

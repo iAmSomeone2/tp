@@ -148,7 +148,7 @@ int daObjDust_c::create() {
     fopAcM_ct(this, daObjDust_c);
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_FloatingDust01.dzb");
         JUT_ASSERT(116, dzb_id != -1);
 
@@ -186,7 +186,7 @@ int daObjDust_c::Create() {
     initBaseMtx();
     mpBgW->SetRideCallback(rideCallBack);
     fopAcM_wt_c::waterCheck(&current.pos);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjDust_c::Execute(Mtx** i_mtx) {

@@ -178,7 +178,7 @@ cPhs_Step daObjSM_DOOR_c::create() {
     fopAcM_ct(this, daObjSM_DOOR_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         gravity = -9.0f;
         mActive = true;
         mType = fopAcM_GetParam(this) & 0xF;
@@ -229,7 +229,7 @@ static int daObjSM_DOOR_IsDelete(daObjSM_DOOR_c* i_this) {
 
 inline int daObjSM_DOOR_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 inline int daObjSM_DOOR_c::Execute(Mtx** i_mtxP) {

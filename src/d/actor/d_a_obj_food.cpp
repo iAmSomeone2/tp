@@ -420,7 +420,7 @@ static cPhs_Step daObj_Food_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, obj_food_class);
 
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, "Obj_fd");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mType = (u8)fopAcM_GetParam(_this);
         _this->mParam1 = (u8)(fopAcM_GetParam(_this) >> 8);
         _this->mParam2 = (u8)(fopAcM_GetParam(_this) >> 0x10);

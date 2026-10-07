@@ -108,7 +108,7 @@ int daObjMirror6Pole_c::create() {
     fopAcM_ct(this, daObjMirror6Pole_c);
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1C00)) {
             return cPhs_ERROR_e;
         }

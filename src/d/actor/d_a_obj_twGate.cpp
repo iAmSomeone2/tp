@@ -137,7 +137,7 @@ int daTwGate_c::create() {
     }
 
     int rv = dComIfG_resLoad(&mPhase, l_resNameIdx[mGateType]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mGateType], l_dzbIdx[mGateType],
             dBgS_MoveBGProc_TypicalRotY, 0x22a0, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;

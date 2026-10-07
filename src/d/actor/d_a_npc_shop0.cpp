@@ -26,7 +26,7 @@ int daNpc_Shop0_c::create() {
     fopAcM_ct(this, daNpc_Shop0_c);
 
     int phase_step = dComIfG_resLoad(&mPhaseReq, getResName());
-    if (phase_step == cPhs_COMPLEATE_e) {
+    if (phase_step == cPhs_COMPLETE_e) {
         getParam();
         if (fopAcM_entrySolidHeap(this, createHeapCallBack, 0) == 0) {
             return cPhs_ERROR_e;            

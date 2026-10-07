@@ -330,7 +330,7 @@ cPhs_Step daNpc_grC_c::create() {
             return cPhs_ERROR_e;
         }
 
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             res_count++;
         }
     }
@@ -368,7 +368,7 @@ cPhs_Step daNpc_grC_c::create() {
         reset();
         Execute();
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return cPhs_INIT_e;

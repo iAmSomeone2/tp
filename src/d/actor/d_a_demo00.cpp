@@ -91,7 +91,7 @@ inline int daDemo00_c::create() {
     setAction(&daDemo00_c::actStandby);
     field_0x588.reset();
     field_0x6a0 = -1;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static void get_foward_angle(cXyz* param_1, cXyz* param_2, s16* param_3, s16* param_4) {

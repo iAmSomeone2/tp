@@ -194,12 +194,12 @@ cPhs_Step daNpcDoorBoy_c::Create() {
     for (int i = 0; i < 2; i++) {
         phase = dComIfG_resLoad(&mPhases[i], l_arcNames[i]);
 
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
             return phase;
         }
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1860)) {
             return cPhs_ERROR_e;
         }

@@ -148,7 +148,7 @@ int daObj_Gadget_c::create() {
     fopAcM_ct(this, daObj_Gadget_c);
     field_0x9d0 = getType();
     int rv = dComIfG_resLoad(&mPhase, l_resNameList[l_bmdData[field_0x9d0][1]]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             return cPhs_ERROR_e;
         }

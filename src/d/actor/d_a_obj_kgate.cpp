@@ -326,7 +326,7 @@ int daObjKGate_c::create1st() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName[mNameArg]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heap_size = l_gate_heap[mNameArg];
 
         if (getSwNo() != 0xFF) {

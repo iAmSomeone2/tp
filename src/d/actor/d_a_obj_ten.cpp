@@ -698,7 +698,7 @@ static daObj_TenHIO_c l_HIO;
 int daObjTEN_c::create() {
     fopAcM_ct(this, daObjTEN_c);
     int rv = dComIfG_resLoad(&mPhase, "I_Ten");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         field_0x624 = fopAcM_GetParam(this) & 0xf;
         if (field_0x624 == 2) {
             field_0x56c = 0;

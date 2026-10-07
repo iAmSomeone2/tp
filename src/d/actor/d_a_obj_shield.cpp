@@ -120,7 +120,7 @@ int daItemShield_c::create() {
         OS_REPORT("[43;30m木の盾：スイッチビット指定がありません！\n\x1b[m");
     }
     int rv = dComIfG_resLoad(&mPhase, dItem_data::getFieldArc(m_itemNo));
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, CheckFieldItemCreateHeap, 0x820) == 0) {
             return cPhs_ERROR_e;
         } 

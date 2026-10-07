@@ -275,12 +275,12 @@ inline int daObjFlag_c::create() {
     fopAcM_ct(this, daObjFlag_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "FlagObj");
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
     phase_state = dComIfG_resLoad(&mPhase2, daSetBgObj_c::getArcName(this));
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x4000)) {
             return cPhs_ERROR_e;
         }

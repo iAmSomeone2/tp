@@ -635,7 +635,7 @@ static cPhs_Step daObj_Gm_Create(fopAc_ac_c* a_this) {
     obj_gm_class* i_this = (obj_gm_class*)a_this;
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "OBJ_GM");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_GM PARAM %x\n", fopAcM_GetParam(a_this));
         a_this->field_0x565 = fopAcM_GetParam(a_this);
         i_this->mType = (fopAcM_GetParam(a_this) >> 8) & 15;

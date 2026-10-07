@@ -65,7 +65,7 @@ int daBmWindow_c::create() {
         return cPhs_ERROR_e;
     }
     int rv = dComIfG_resLoad(&mPhase, "H_Window");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         int movert = MoveBGCreate("H_Window", 7,
             dBgS_MoveBGProc_TypicalRotY, 0x1d20, NULL);
         if (movert == cPhs_ERROR_e) {

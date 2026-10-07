@@ -554,7 +554,7 @@ cPhs_Step daNpc_Pachi_Besu_c::create() {
     mTwilight = false;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x35B0)) {
             return cPhs_ERROR_e;
         }

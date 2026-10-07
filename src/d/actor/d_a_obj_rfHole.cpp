@@ -35,7 +35,7 @@ int daRfHole_c::CreateHeap() {
 int daRfHole_c::create() {
     fopAcM_ct(this, daRfHole_c);
     int rv = dComIfG_resLoad(&mPhase, "Otosiana");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (MoveBGCreate("Otosiana", 7, dBgS_MoveBGProc_TypicalRotY, 0xb40, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         } 

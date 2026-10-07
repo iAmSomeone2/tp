@@ -299,7 +299,7 @@ static int daOBJ_RW_Create(fopAc_ac_c* actor) {
     fopAcM_ct(actor, obj_rw_class);
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "Obj_rw");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("Obj_rw", fopAcM_GetParam(actor));
         OS_REPORT("OBJ_RW//////////////OBJ_RW SET 1 !!\n");
 

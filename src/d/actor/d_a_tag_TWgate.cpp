@@ -1021,11 +1021,11 @@ void daTagTWGate_c::initBaseMtx() {
 int daTagTWGate_c::downloadModels() {
     int phase_state = dComIfG_resLoad(&mPhaseMdRes, "TWGate_Md");
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = dComIfG_resLoad(&mPhasePyRes, mIsWolf ? "TWGate_Wf" : "TWGate_Lk");
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x3140)) {
             return -1;
         } else {
@@ -1106,7 +1106,7 @@ int daTagTWGate_c::create() {
         return cPhs_ERROR_e;
     } else {
         phase_state = dComIfG_resLoad(&mPhaseZevArc, l_zevParamTbl[mType].mArcName);
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             create_init();
         }
     }

@@ -337,13 +337,13 @@ cPhs_Step daObjKshtr_c::phase_0() {
     cPhs_Step phase;
     if (l_anmArcName[mType] != NULL) {
         phase = dComIfG_resLoad(&mPhase2, l_anmArcName[mType]);
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
                 return phase;
         }
     }
 
     phase = dComIfG_resLoad(&mPhase1, l_arcName[mType]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName[mType], l_dzb[mType], NULL, l_heap_size[mType], NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;
@@ -377,7 +377,7 @@ cPhs_Step daObjKshtr_c::phase_1() {
 }
 
 cPhs_Step daObjKshtr_c::phase_2() {
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 cPhs_Step daObjKshtr_c::create1st() {

@@ -1577,7 +1577,7 @@ static int daFshop_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, fshop_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "Fshop");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("FSHOP PARAM %x\n", fopAcM_GetParam(actor));
         if ((fopAcM_GetParam(actor) & 0xFF) == 0x23) {
             if (!fopAcM_entrySolidHeap(actor, BalluseHeapInit, 0x800)) {

@@ -72,7 +72,7 @@ int daObjLv4Gear_c::create() {
     mType = getType();
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, (heapCallbackFunc)CheckCreateHeap, l_heap_size[mType])) {
             return cPhs_ERROR_e;
         }

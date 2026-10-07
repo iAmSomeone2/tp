@@ -94,7 +94,7 @@ int daSCannon_c::create() {
     }
 
     char* arcname = l_arcName_Comp;
-    int ptl_phase_state = cPhs_COMPLEATE_e;
+    int ptl_phase_state = cPhs_COMPLETE_e;
     if (layerNo == 1) {
         arcname = l_arcName_Crash;
         mIsPortal = FALSE;
@@ -117,7 +117,7 @@ int daSCannon_c::create() {
         return cPhs_ERROR_e;
     }
 
-    if (phase_state == cPhs_COMPLEATE_e && zev_phase_state == cPhs_COMPLEATE_e && ptl_phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e && zev_phase_state == cPhs_COMPLETE_e && ptl_phase_state == cPhs_COMPLETE_e) {
         mLayerNo = layerNo;
 
         u32 heapsize = 0xF000;
@@ -170,7 +170,7 @@ int daSCannon_c::create() {
             execute();
         }
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return cPhs_INIT_e;

@@ -395,7 +395,7 @@ cPhs_Step daNpc_Post_c::create() {
     mTwilight = dKy_darkworld_check();
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, BitSW:%02x<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo,
                   getBitSW(), fopAcM_GetParam(this));
 

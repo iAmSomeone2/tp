@@ -1058,7 +1058,7 @@ static int daE_TH_BALL_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(i_this, e_th_ball_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "E_th_ball");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_TH_BALL PARAM %x\n", fopAcM_GetParam(a_this));
         OS_REPORT("E_TH_BALL//////////////E_TH_BALL SET 1 !!\n");
 

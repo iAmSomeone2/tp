@@ -118,7 +118,7 @@ int daObjRotStair_c::create1st() {
         mInit = 1;
     }
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 0xe,
                              dBgS_MoveBGProc_TypicalRotY, 0xd1c0, NULL);
         if (rv == cPhs_ERROR_e) {

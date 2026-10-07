@@ -199,7 +199,7 @@ int daHoZelda_c::create() {
     fopAcM_ct(this, daHoZelda_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daHoZelda_createHeap, 0xA240)) {
             return cPhs_ERROR_e;
         }

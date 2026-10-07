@@ -113,7 +113,7 @@ static int daDisappear_Create(fopAc_ac_c* i_this) {
     }
 
     set_disappear(this_, particle_scale);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daDisappear_Method = {

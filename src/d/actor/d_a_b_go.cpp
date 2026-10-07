@@ -228,7 +228,7 @@ static int daB_GO_Create(fopAc_ac_c* i_this) {
     OS_REPORT("B_GO//////////////B_GO SET 0 !!\n");
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "B_go");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("B_GO PARAM %x\n", fopAcM_GetParam(a_this));
         OS_REPORT("B_GO//////////////B_GO SET 1 !!\n");
 

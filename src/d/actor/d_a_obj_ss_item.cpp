@@ -50,10 +50,10 @@ int daObj_SSItem_c::create() {
     if (field_0xB0E == 2) {
         field_0xB04 = fopAcM_create(fpcNm_OBJ_PUMPKIN_e, 0x10000319, &current.pos,
                                     fopAcM_GetRoomNo(this), &current.angle, NULL, -1);
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     } else {
         int retVal = dComIfG_resLoad(&mPhase, getResName());
-        if (retVal == cPhs_COMPLEATE_e) {
+        if (retVal == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, &createHeapCallBack, 0xEB0)) {
                 return cPhs_ERROR_e;
             } else {

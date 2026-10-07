@@ -2170,7 +2170,7 @@ cPhs_Step daE_ZH_c::create() {
     fopAcM_ct(this, daE_ZH_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, "E_ZH");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_ZH PARAM %x\n", fopAcM_GetParam(this));
         arg0 = fopAcM_GetParam(this);
         bitSw = fopAcM_GetParam(this) >> 8;

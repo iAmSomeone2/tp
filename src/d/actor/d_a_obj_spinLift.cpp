@@ -79,7 +79,7 @@ int daSpinLift_c::create() {
     mModelType = getModelType();
     int phase = dComIfG_resLoad(&mPhase, l_resNameIdx[mModelType]);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mModelType], l_dzbIdx[mModelType],
                          dBgS_MoveBGProc_TypicalRotY, 0x9300, NULL) == cPhs_ERROR_e)
         {

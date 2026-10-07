@@ -147,7 +147,7 @@ int daNpc_ZelR_c::create() {
     mTwilight = false;
 
     int phaseState = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phaseState == cPhs_COMPLEATE_e) {
+    if (phaseState == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x5cd0)) {
             OS_REPORT("===>isDelete:TRUE\n");
             return cPhs_ERROR_e;

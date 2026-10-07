@@ -80,7 +80,7 @@ BOOL fpcCtRq_IsDoing(create_request* i_request) {
 }
 
 BOOL fpcCtRq_Do(create_request* i_request) {
-    int phase = cPhs_COMPLEATE_e;
+    int phase = cPhs_COMPLETE_e;
 
     if (i_request->methods != NULL) {
         if (i_request->methods->phase_handler != NULL) {
@@ -93,7 +93,7 @@ BOOL fpcCtRq_Do(create_request* i_request) {
     }
 
     switch (phase) {
-    case cPhs_COMPLEATE_e: {
+    case cPhs_COMPLETE_e: {
         if (fpcEx_ToExecuteQ(i_request->process) == 0)
             return fpcCtRq_Cancel(i_request);
         else

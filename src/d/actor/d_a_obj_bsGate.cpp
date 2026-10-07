@@ -84,7 +84,7 @@ int daBsGate_c::CreateHeap() {
 cPhs_Step daBsGate_c::create() {
     fopAcM_ct(this, daBsGate_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, "S_Zgate");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (MoveBGCreate("S_Zgate", 7, dBgS_MoveBGProc_TypicalRotY, 0xf00, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

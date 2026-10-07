@@ -674,7 +674,7 @@ static int daE_ARROW_Create(fopAc_ac_c* i_this) {
     }
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, a_this->mResName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         a_this->mArrowType = fopAcM_GetParam(a_this) & 0xF;
         a_this->mFlags = fopAcM_GetParam(a_this) & 0xF0;
 

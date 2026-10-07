@@ -2843,7 +2843,7 @@ static int daE_MK_Create(fopAc_ac_c* i_actor) {
     fopAcM_ct(&mk->actor, e_mk_class);
 
     int phase = dComIfG_resLoad(&mk->phase, "E_mk");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_MK PARAM %x\n", fopAcM_GetParam(i_actor));
         if (strcmp(dComIfGp_getStartStageName(), "D_MN05B") == 0 && dComIfGs_isStageMiddleBoss()) {
             OS_REPORT("中ボスE_MK やられ後なので再セットしません\n"); // Since it's the middle boss E_MK after being defeated, I won't reset it.

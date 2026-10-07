@@ -171,7 +171,7 @@ int daNpc_Zelda_c::create() {
     mTwilight = false;
 
     s32 loadResult = loadRes(l_loadResPtrnList[field_0xf80], (const char**)l_resNameList);
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathNo:%02x<%08x> ", fopAcM_getProcNameString(this),
             field_0xf80, mFlowNodeNo, getPathID(), fopAcM_GetParam(this));
         if (isDelete()) {

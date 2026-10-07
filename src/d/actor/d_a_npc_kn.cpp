@@ -555,7 +555,7 @@ int daNpc_Kn_c::create() {
     OS_REPORT("\n");
 
     int phase_state = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         static int const heapSize[8] = {0x4B10, 0x4B20, 0x4B10, 0x4B10, 0x5A00, 0x4B10, 0x4B20, 0x0000};
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, heapSize[mType])) {
             return cPhs_ERROR_e;

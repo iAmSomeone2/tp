@@ -123,7 +123,7 @@ static int dOvlpFd_Delete(overlap1_class* i_this) {
 
 static int dOvlpFd_Create(void* i_this) {
     dOvlpFd_execute_f = dOvlpFd_FadeIn;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dOvlpFd_Method = {

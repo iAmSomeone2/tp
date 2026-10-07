@@ -208,7 +208,7 @@ int daObjVolcBom_c::create1st() {
     }
 
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 24, dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

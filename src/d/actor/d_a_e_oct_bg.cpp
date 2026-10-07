@@ -789,7 +789,7 @@ int daE_OctBg_c::create() {
     fopAcM_ct(this, daE_OctBg_c);
 
     int rv = dComIfG_resLoad(&mPhase,  "E_bg");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("///////////// E_OctBg ////////////////\n");
         if (fopAcM_entrySolidHeap(this, useHeapInit, 0x10e0) == 0) {
             return cPhs_ERROR_e;

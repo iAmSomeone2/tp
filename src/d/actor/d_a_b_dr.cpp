@@ -4035,7 +4035,7 @@ int daB_DR_c::create() {
     fopAcM_ct(this, daB_DR_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_DR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heap_size = 0x68E0;
 
         arg0 = fopAcM_GetParam(this);

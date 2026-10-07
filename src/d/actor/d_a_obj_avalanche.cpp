@@ -105,7 +105,7 @@ int daObjAvalanche_c::CreateHeap() {
 
 int daObjAvalanche_c::create1st() {
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 13, dBgS_MoveBGProc_Trans, 0x2920, NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

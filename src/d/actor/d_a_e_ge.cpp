@@ -1302,7 +1302,7 @@ int daE_GE_c::create() {
     mGroupNo = fopAcM_GetParam(this) >> 0x10;
 
     int phase = dComIfG_resLoad(&mPhaseReq, "E_GE");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_GE PARAM %x\n", fopAcM_GetParam(this));
 
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1340)) {

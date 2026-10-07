@@ -39,7 +39,7 @@ int daHsTarget_c::create() {
         mIndex = 0;
     }
     int phase = dComIfG_resLoad(&mPhaseReq, l_resNameIdx[mIndex]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mIndex], l_dzbIdx[mIndex],
                          dBgS_MoveBGProc_TypicalRotY, 0xac0, NULL) == cPhs_ERROR_e)
         {

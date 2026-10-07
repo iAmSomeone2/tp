@@ -38,7 +38,7 @@ int daSldWall_c::create() {
     fopAcM_ct(this, daSldWall_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "L4SldWall");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L4SldWall", 7, dBgS_MoveBGProc_TypicalRotY, 0x1300, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

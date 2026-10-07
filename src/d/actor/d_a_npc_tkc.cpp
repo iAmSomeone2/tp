@@ -219,7 +219,7 @@ cPhs_Step daNpcTkc_c::Create() {
 
     cPhs_Step phase = cPhs_ERROR_e;
     phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2030)) {
             return cPhs_ERROR_e;
         }

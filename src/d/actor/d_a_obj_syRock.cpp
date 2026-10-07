@@ -173,7 +173,7 @@ cPhs_Step daSyRock_c::create() {
     cPhs_Step bgCreatePhaseProcess;
 
     const cPhs_Step requestedPhaseProcess = static_cast<cPhs_Step>(dComIfG_resLoad(&mPhase, "syourock"));
-    if (requestedPhaseProcess == cPhs_COMPLEATE_e) {
+    if (requestedPhaseProcess == cPhs_COMPLETE_e) {
         if (MoveBGCreate("syourock", 0x8, dBgS_MoveBGProc_TypicalRotY, 0x2100, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

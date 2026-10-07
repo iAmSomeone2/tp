@@ -30,7 +30,7 @@ int daObj_Oiltubo_c::create() {
     fopAcM_ct(this, daObj_Oiltubo_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, getResName());
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2000)) {
             return cPhs_ERROR_e;
         }

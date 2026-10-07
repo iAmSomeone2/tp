@@ -163,7 +163,7 @@ static int daObj_Gb_Create(fopAc_ac_c* actor) {
     obj_gb_class* i_this = (obj_gb_class*)actor;
     int rv = dComIfG_resLoad(&i_this->mPhase, "Obj_gb");
     
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_GB PARAM %x\n", fopAcM_GetParam(i_this));
         i_this->field_0x57c = fopAcM_GetParam(i_this);
         if (i_this->field_0x57c == 0xff) {

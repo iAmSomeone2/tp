@@ -39,7 +39,7 @@ int daKiPot_c::create() {
     field_0x575 = 0;
     init_modeWait();
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daKiPot_c::Execute() {

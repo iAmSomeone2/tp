@@ -236,7 +236,7 @@ cPhs_Step daNpcPasser2_c::create() {
     }
 
     cPhs_Step phase = loadResrc(m_type, m_objNum);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 i_size = 0;
         #if DEBUG
         i_size = 0x15A0;

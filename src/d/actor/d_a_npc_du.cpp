@@ -639,7 +639,7 @@ static cPhs_Step daNpc_Du_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&du->actor, npc_du_class);
 
     cPhs_Step phase = dComIfG_resLoad(&du->mPhase, "Npc_Du");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_DU PARAM %x\n", fopAcM_GetParam(i_this));
         du->arg0 = fopAcM_GetParam(i_this);
         du->arg1 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;

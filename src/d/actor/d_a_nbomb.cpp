@@ -202,7 +202,7 @@ int daNbomb_c::create() {
         mType = TYPE_NORMAL_PLAYER;
     }
 
-    if (mType >= TYPE_FLOWER && dComIfG_resLoad(&mPhase, m_arcNameList[mType]) != cPhs_COMPLEATE_e)
+    if (mType >= TYPE_FLOWER && dComIfG_resLoad(&mPhase, m_arcNameList[mType]) != cPhs_COMPLETE_e)
     {
         return cPhs_ERROR_e;
     }
@@ -365,7 +365,7 @@ int daNbomb_c::create() {
     mpModel->calc();
     setSmokePos();
     model = mpModel;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daNbomb_Create(fopAc_ac_c* i_this) {

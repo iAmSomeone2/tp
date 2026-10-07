@@ -152,7 +152,7 @@ int daLv3Water_c::create() {
 
     int phase = dComIfG_resLoad(&mPhase, l_resNameIdx[mType]);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 heapSize = estimateSizeTbl[mType];
         OS_REPORT("l3water: == type:%d [0x%04x:%s] ==\n", mType, heapSize, l_resNameIdx[mType]);
 

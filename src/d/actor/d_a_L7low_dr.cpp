@@ -138,7 +138,7 @@ int daL7lowDr_c::create() {
     fopAcM_ct(this, daL7lowDr_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "L7lowDr");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("////////////// L7lowDr ///////////////////\n");
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1D20)) {
             return cPhs_ERROR_e;

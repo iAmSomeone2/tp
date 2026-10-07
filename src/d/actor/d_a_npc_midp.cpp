@@ -150,7 +150,7 @@ int daNpc_midP_c::create() {
     mTwilight = 0;
 
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             OS_REPORT("===>isDelete:TRUE\n");
             return cPhs_ERROR_e;

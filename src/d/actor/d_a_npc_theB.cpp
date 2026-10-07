@@ -239,7 +239,7 @@ cPhs_Step daNpcTheB_c::create() {
     fopAcM_ct(this, daNpcTheB_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2CB0)) {
             return cPhs_ERROR_e;
         }
@@ -282,7 +282,7 @@ cPhs_Step daNpcTheB_c::create() {
         reset();
         Execute();
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return phase;

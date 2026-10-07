@@ -107,7 +107,7 @@ int daBdoor_c::CreateInit() {
 cPhs_Step daBdoor_c::create() {
     fopAcM_ct(this, daBdoor_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, getArcName());
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0xa000)) {
             return cPhs_ERROR_e;
         }

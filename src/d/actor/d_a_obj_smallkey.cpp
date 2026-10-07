@@ -171,7 +171,7 @@ int daKey_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, dItem_data::getFieldArc(m_itemNo));
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckFieldItemCreateHeap, 0x840)) {
             return cPhs_ERROR_e;
         }

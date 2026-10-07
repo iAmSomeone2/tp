@@ -240,7 +240,7 @@ int dMeter2_c::_create() {
     mpHeap->getTotalFreeSize();
     field_0x11c = NULL;
     mDoExt_setCurrentHeap(heap);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMeter2_c::_execute() {

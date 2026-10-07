@@ -160,7 +160,7 @@ Creation is *asynchronous and phased* so it can wait on disk I/O without stallin
    | `cPhs_INIT_e` | Not started / still waiting (e.g., REL not loaded yet). Called again next frame. |
    | `cPhs_LOADING_e` | Async load in progress. |
    | `cPhs_NEXT_e` | Advance to the next phase function in the same frame. |
-   | `cPhs_COMPLEATE_e` | Done (sic – the spelling in the source). The process becomes live. |
+   | `cPhs_COMPLETE_e` | Done (`cPhs_COMPLEATE_e` upstream; this fork corrected the spelling). The process becomes live. |
    | `cPhs_ERROR_e` | Abort; the process is discarded. |
 
    Actor create methods are usually a two-step: *load resources* (`dComIfG_resLoad(&mPhase, "ArcName")` returns `cPhs_INIT_e` until the archive is mounted), then *initialise* (create heap via `fopAcM_entrySolidHeap`, model, colliders, etc.). `fopAcM_ct(this, Class)` at the start of `Create` runs the C++ constructor via placement-new the first time through.
@@ -214,7 +214,7 @@ Scene manager files: `f_op_scene_mng.cpp` (`fopScnM_*`), `f_op_scene_req.cpp` (`
 Most actors are separate REL files loaded from the disc when needed:
 
 1. Every process name has a slot in `DMC[]` (`src/c/c_dylink.cpp`). `DynamicNameTable` maps `fpcNm_*_e → "d_a_xxx"`; each becomes a `DynamicModuleControl` (`src/DynamicLink.cpp`). Names not in the table (DOL-resident code) have a `NULL` slot and count as always-linked.
-2. `cDyl_LinkASync(profName)` (called from `fpcLd_Load` during the create phases) returns `cPhs_INIT_e` until the REL has been read from disc on the DVD thread, then links it (`OSLink`, running `_prolog` from `src/REL/executor.c`) and returns `cPhs_COMPLEATE_e`. Reference-counted: `link()`/`unlink()` (`mLinkCount`).
+2. `cDyl_LinkASync(profName)` (called from `fpcLd_Load` during the create phases) returns `cPhs_INIT_e` until the REL has been read from disc on the DVD thread, then links it (`OSLink`, running `_prolog` from `src/REL/executor.c`) and returns `cPhs_COMPLETE_e`. Reference-counted: `link()`/`unlink()` (`mLinkCount`).
 3. Once linked, the profile is reachable through `g_fpcPfLst_ProfileList[name]` and creation proceeds.
 4. When the last process of that name is deleted, `fpcLd_Free` → `cDyl_Unlink` frees the module.
 5. REL/archive **pre-loading** exists too: `dScnLogo_c` (`preLoad_dyl`) warms some modules during the logo, and `dScnPly_c` has a `PreLoadInfo` table (`dylKeyTbl` = process names to link, `resNameTbl` = archives to load), currently populated for a single stage (`T_JOINT`, which loads the cow actor and the `Always` archive).

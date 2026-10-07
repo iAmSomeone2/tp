@@ -1458,13 +1458,13 @@ int daObjMovebox::Act_c::Mthd_Create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, M_arcname[mType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heap_size = attr().mHeapSize;
         path_init();
 
         phase_state = MoveBGCreate(M_arcname[mType], attr().mMoveBGIdx, dBgS_MoveBGProc_Trans,
                                    heap_size, NULL);
-        JUT_ASSERT(1663, (phase_state == cPhs_COMPLEATE_e) || (phase_state == cPhs_ERROR_e));
+        JUT_ASSERT(1663, (phase_state == cPhs_COMPLETE_e) || (phase_state == cPhs_ERROR_e));
     }
 
     return phase_state;

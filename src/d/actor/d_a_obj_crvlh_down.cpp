@@ -140,7 +140,7 @@ int daObjCRVLH_DW_c::create() {
     fopAcM_ct(this, daObjCRVLH_DW_c);
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         mParam = fopAcM_GetParam(this);
 
         if (mParam != 0xFF) {
@@ -189,7 +189,7 @@ static int daObjCRVLH_DW_IsDelete(daObjCRVLH_DW_c* i_this) {
 
 int daObjCRVLH_DW_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjCRVLH_DW_c::Execute(Mtx** param_0) {

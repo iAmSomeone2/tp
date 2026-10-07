@@ -106,7 +106,7 @@ int daNpc_Zant_c::create() {
     mTwilight = false;
 
     rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             return cPhs_ERROR_e;
         } else if (isDelete()) {

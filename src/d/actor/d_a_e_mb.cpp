@@ -681,7 +681,7 @@ static int daE_MB_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, e_mb_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "E_mb");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_MB PARAM %x\n", fopAcM_GetParam(i_this));
         
         u8 swbit = (fopAcM_GetParam(i_this) >> 0x18) & 0xFF;

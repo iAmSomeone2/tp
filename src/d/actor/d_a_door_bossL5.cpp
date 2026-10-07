@@ -126,15 +126,15 @@ int daBdoorL5_c::CreateInit() {
 int daBdoorL5_c::create() {
     fopAcM_ct(this, daBdoorL5_c);
     int rv = dComIfG_resLoad(&mPhase1, getArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     rv = dComIfG_resLoad(&mPhase3, getAnmArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     rv = dComIfG_resLoad(&mPhase2, getAlwaysArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     if (!dComIfGs_isSwitch(door_param2_c::getSwbit(this), fopAcM_GetRoomNo(this))
@@ -148,7 +148,7 @@ int daBdoorL5_c::create() {
         return cPhs_ERROR_e;
     } 
     if (CreateInit() != 0) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
     return cPhs_ERROR_e;
 }

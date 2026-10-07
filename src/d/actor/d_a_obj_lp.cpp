@@ -368,7 +368,7 @@ static int daObj_Lp_Create(fopAc_ac_c* a_this) {
     obj_lp_class* i_this = (obj_lp_class*)a_this;
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "Obj_lp");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_LP PARAM %x\n", fopAcM_GetParam(i_this));
 
         i_this->field_0x570 = fopAcM_GetParam(i_this);

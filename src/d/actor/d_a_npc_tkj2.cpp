@@ -1134,7 +1134,7 @@ static cPhs_Step daNpc_Tkj2_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&tkj2->actor, npc_tkj2_class);
 
     cPhs_Step phase = dComIfG_resLoad(&tkj2->mPhase, "Tkj2");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_TKJ2 PARAM %x\n", fopAcM_GetParam(i_this));
 
         tkj2->field_0x5b4 = fopAcM_GetParam(i_this);

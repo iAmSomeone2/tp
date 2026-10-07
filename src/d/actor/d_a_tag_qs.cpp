@@ -172,7 +172,7 @@ int daTagQs_c::create() {
     mStts.Init(0xff, 0, this);
     mCyl.Set(l_cc_cyl_src);
     mCyl.SetStts(&mStts);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 f32 daTagQs_c::getPower() {

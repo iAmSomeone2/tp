@@ -3169,7 +3169,7 @@ cPhs_Step daE_YMB_c::create() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, "E_YB");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_YMB PARAM %x\n", fopAcM_GetParam(this));
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x5200)) {
             return cPhs_ERROR_e;

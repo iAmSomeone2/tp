@@ -792,7 +792,7 @@ int daL7ODR_c::create() {
     field_0x8b7 = 0;
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_DR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("L7ODR PARAM %x\n", fopAcM_GetParam(this));
         OS_REPORT("L7ODR//////////////L7ODR SET 1 !!\n");
 

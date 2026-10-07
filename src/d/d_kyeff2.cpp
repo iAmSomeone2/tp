@@ -34,7 +34,7 @@ static int dKyeff2_Delete(dKyeff2_c* i_this) {
 
 static int dKyeff2_Create(kankyo_class* i_this) {
     dKyw_wether_init2();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dKyeff2_Method = {

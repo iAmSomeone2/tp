@@ -808,7 +808,7 @@ static cPhs_Step daE_Bug_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, e_bug_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_bug");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_BUG PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x570 = fopAcM_GetParam(a_this);
         i_this->bug_num = i_this->field_0x570 + 1;

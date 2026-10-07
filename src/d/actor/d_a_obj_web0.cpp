@@ -229,7 +229,7 @@ static int daObj_Web0_Create(fopAc_ac_c* i_this) {
     };
 
     int phase = dComIfG_resLoad(&_this->mPhase, "Obj_web0");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int switchNo = fopAcM_GetParam(_this) >> 0x18;
 
         if (switchNo != 0xFF && dComIfGs_isSwitch(switchNo, fopAcM_GetRoomNo(_this))) {

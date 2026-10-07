@@ -127,12 +127,12 @@ cPhs_Step daNpcShoe_c::Create() {
     step = cPhs_ERROR_e;
     for (int i = 0; i < 3; i++) {
         step = dComIfG_resLoad(&mPhases[i], l_arcNames[i]);
-        if (step != cPhs_COMPLEATE_e) {
+        if (step != cPhs_COMPLETE_e) {
             return step;
         }
     }
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2920)) {
             return cPhs_ERROR_e;
         }

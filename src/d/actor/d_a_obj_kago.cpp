@@ -103,7 +103,7 @@ cPhs_Step daObj_Kago_c::create() {
     mType = getType();
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_resNameList[l_bmdData[0][1]]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) <%08x> -> roomNo.%d", fopAcM_getProcNameString(this), getType(), fopAcM_GetParam(this), fopAcM_GetRoomNo(this));
         if (mType == 0 && isDelete()) {
             OS_REPORT("===>isDelete:TRUE\n");

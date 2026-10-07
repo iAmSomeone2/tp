@@ -145,7 +145,7 @@ int daLv6TogeTrap_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_resNameIdx[mModelType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         static const u16 estimateSizeTbl[] = {
             0x810,
             0x2A00,

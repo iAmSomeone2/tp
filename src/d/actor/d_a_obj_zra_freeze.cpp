@@ -59,7 +59,7 @@ cPhs_Step daZraFreeze_c::Create() {
     mMapToolId = fopAcM_GetParam(this) & 0xff;
     mEventId = -1;
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x1540)) {
             return cPhs_ERROR_e;
         }

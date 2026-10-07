@@ -30,7 +30,7 @@ int daObjLv4PRwall_c::create1st() {
     mType = getType();
 
     int phase_state = dComIfG_resLoad(this, l_arcName[mType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         field_0x60e = 0;
 
         if (mType == 0 && getSw2No() != 0xFF && fopAcM_isSwitch(this, getSw2No())) {

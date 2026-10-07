@@ -184,7 +184,7 @@ bool dScnLogo_c::preLoad_dyl() {
     for (int i = 0; i < var_r28; i++) {
         int phase_state = cDylPhs::Link(&m_preLoad_dylPhase[i], l_preLoad_dylKeyTbl[i]);
 
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             ret = false;
         }
     }
@@ -1060,7 +1060,7 @@ static int phase_2(dScnLogo_c* i_this) {
     if (dComIfG_syncAllObjectRes()) {
         return cPhs_INIT_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 
@@ -1073,7 +1073,7 @@ static int resLoad(request_of_phase_process_class* i_phase, dScnLogo_c* i_this) 
 
 int dScnLogo_c::create() {
     int phase_state = resLoad(&field_0x1c4, this);
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 

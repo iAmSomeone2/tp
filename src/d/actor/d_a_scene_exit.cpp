@@ -44,7 +44,7 @@ inline int daScex_c::create() {
     scale.z *= 75.0f;
     scale.y *= 150.0f;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daScex_Create(fopAc_ac_c* i_this) {

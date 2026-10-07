@@ -42,7 +42,7 @@ cPhs_Step daObjSword_c::create() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, dItem_data::getFieldArc(m_itemNo));
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckFieldItemCreateHeap, 0x4000)) {
             return cPhs_ERROR_e;
         }

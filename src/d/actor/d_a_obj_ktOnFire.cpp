@@ -90,7 +90,7 @@ int daKtOnFire_c::create() {
         field_0x6e2 = 1;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daKtOnFire_c::lightInit() {

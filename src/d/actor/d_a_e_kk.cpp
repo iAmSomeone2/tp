@@ -1364,7 +1364,7 @@ int daE_KK_c::create() {
     fopAcM_ct(this, daE_KK_c);
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, "E_KK");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_KK PARAM %x\n", fopAcM_GetParam(this));
 
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x3e90)) {

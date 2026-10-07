@@ -50,7 +50,7 @@ int dMeterHaihai_c::_create() {
 
     mFlags = 0;
     onPlayAllAnime();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMeterHaihai_c::_execute(u32 i_flags) {

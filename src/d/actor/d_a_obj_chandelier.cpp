@@ -40,7 +40,7 @@ int daObjChandelier_c::CreateHeap() {
 cPhs_Step daObjChandelier_c::create1st() {
     fopAcM_ct(this, daObjChandelier_c);
     cPhs_Step step = dComIfG_resLoad(this, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0x4500, &mMtx);
         if (step == cPhs_ERROR_e) {
             return step;

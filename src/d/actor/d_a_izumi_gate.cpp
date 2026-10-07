@@ -40,7 +40,7 @@ static char* l_arcName = "M_IzmGate";
 int daIzumiGate_c::create() {
     fopAcM_ct(this, daIzumiGate_c);
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int objectName = dComIfG_getObjctResName2Index(l_arcName, "M_IzumiGate_b.dzb");
         phase = MoveBGCreate(l_arcName, objectName, dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL);
         if (phase == cPhs_ERROR_e) {
@@ -63,7 +63,7 @@ int daIzumiGate_c::CreateHeap() {
 
 int daIzumiGate_c::Create() {
     initBaseMtx();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daIzumiGate_c::Execute(Mtx** i_mtx) {

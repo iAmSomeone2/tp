@@ -61,7 +61,7 @@ int daTagMhint_c::create() {
         attention_info.position = eyePos;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagMhint_Create(fopAc_ac_c* i_this) {

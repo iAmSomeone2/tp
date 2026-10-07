@@ -151,7 +151,7 @@ static cPhs_Step daObj_Lbox_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, obj_lbox_class);
     cPhs_Step step = dComIfG_resLoad(&a_this->mPhaseReq, "Obj_lbox");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         a_this->mParam = fopAcM_GetParam(i_this);
         if (a_this->mParam == 0xFF) {
             a_this->mParam = 0;

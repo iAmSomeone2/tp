@@ -42,7 +42,7 @@ public:
         }
 
         eyePos = attention_info.position;
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
 private:

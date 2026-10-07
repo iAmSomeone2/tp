@@ -13,7 +13,7 @@ int daTag_Lv5Soup_c::create() {
     fopAcM_ct(this, daTag_Lv5Soup_c);
     fopAcM_setCullSizeBox(this, -30.0f, -15.0f, -30.0f, 30.0f, 45.0f, 30.0f);
     attention_info.flags = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_Lv5Soup_c::Delete() {

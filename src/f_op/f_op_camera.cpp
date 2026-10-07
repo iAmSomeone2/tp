@@ -80,7 +80,7 @@ static int fopCam_Create(void* i_this) {
     }
 
     ret = fpcMtd_Create(&a_this->submethod->base, a_this);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         fopDwTg_ToDrawQ(&a_this->create_tag, fpcM_DrawPriority(a_this));
     }
 

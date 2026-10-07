@@ -205,7 +205,7 @@ int daTag_FWall_c::create() {
     }
 
     current.angle.x = shape_angle.x = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTag_FWall_Create(daTag_FWall_c* i_this) {

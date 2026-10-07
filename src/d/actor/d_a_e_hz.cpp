@@ -2037,7 +2037,7 @@ int daE_HZ_c::create() {
     dKy_tevstr_init(&mTevStr, home.roomNo, 0xFF);
 
     int phase = dComIfG_resLoad(&mPhaseReq, "E_HZ");
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
 
@@ -2051,7 +2051,7 @@ int daE_HZ_c::create() {
     }
 
     phase = dComIfG_resLoad(&mPhaseReq2, mpName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_HZ PARAM %x\n", fopAcM_GetParam(this));
 
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x2C20)) {

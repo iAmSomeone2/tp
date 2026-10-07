@@ -597,7 +597,7 @@ static cPhs_Step daObj_Ito_Create(fopAc_ac_c* a_this) {
     a_this = &i_this->actor;
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "OBJ_ITO");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_ITO PARAM %x\n", fopAcM_GetParam(a_this));
 
         i_this->field_0x570 = fopAcM_GetParam(a_this) & 1;

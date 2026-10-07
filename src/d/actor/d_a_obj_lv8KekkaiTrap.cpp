@@ -64,7 +64,7 @@ int daKekaiTrap_c::create() {
     mType = getType();
     
     int phase_state = dComIfG_resLoad(&mPhase, l_type[mType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_type[mType], l_dzbIdx[mType], dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

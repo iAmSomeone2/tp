@@ -130,7 +130,7 @@ static int daObj_Tatigi_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(&i_this->mBase, obj_tatigi_class);
 
     int rv = dComIfG_resLoad(&i_this->mPhase, "Obj_tg");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_TATIGI PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x570 = fopAcM_GetParam(a_this) & 0xff;
         i_this->field_0x571 = (fopAcM_GetParam(a_this) & 0xff00) >> 8;

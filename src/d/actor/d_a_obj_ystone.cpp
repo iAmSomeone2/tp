@@ -253,7 +253,7 @@ static cPhs_Step daObj_Ystone_Create(fopAc_ac_c* i_this) {
     _this->mLevel = getNowLevel() - 1;
     cPhs_Step step = dComIfG_resLoad(&_this->mPhaseReq, l_arcName[_this->mLevel]);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (_this->mLevel < 3) {
             if (!fopAcM_entrySolidHeap(_this, useHeapInit, 0x1000)) {
                 return cPhs_ERROR_e;

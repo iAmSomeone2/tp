@@ -34,7 +34,7 @@ cPhs_Step daObjWchain_c::create() {
     fopAcM_ct(this, daObjWchain_c);
     mSw = fopAcM_GetParam(this) & 0xff;
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         mRepeatable = (fopAcM_GetParam(this) >> 8) & 0xf;
         if (mRepeatable == 0xf) {
             mRepeatable = 0;

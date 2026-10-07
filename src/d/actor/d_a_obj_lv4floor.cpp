@@ -41,7 +41,7 @@ int daObjLv4Floor_c::CreateHeap() {
 
 int daObjLv4Floor_c::create1st() {
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
 

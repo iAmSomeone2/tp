@@ -1097,7 +1097,7 @@ static int daE_SB_Delete(daE_SB_c* i_this) {
 cPhs_Step daE_SB_c::Create() {
     fopAcM_ct(this, daE_SB_c);
     cPhs_Step phase = dComIfG_resLoad(&mPhaseReq, "E_SB");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         field_0x61a = fopAcM_GetParam(this);
         if (field_0x61a != 0xFF && dComIfGs_isSwitch(field_0x61a, fopAcM_GetRoomNo(this))) {
             return cPhs_ERROR_e;

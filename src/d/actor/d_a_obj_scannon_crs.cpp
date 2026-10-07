@@ -71,7 +71,7 @@ int daSCannonCrs_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daSCannonCrs_c_createHeap, 0x9000)) {
             return cPhs_ERROR_e;
         }

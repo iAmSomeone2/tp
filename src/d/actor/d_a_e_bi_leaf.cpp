@@ -98,7 +98,7 @@ static int daE_BI_LEAF_Create(fopAc_ac_c* actor) {
     fopAcM_ct(i_this, e_bi_leaf_class);
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "E_BI");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         i_this->type = fopAcM_GetParam(i_this) & 0xFF;
         OS_REPORT("E_BI_LEAF//////////////E_BI_LEAF SET 1 !!\n");
 

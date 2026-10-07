@@ -195,7 +195,7 @@ static int daObj_Cb_Create(fopAc_ac_c* actor) {
     fopAcM_ct(actor, obj_cb_class);
     obj_cb_class* i_this = (obj_cb_class*)actor;
     int rv = dComIfG_resLoad(&i_this->mPhase, "Obj_cb");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_CB PARAM %x\n", fopAcM_GetParam(i_this));
         if (i_this->home.angle.x != 0) {
             i_this->field_0x596 = 5;

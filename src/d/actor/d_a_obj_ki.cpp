@@ -144,7 +144,7 @@ static cPhs_Step daObj_Ki_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(_this, obj_ki_class);
     cPhs_Step step = dComIfG_resLoad(&_this->mPhaseReq, "Obj_Ki");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mBmdIdx = (u8)fopAcM_GetParam(_this);
         if (_this->mBmdIdx != 0) {
             _this->mBmdIdx = 1;

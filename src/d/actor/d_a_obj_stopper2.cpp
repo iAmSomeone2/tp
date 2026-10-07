@@ -98,7 +98,7 @@ int daObjStopper2_c::create() {
     #endif
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
@@ -110,7 +110,7 @@ int daObjStopper2_c::create() {
         return cPhs_ERROR_e;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjStopper2_c::execute() {

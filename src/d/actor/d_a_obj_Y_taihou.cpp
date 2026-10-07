@@ -77,7 +77,7 @@ static char const* l_arcName[1] = {"Y_taihou"};
 
 int daObjYtaihou_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName[0]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         setMtx();
         phase = MoveBGCreate(l_arcName[0], 7, dBgS_MoveBGProc_TypicalRotY, 0x4550, &mMtx);
         if (phase == cPhs_ERROR_e) {
