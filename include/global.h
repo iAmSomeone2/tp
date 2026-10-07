@@ -74,13 +74,17 @@
 
 #ifndef __MWERKS__
 // Silence clangd errors about MWCC PPC intrinsics by declaring them here.
-extern int __cntlzw(unsigned int);
 extern int __rlwimi(int, int, int, int, int);
 extern void __dcbf(void*, int);
 extern void __dcbz(void*, int);
 extern void __sync();
 extern int __abs(int);
-void* __memcpy(void*, const void*, int);
+
+// Host equivalents of the intrinsics the engine actually links against.
+#include <bit>
+#include <cstring>
+inline int __cntlzw(unsigned int x) { return std::countl_zero(x); }
+inline void* __memcpy(void* dst, const void* src, int n) { return std::memcpy(dst, src, n); }
 #endif
 
 #define FAST_DIV(x, n) (x >> (n / 2))

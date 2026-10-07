@@ -38,8 +38,6 @@ public:
     virtual s32 writeData(const void*, s32);
     virtual s32 getLength() const;
     virtual s32 getPosition() const { return mPosition; }
-    virtual s32 seek(s32, JSUStreamSeekFrom);
-    virtual s32 getAvailable() const;
     virtual s32 seekPos(s32, JSUStreamSeekFrom);
 
 private:
