@@ -5,11 +5,6 @@ struct dShutdownErrorMsg_c {
     static bool execute();
 };
 
-struct dDvdErrorMsg_c {
-    static void draw(s32);
-    static bool execute();
-};
-
 #if !PLATFORM_GCN
 struct dConnectErrorMsg_c {
     static void disable();

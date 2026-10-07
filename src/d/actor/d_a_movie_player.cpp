@@ -22,6 +22,32 @@
 #include "f_op/f_op_overlap_mng.h"
 #include <cstring>
 
+/*
+ * THP movie playback (the `MOVIE_PLAYER` actor).
+ *
+ * The file has three layers:
+ *  1. The THP codec (`THPAudioDecode`, `THPVideoDecode` and the `__THP*` helpers), which is the SDK
+ *     THP library built into the actor. Audio is 4-bit DSP-ADPCM. Video is baseline JPEG, 4:2:0, decoded to
+ *     separate Y/U/V planes. The video path is PowerPC assembly (paired singles, locked cache) that is
+ *     compiled out unless `__MWERKS__` is defined, so on other compilers those bodies are empty.
+ *  2. The player (`daMP_THPPlayer*`): a reader thread streams frames from the disc, an audio and a video
+ *     decoder thread turn them into PCM and Y/U/V textures, message queues hand the buffers from thread
+ *     to thread, and a VI post-retrace callback (`daMP_PlayControl`) paces what is shown.
+ *  3. The actor (`daMP_c`): opens `/Movie/demo_movieNN_MM.thp`, draws the current frame as three I8
+ *     textures that TEV combines into RGB, and ends the movie on a button press or the last frame.
+ *
+ * Streaming buffer flow: free read buffer -> `daMP_Reader` fills it -> readed queue -> audio decoder
+ * (only if the movie has sound) -> readed queue 2 -> video decoder -> free read buffer. The decoders
+ * also exchange texture sets and audio buffers with the display/mixing side through their own queues.
+ * In "on memory" mode the whole movie is loaded at once and the decoders walk it directly, with no reader.
+ *
+ * Port note: THP files are big-endian, and the frame/header words are read as raw `u32`/`s32` here.
+ */
+
+/**
+ * Size of the next frame in bytes. Each frame starts with a word holding that, which is how the reader knows
+ * how much to read after the current one.
+ */
 inline s32 daMP_NEXT_READ_SIZE(daMP_THPReadBuffer* readBuf) {
     return *(s32*)readBuf->ptr;
 }
@@ -30,6 +56,14 @@ inline s32 daMP_NEXT_READ_SIZE(daMP_THPReadBuffer* readBuf) {
 extern "C" {
 #endif
 
+/**
+ * Decodes one THP audio frame (DSP-ADPCM: 14 4-bit samples per 8-byte block) into 16-bit PCM.
+ *
+ * @param audioBuffer Output, `sampleSize * 2` samples (two channels).
+ * @param audioFrame Frame data, starting with a `THPAudioRecordHeader` (coefficients and history).
+ * @param flag 1 = planar output (one channel after the other), anything else = interleaved.
+ * @return Samples per channel decoded, or 0 if a pointer is NULL.
+ */
 static u32 THPAudioDecode(s16* audioBuffer, u8* audioFrame, s32 flag) {
     THPAudioRecordHeader* header;
     THPAudioDecodeInfo decInfo;
@@ -49,6 +83,9 @@ static u32 THPAudioDecode(s16* audioBuffer, u8* audioFrame, s32 flag) {
     left = audioFrame + sizeof(THPAudioRecordHeader);
     right = left + header->offsetNextChannel;
 
+    // Planar: the "right" block goes first and the "left" block `sampleSize` samples later. Interleaved: the
+    // "right" block goes to even slots and the "left" block to odd slots. `daMP_MixAudio` reads slot 0 as left,
+    // so the names here are reversed relative to playback.
     if (flag == 1) {
         decRightPtr = audioBuffer;
         decLeftPtr = audioBuffer + header->sampleSize;
@@ -59,12 +96,18 @@ static u32 THPAudioDecode(s16* audioBuffer, u8* audioFrame, s32 flag) {
         step = 2;
     }
 
+    // No second channel block: the stream is mono, and each decoded sample is written to both channels.
     if (header->offsetNextChannel == 0) {
         __THPAudioInitialize(&decInfo, left);
 
         yn1 = header->lYn1;
         yn2 = header->lYn2;
 
+        // Per sample (the loops below repeat this step):
+        //   yn = (coef[1] * yn2 + coef[0] * yn1 + ((sample << scale) << 11)) << 5
+        // which is 32-bit fixed point. The upper 16 bits are the output, rounded to nearest (ties to even,
+        // by the 0x8000/0x10000 test) and clamped to the s32 range before the shift. `yn1`/`yn2` are the
+        // previous two outputs.
         for (i = 0; i < header->sampleSize; i++) {
             sample = __THPAudioGetNewSample(&decInfo);
             yn = header->lCoef[decInfo.predictor][1] * yn2;
@@ -95,6 +138,7 @@ static u32 THPAudioDecode(s16* audioBuffer, u8* audioFrame, s32 flag) {
             yn1 = (s16)(yn >> 16);
         }
     } else {
+        // Stereo: decode the left block, then the right block, each with its own coefficients and history.
         __THPAudioInitialize(&decInfo, left);
 
         yn1 = header->lYn1;
@@ -165,6 +209,10 @@ static u32 THPAudioDecode(s16* audioBuffer, u8* audioFrame, s32 flag) {
     return header->sampleSize;
 }
 
+/**
+ * Returns the next 4-bit ADPCM sample, sign-extended. At the start of each 8-byte block (every 16 nibbles)
+ * it first consumes the block header byte: predictor index in bits 4-6, scale in bits 0-3.
+ */
 static s32 __THPAudioGetNewSample(THPAudioDecodeInfo* info) {
     s32 sample;
 
@@ -186,6 +234,9 @@ static s32 __THPAudioGetNewSample(THPAudioDecodeInfo* info) {
     return sample;
 }
 
+/**
+ * Starts decoding a channel at `ptr`: resets the nibble counter and reads the first block header.
+ */
 static void __THPAudioInitialize(THPAudioDecodeInfo* info, u8* ptr) {
     info->encodeData = ptr;
     info->offsetNibbles = 2;
@@ -194,6 +245,12 @@ static void __THPAudioInitialize(THPAudioDecodeInfo* info, u8* ptr) {
     info->encodeData++;
 }
 
+// Decoder state shared by the `__THP*` functions (file statics, as in the SDK).
+// `Y/U/Vdchuff` and `Y/U/Vachuff` are the DC/AC Huffman tables of each component, set by
+// `__THPPrepBitStream`. `Gbase`, `Gwid` and `Gq` are the inverse DCT's arguments (output plane, plane width in
+// pixels, quantisation table); they are globals because the assembly reads them directly.
+// `__THPLCWork512/640` are the locked-cache scratch planes (Y, U, V), `__THPMCUBuffer` the six coefficient
+// blocks of the current MCU, and `__THPOldGQR5/6` the caller's quantisation registers.
 static u8 THPStatistics[1120] ATTRIBUTE_ALIGN(32);
 
 static THPHuffmanTab* Ydchuff ATTRIBUTE_ALIGN(32);
@@ -238,6 +295,16 @@ static THPFileInfo* __THPInfo;
 
 static BOOL __THPInitFlag;
 
+/**
+ * Decodes one video frame (a JPEG image) into planar Y, U and V textures.
+ *
+ * @param file Start of the JPEG data.
+ * @param tileY Output luma plane. @param tileU, tileV Output chroma planes (half width and height).
+ * @param work Scratch memory for `THPFileInfo`, the Huffman build tables and the MCU buffers.
+ * @return 0 on success, otherwise a THP error code: 3 bad syntax, 11 unsupported marker, 25/26/27 missing
+ *         input/work/output, 28 locked cache not enabled, 29 `THPInit` not called; 10, 12, 15 and 19 come
+ *         from the header parsers.
+ */
 static s32 THPVideoDecode(void* file, void* tileY, void* tileU, void* tileV, void* work) {
     u8 all_done, status;
     s32 errorCode;
@@ -254,6 +321,7 @@ static s32 THPVideoDecode(void* file, void* tileY, void* tileU, void* tileV, voi
         goto _err_no_work;
     }
 
+    // HID2[LCE]: the locked cache must be enabled (`LCEnable`), because the IDCT output is staged there.
     if (!(PPCMfhid2() & 0x10000000)) {
         goto _err_lc_not_enabled;
     }
@@ -262,6 +330,8 @@ static s32 THPVideoDecode(void* file, void* tileY, void* tileU, void* tileV, voi
         goto _err_not_initialized;
     }
 
+    // Work area layout: a 32-byte-aligned `THPFileInfo` first. What follows is used by the Huffman table build
+    // and then, 32-byte aligned again, by the MCU buffers (`__THPSetupBuffers`).
     __THPWorkArea = (u8*)work;
     __THPInfo = (THPFileInfo*)OSRoundUp32B(__THPWorkArea);
     __THPWorkArea = (u8*)OSRoundUp32B(__THPWorkArea) + sizeof(THPFileInfo);
@@ -271,6 +341,11 @@ static s32 THPVideoDecode(void* file, void* tileY, void* tileU, void* tileV, voi
     __THPInfo->c = (u8*)file;
     all_done = FALSE;
 
+    // Walk the JPEG marker segments up to the start of scan. Each is 0xFF, optional 0xFF fill, then a marker code:
+    //   0xC4 DHT (Huffman tables)   0xC0 SOF0 (frame header)   0xDB DQT (quantisation tables)
+    //   0xDD DRI (restart interval) 0xDA SOS (scan header, ends the loop)   0xD8 SOI (nothing to do)
+    //   0xE0-0xEF APPn and 0xFE COM are skipped by their length field.
+    // Anything else (progressive frames, arithmetic coding, ...) is rejected.
     for (;;) {
         if ((*(__THPInfo->c)++) != 255) {
             goto _err_bad_syntax;
@@ -345,6 +420,8 @@ static s32 THPVideoDecode(void* file, void* tileY, void* tileU, void* tileV, voi
     __THPDecompressYUV(tileY, tileU, tileV);
     return 0;
 
+// Error exits: set the code and leave through `_err_exit`. `_err_bad_resource` and `_err_no_mem` are
+// never jumped to here.
 _err_no_input:
     errorCode = 25;
     goto _err_exit;
@@ -389,6 +466,9 @@ _err_exit:
     return errorCode;
 }
 
+/**
+ * Carves the six MCU coefficient buffers (4 Y, 1 U, 1 V blocks of 64 `THPCoeff`) out of the work area.
+ */
 static void __THPSetupBuffers() {
     u8 i;
     THPCoeff* buffer;
@@ -400,6 +480,10 @@ static void __THPSetupBuffers() {
     }
 }
 
+/**
+ * Parses the SOF0 segment. Only 8-bit precision (error 10), three components (12) and 4:2:0 sampling, meaning
+ * 2x2 for Y and 1x1 for U/V (19), are accepted. Stores the image size and each component's quantisation table.
+ */
 static u8 __THPReadFrameHeader() {
     u8 i, utmp8;
 
@@ -436,6 +520,10 @@ static u8 __THPReadFrameHeader() {
 
 #define THPROUNDUP(a, b) ((((s32)(a)) + ((s32)(b)-1L)) / ((s32)(b)))
 
+/**
+ * Parses the SOS segment: records each component's DC/AC Huffman table selector and checks those tables were
+ * defined (error 15). Also computes `MCUsPerRow` (16-pixel MCUs) and resets the DC predictors.
+ */
 static u8 __THPReadScaneHeader() {
     u8 i, utmp8;
     __THPInfo->c += 2;
@@ -470,6 +558,8 @@ static u8 __THPReadScaneHeader() {
     return 0;
 }
 
+// Zigzag index -> row-major position within an 8x8 block. The 16 extra entries (63) keep a corrupt run length
+// that overshoots `k` inside the table.
 static const u8 __THPJpegNaturalOrder[80] = {
     0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,  5,  12, 19, 26, 33,
     40, 48, 41, 34, 27, 20, 13, 6,  7,  14, 21, 28, 35, 42, 49, 56, 57, 50, 43, 36,
@@ -477,10 +567,15 @@ static const u8 __THPJpegNaturalOrder[80] = {
     47, 55, 62, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
 };
 
+// AAN IDCT scale factors: 1 for k = 0, sqrt(2) * cos(k * pi / 16) otherwise.
 static const f64 __THPAANScaleFactor[8] = {
     1.0f, 1.387039845f, 1.306562965f, 1.175875602f, 1.0f, 0.785694958f, 0.541196100f, 0.275899379f,
 };
 
+/**
+ * Parses a DQT segment (one or more 64-entry 8-bit tables in zigzag order). Each is converted to float and
+ * multiplied by the AAN row and column factors, so the IDCT needs no separate scaling step.
+ */
 static u8 __THPReadQuantizationTable() {
     int length;
     u16 id, i, row, col;
@@ -516,10 +611,17 @@ static u8 __THPReadQuantizationTable() {
 	return 0;
 }
 
+/**
+ * Parses a DHT segment. Per table: class/id byte, 16 code-length counts, then the symbols (`Vij`). The table
+ * index is `id * 2 + class`, so DC tables are even and AC tables odd. Builds the size/code tables and then the
+ * decoder tables, and marks the table valid.
+ */
 static u8 __THPReadHuffmanTableSpecification() {
     u8 t_class, id, i, tab_index;
     u16 length, num_Vij;
 
+    // Scratch layout in the work area: the size table (up to 256 symbols plus a 0 terminator) and then the code
+    // table. The `u16` code table starts at an odd address (+257), which PowerPC tolerates but strict hosts may not.
     __THPHuffmanSizeTab = __THPWorkArea;
     __THPHuffmanCodeTab = reinterpret_cast<u16*>(reinterpret_cast<uintptr_t>(__THPWorkArea) + 256 + 1);
     length = (u16)((__THPInfo->c)[0] << 8 | (__THPInfo->c)[1]);
@@ -562,6 +664,9 @@ static u8 __THPReadHuffmanTableSpecification() {
     return 0;
 }
 
+/**
+ * JPEG Annex C, HUFFSIZE: lists the code length of every symbol in order, ended by 0.
+ */
 static void __THPHuffGenerateSizeTable() {
     s32 p, l, i;
     p = 0;
@@ -576,6 +681,10 @@ static void __THPHuffGenerateSizeTable() {
     __THPHuffmanSizeTab[p] = 0;
 }
 
+/**
+ * JPEG Annex C, HUFFCODE: assigns the canonical code of every symbol (codes of one length are consecutive,
+ * and the code is shifted left when the length grows).
+ */
 static void __THPHuffGenerateCodeTable() {
     u8 si;
     u16 p, code;
@@ -595,6 +704,11 @@ static void __THPHuffGenerateCodeTable() {
     }
 }
 
+/**
+ * JPEG Annex F, decoder tables. For each length `l`: `maxCode[l]` is the largest code of that length (-1 if there
+ * is none) and `valPtr[l]` is the index of its first symbol minus its first code. `maxCode[17]` is a sentinel so
+ * the slow decode loop always ends.
+ */
 static void __THPHuffGenerateDecoderTables(u8 tabIndex) {
     s32 p, l;
     THPHuffmanTab* h;
@@ -615,6 +729,9 @@ static void __THPHuffGenerateDecoderTables(u8 tabIndex) {
     h->maxCode[17] = 0xfffffL;
 }
 
+/**
+ * Parses a DRI segment: turns on restart handling and sets the restart interval in MCUs.
+ */
 static void __THPRestartDefinition() {
     __THPInfo->RST = TRUE;
     __THPInfo->c += 2;
@@ -623,6 +740,10 @@ static void __THPRestartDefinition() {
     __THPInfo->currMCU = __THPInfo->nMCU;
 }
 
+/**
+ * Prepares the entropy-coded data for decoding. The bit reader works on 32-bit words, so the byte pointer is
+ * split into an aligned word pointer and a bit position, and the fast Huffman lookup tables are built.
+ */
 static void __THPPrepBitStream() {
     u32* ptr;
     u32 offset, i, j, k;
@@ -631,6 +752,9 @@ static void __THPPrepBitStream() {
     offset = reinterpret_cast<uintptr_t>(__THPInfo->c) & 3;
     ASSERTLINE(3799, __THPInfo->cnt <= 33);
 
+    // `cnt` is the bit position in `currByte`, plus one: 1 means nothing consumed, 33 means all 32 bits consumed
+    // (a new word is needed). It starts at 33, so afterwards the bytes of the header that share the first word
+    // (`offset`) are marked as consumed.
     if (__THPInfo->cnt != 33) {
         __THPInfo->cnt -= (3 - offset) * 8;
     } else {
@@ -642,6 +766,9 @@ static void __THPPrepBitStream() {
     __THPInfo->c = (u8*)ptr;
     __THPInfo->currByte = *ptr;
 
+    // For each valid table build the 5-bit quick lookup: `quick[j]` is the symbol whose code (of up to 5 bits) is a
+    // prefix of the 5 bits `j`, and `increment[j]` is that code's length. 0xFF means the code is longer than 5 bits
+    // and the slow canonical decode has to finish the job. (`k = 99` ends the search at the first match.)
     for (i = 0; i < 4; i++) {
         if (__THPInfo->validHuffmanTabs & (1 << i)) {
             for (j = 0; j < 32; j++) {
@@ -662,6 +789,7 @@ static void __THPPrepBitStream() {
         }
     }
 
+    // DC tables are the even entries and AC tables the odd ones, as in `__THPReadHuffmanTableSpecification`.
     {
         s32 YdcTab, UdcTab, VdcTab, YacTab, UacTab, VacTab;
 
@@ -683,6 +811,10 @@ static void __THPPrepBitStream() {
     }
 }
 
+/**
+ * Decodes the whole scan, one 16-pixel-high MCU row at a time, using a row decoder specialised for 512x448 and
+ * 640x480 frames and a generic one for other sizes. Quantisation registers are switched around it.
+ */
 static void __THPDecompressYUV(void* tileY, void* tileU, void* tileV) {
     u16 currentY, targetY;
     __THPInfo->dLC[0] = (u8*)tileY;
@@ -715,6 +847,9 @@ static void __THPDecompressYUV(void* tileY, void* tileU, void* tileV) {
     __THPGQRRestore();
 }
 
+/**
+ * Restores the GQR5/GQR6 values that `__THPGQRSetup` replaced.
+ */
 static void __THPGQRRestore() {
 #ifdef __MWERKS__
     register u32 tmp1, tmp2;
@@ -730,6 +865,11 @@ static void __THPGQRRestore() {
     // clang-format on
 }
 
+/**
+ * Saves GQR5/GQR6 and loads the formats the IDCT relies on: GQR5 = 0x00070007 (load `s16`, no scale), used for
+ * the coefficients, and GQR6 = 0x3D043D04 (store `u8`, scale 2^-3), used for the pixels. The scale divides out
+ * the gain of 8 of the AAN transform.
+ */
 static void __THPGQRSetup() {
 #ifdef __MWERKS__
     register u32 tmp1, tmp2;
@@ -755,6 +895,9 @@ static void __THPGQRSetup() {
     // clang-format on
 }
 
+/**
+ * Decodes one row of 16x16 MCUs of a 512-wide frame into the locked-cache planes and copies them out.
+ */
 static void __THPDecompressiMCURow512x448() {
     u8 cl_num;
     u32 x_pos;
@@ -762,6 +905,7 @@ static void __THPDecompressiMCURow512x448() {
 
     LCQueueWait(3);
 
+    // One MCU = 6 blocks: four Y blocks (2x2, 16x16 pixels), one U and one V block (8x8, half resolution).
     for (cl_num = 0; cl_num < __THPInfo->MCUsPerRow; cl_num++) {
         __THPHuffDecodeDCTCompY(__THPInfo, __THPMCUBuffer[0]);
         __THPHuffDecodeDCTCompY(__THPInfo, __THPMCUBuffer[1]);
@@ -770,6 +914,8 @@ static void __THPDecompressiMCURow512x448() {
         __THPHuffDecodeDCTCompU(__THPInfo, __THPMCUBuffer[4]);
         __THPHuffDecodeDCTCompV(__THPInfo, __THPMCUBuffer[5]);
 
+        // Inverse DCT per block into the plane's tiled layout. The two lower Y blocks use the Y8 variant (8 rows lower).
+        // The chroma planes are half as wide (`Gwid` 256) and the U/V blocks sit at half the x offset.
         comp = &__THPInfo->components[0];
         Gbase = __THPLCWork512[0];
         Gwid = 512;
@@ -791,6 +937,8 @@ static void __THPDecompressiMCURow512x448() {
         Gq = __THPInfo->quantTabs[comp->quantizationTableSelector];
         __THPInverseDCTNoYPos(__THPMCUBuffer[5], x_pos);
 
+        // Restart interval: every `nMCU` MCUs the bit position is rounded up to a byte boundary and the DC predictors
+        // are reset to 0.
         if (__THPInfo->RST != 0) {
             if ((--__THPInfo->currMCU) == 0) {
                 __THPInfo->currMCU = __THPInfo->nMCU;
@@ -807,6 +955,8 @@ static void __THPDecompressiMCURow512x448() {
         }
     }
 
+    // Copy the finished rows from the locked cache to the output: Y is 512 x 16 bytes (0x2000), U and V are
+    // 256 x 8 (0x800). `LCQueueWait` at the top waits for the previous row's copies before the scratch is reused.
     LCStoreData(__THPInfo->dLC[0], __THPLCWork512[0], 0x2000);
     LCStoreData(__THPInfo->dLC[1], __THPLCWork512[1], 0x800);
     LCStoreData(__THPInfo->dLC[2], __THPLCWork512[2], 0x800);
@@ -816,6 +966,14 @@ static void __THPDecompressiMCURow512x448() {
     __THPInfo->dLC[2] += 0x800;
 }
 
+/**
+ * Inverse DCT of one 8x8 block (AAN, paired singles) for the lower half of a 16x16 luma MCU. Reads `Gq`, `Gbase`
+ * and `Gwid`. The `u8` pixels are stored straight into GX I8 tile order (8x4-pixel tiles of 32 bytes), 8 pixel
+ * rows below the top of the MCU row, so the plane can be used as a texture without a swizzle.
+ *
+ * @param in Dequantised-on-the-fly coefficients (`s16`, natural order).
+ * @param xPos Pixel x of the block within the plane.
+ */
 static void __THPInverseDCTY8(__REGISTER THPCoeff* in, __REGISTER u32 xPos) {
 #ifdef __MWERKS__
     register f32 *q, *ws;
@@ -1128,6 +1286,9 @@ static void __THPInverseDCTY8(__REGISTER THPCoeff* in, __REGISTER u32 xPos) {
 #endif
 }
 
+/**
+ * Same as `__THPInverseDCTY8`, but writes at the top of the MCU row. Used for the upper Y blocks and for U and V.
+ */
 static void __THPInverseDCTNoYPos(__REGISTER THPCoeff* in, __REGISTER u32 xPos) {
 #ifdef __MWERKS__
     register f32 *q, *ws;
@@ -1435,6 +1596,9 @@ static void __THPInverseDCTNoYPos(__REGISTER THPCoeff* in, __REGISTER u32 xPos) 
 #endif
 }
 
+/**
+ * Same as `__THPDecompressiMCURow512x448` for a 640-wide frame (Y plane 640 x 16 = 0x2800, U/V 320 x 8 = 0xA00).
+ */
 static void __THPDecompressiMCURow640x480() {
     u8 cl_num;
     u32 x_pos;
@@ -1502,6 +1666,10 @@ static void __THPDecompressiMCURow640x480() {
     __THPInfo->dLC[2] += 0xA00;
 }
 
+/**
+ * Same as the row decoders above for any width `x`, using the 640-wide scratch planes. The output sizes are
+ * derived from `x` (Y is `16 * x` bytes, U and V `4 * x`).
+ */
 static void __THPDecompressiMCURowNxN() {
     u8 cl_num;
     u32 x_pos, x;
@@ -1566,12 +1734,18 @@ static void __THPDecompressiMCURowNxN() {
     __THPInfo->dLC[2] += ((sizeof(u8) * 64) * (x / 16));
 }
 
+/**
+ * Decodes one 8x8 luma block from the bit stream into `block` (zigzag order undone, not yet dequantised): the
+ * DC difference first, then the AC coefficients. The bit reader is inlined as assembly.
+ */
 static void __THPHuffDecodeDCTCompY(__REGISTER THPFileInfo* info, THPCoeff* block) {
     {
         __REGISTER s32 t;
         THPCoeff dc;
         __REGISTER THPCoeff diff;
 
+        // DC: `dcbz` clears the block's four 32-byte cache lines without fetching them (the last one is cleared while
+        // the DC symbol is being decoded). `t` is the size category of the DC difference; `t` more bits follow it.
         __dcbz((void*)block, 0);
         t = __THPHuffDecodeTab(info, Ydchuff);
         __dcbz((void*)block, 32);
@@ -1634,16 +1808,22 @@ static void __THPHuffDecodeDCTCompY(__REGISTER THPFileInfo* info, THPCoeff* bloc
                 ASSERTLINE(4336, info->cnt <=33);
             }
 
+            // JPEG "extend": if the top bit of the t-bit value is 0 (leading zeros > 32 - t), the number is negative.
             if (__cntlzw((u32)diff) > 32 - t) {
                 S16_ADD_2(diff, (0xFFFFFFFF << t) + 1);
             }
         };
 
         __dcbz((void*)block, 96);
+        // DC is coded as a difference from the previous block of the same component.
         dc = (s16)(info->components[0].predDC + diff);
         block[0] = info->components[0].predDC = dc;
     }
 
+    // AC: coefficients 1..63 in zigzag order (`k`). Each symbol is a run/size byte. The names are swapped relative to
+    // the JPEG spec: `ssss` holds the zero-run (high nibble) and `rrrr` the bit length (low nibble) of the value
+    // that follows. The Huffman decode first tries the 5-bit quick table; the labelled paths are the slow cases
+    // (fewer than 5 bits left in the word, word exhausted, exactly one bit left, code longer than 5 bits).
     {
         __REGISTER s32 k;
         __REGISTER s32 code;
@@ -1977,6 +2157,8 @@ static void __THPHuffDecodeDCTCompY(__REGISTER THPFileInfo* info, THPCoeff* bloc
 #endif
             }
 
+            // Size 0: a run of 15 is ZRL (sixteen zeros, the loop's own `k++` supplies the sixteenth); anything else is
+            // EOB, which ends the block.
             {
             _RECV_SSSS_ZERO:
                 if (ssss != 15) {
@@ -2000,6 +2182,11 @@ static void __THPHuffDecodeDCTCompY(__REGISTER THPFileInfo* info, THPCoeff* bloc
     }
 }
 
+/**
+ * Decodes one Huffman symbol with table `h` and consumes its bits: the 5-bit quick table first, then the
+ * canonical decode (compare against `maxCode` per length) for longer codes. Refills `currByte` from the
+ * stream as needed. Returns the symbol.
+ */
 static s32 __THPHuffDecodeTab(__REGISTER THPFileInfo* info, __REGISTER THPHuffmanTab* h) {
     __REGISTER s32 code;
     __REGISTER u32 cnt;
@@ -2270,6 +2457,9 @@ _FailedCheckNoBits1:
     return (h->Vij[(s32)(code + h->valPtr[cnt])]);
 }
 
+/**
+ * Same as `__THPHuffDecodeDCTCompY`, for the U block (component 1, its own DC predictor and tables).
+ */
 static void __THPHuffDecodeDCTCompU(__REGISTER THPFileInfo* info, THPCoeff* block) {
     __REGISTER s32 t;
     __REGISTER THPCoeff diff;
@@ -2414,6 +2604,9 @@ static void __THPHuffDecodeDCTCompU(__REGISTER THPFileInfo* info, THPCoeff* bloc
     }
 }
 
+/**
+ * Same as `__THPHuffDecodeDCTCompY`, for the V block (component 2, its own DC predictor and tables).
+ */
 static void __THPHuffDecodeDCTCompV(__REGISTER THPFileInfo* info, THPCoeff* block) {
     __REGISTER s32 t;
     __REGISTER THPCoeff diff;
@@ -2561,6 +2754,10 @@ static void __THPHuffDecodeDCTCompV(__REGISTER THPFileInfo* info, THPCoeff* bloc
     }
 }
 
+/**
+ * Initialises the decoder: carves the locked cache (base 0xE0000000) into the Y/U/V scratch planes for the
+ * 512-wide and 640-wide cases (the two layouts overlap; only one is used per movie) and sets up fast casts.
+ */
 static BOOL THPInit() {
     u8* base;
     base = (u8*)(0xE000 << 16);
@@ -2590,6 +2787,9 @@ static BOOL THPInit() {
 }
 #endif
 
+// The player is a singleton. `state`: 0 stopped/opened, 1 prepared, 2 playing, 3 finished, 4 paused, 5 error.
+// `internalState` follows it but gates audio mixing (see `daMP_PlayControl`). Queue naming: "readed" means
+// filled by the reader, "free" means ready to be filled.
 static daMP_THPPlayer daMP_ActivePlayer;
 
 static BOOL daMP_ReadThreadCreated;
@@ -2598,34 +2798,52 @@ static OSMessageQueue daMP_FreeReadBufferQueue;
 
 static OSMessageQueue daMP_ReadedBufferQueue;
 
+/**
+ * Blocks until a filled read buffer is available and returns it (audio decoder input, or the video decoder's when there is no sound).
+ */
 void* daMP_PopReadedBuffer() {
     OSMessage buffer;
     OSReceiveMessage(&daMP_ReadedBufferQueue, &buffer, 1);
     return buffer;
 }
 
+/**
+ * Queues a filled read buffer for the next stage, blocking while the queue is full.
+ */
 void daMP_PushReadedBuffer(void* buffer) {
     OSSendMessage(&daMP_ReadedBufferQueue, buffer, 1);
 }
 
+/**
+ * Blocks until a read buffer is free and returns it (the reader's next target).
+ */
 void* daMP_PopFreeReadBuffer() {
     OSMessage buffer;
     OSReceiveMessage(&daMP_FreeReadBufferQueue, &buffer, 1);
     return buffer;
 }
 
+/**
+ * Returns a read buffer to the free pool.
+ */
 void daMP_PushFreeReadBuffer(void* buffer) {
     OSSendMessage(&daMP_FreeReadBufferQueue, buffer, 1);
 }
 
 static OSMessageQueue daMP_ReadedBufferQueue2;
 
+/**
+ * Blocks until a buffer whose audio has been decoded is available (the video decoder's input when there is sound).
+ */
 void* daMP_PopReadedBuffer2() {
     OSMessage buffer;
     OSReceiveMessage(&daMP_ReadedBufferQueue2, &buffer, 1);
     return buffer;
 }
 
+/**
+ * Passes a read buffer on from the audio decoder to the video decoder.
+ */
 void daMP_PushReadedBuffer2(void* buffer) {
     OSSendMessage(&daMP_ReadedBufferQueue2, buffer, 1);
 }
@@ -2638,12 +2856,18 @@ static OSMessage daMP_ReadedBufferMessage2[10];
 
 static OSThread daMP_ReadThread;
 
+/**
+ * Resumes the read thread if it exists.
+ */
 void daMP_ReadThreadStart() {
     if (daMP_ReadThreadCreated) {
         OSResumeThread(&daMP_ReadThread);
     }
 }
 
+/**
+ * Cancels the read thread, if it exists.
+ */
 void daMP_ReadThreadCancel() {
     if (daMP_ReadThreadCreated) {
         OSCancelThread(&daMP_ReadThread);
@@ -2651,6 +2875,12 @@ void daMP_ReadThreadCancel() {
     }
 }
 
+/**
+ * Read thread: streams frames from the disc into free read buffers and queues them for decoding. The first
+ * read starts at `initOffset` with `initReadSize`; the size of each following frame is taken from the first word
+ * of the frame just read. Stops itself on a disc error or at the end of a non-looping movie, and wraps to the
+ * first frame when looping.
+ */
 void* daMP_Reader(void*) {
     daMP_THPReadBuffer* buf;
 	s32 curFrame;
@@ -2679,6 +2909,8 @@ void* daMP_Reader(void*) {
 		offset += initReadSize;
 		initReadSize = daMP_NEXT_READ_SIZE(buf);
 
+        // `frame` counts frames since the start of this run; adding `initReadFrame` gives the frame number in the movie.
+        // After the last frame loop back to the start of the movie data (`playFlag` bit 0) or stop.
         u32 numFrames = daMP_ActivePlayer.header.numFrames;
 		curFrame = (frame + daMP_ActivePlayer.initReadFrame) % numFrames;
 		if (curFrame == daMP_ActivePlayer.header.numFrames - 1) {
@@ -2696,6 +2928,10 @@ static u8 daMP_ReadThreadStack[0x2000];
 
 static BOOL daMP_VideoDecodeThreadCreated;
 
+/**
+ * Creates the read thread (stack 0x2000, started suspended) at priority `param_0`, and the three 10-entry queues
+ * it uses. Returns FALSE if the thread cannot be created.
+ */
 static BOOL daMP_CreateReadThread(s32 param_0) {
     if (!OSCreateThread(&daMP_ReadThread, daMP_Reader, 0, daMP_ReadThreadStack + sizeof(daMP_ReadThreadStack), sizeof(daMP_ReadThreadStack), param_0, 1)) {
         OSReport("Can't create read thread\n");
@@ -2715,18 +2951,27 @@ static u8 daMP_VideoDecodeThreadStack[0x64000];
 
 static OSMessageQueue daMP_FreeTextureSetQueue;
 
+/**
+ * Blocks until a texture set is free and returns it (the video decoder's output target).
+ */
 void* daMP_PopFreeTextureSet() {
     OSMessage tex;
     OSReceiveMessage(&daMP_FreeTextureSetQueue, &tex, 1);
     return tex;
 }
 
+/**
+ * Returns a texture set to the free pool.
+ */
 void daMP_PushFreeTextureSet(void* tex) {
     OSSendMessage(&daMP_FreeTextureSetQueue, tex, 0);
 }
 
 static OSMessageQueue daMP_DecodedTextureSetQueue;
 
+/**
+ * Takes the next decoded texture set, or returns NULL if none is ready and `flags` is non-blocking (0).
+ */
 void* daMP_PopDecodedTextureSet(s32 flags) {
     OSMessage tex;
     if (OSReceiveMessage(&daMP_DecodedTextureSetQueue, &tex, flags) == TRUE) {
@@ -2736,6 +2981,9 @@ void* daMP_PopDecodedTextureSet(s32 flags) {
     }
 }
 
+/**
+ * Queues a decoded texture set for display.
+ */
 void daMP_PushDecodedTextureSet(void* tex) {
     OSSendMessage(&daMP_DecodedTextureSetQueue, tex, 1);
 }
@@ -2746,6 +2994,11 @@ static OSMessage daMP_DecodedTextureSetMessage[3];
 
 static BOOL daMP_First;
 
+/**
+ * Decodes the video component of one frame into a free texture set and queues it for display. A frame holds a
+ * size table (one word per component, after two header words) followed by the component data. On a decode
+ * error it wakes the thread waiting in `daMP_THPPlayerPrepare` (first frame only) and suspends itself.
+ */
 static void daMP_VideoDecode(daMP_THPReadBuffer* readBuffer) {
     THPTextureSet* textureSet;
 	s32 i;
@@ -2776,6 +3029,7 @@ static void daMP_VideoDecode(daMP_THPReadBuffer* readBuffer) {
 		}
 		}
 
+        // Skip to the next component: its data starts after this component's `*tileOffsets` bytes.
         tile += *tileOffsets;
 		tileOffsets++;
     }
@@ -2786,6 +3040,12 @@ static void daMP_VideoDecode(daMP_THPReadBuffer* readBuffer) {
     }
 }
 
+/**
+ * Video decode thread (streaming mode): takes read buffers, decodes them and frees them.
+ * `videoDecodeCount` is frames decoded minus frames the display has taken. It goes negative when the display
+ * asked for a frame the decoder had not produced. With sound (the clock) the decoder then drops that many
+ * frames undecoded to catch up. The last frame of a non-looping movie is never dropped.
+ */
 static void* daMP_VideoDecoder(void* param_0) {
     daMP_THPReadBuffer* thpBuffer;
 
@@ -2817,6 +3077,11 @@ static void* daMP_VideoDecoder(void* param_0) {
 	}
 }
 
+/**
+ * Video decode thread for "on memory" playback: walks the movie data in place (no reader thread), with the same
+ * frame-dropping rule as `daMP_VideoDecoder`. The first word of a frame is the size of the next one, and the
+ * last frame stores the size of the first, so looping just restarts at `movieData`.
+ */
 static void* daMP_VideoDecoderForOnMemory(void* param_0) {
     daMP_THPReadBuffer readBuffer;
 	s32 readSize;
@@ -2873,6 +3138,10 @@ static void* daMP_VideoDecoderForOnMemory(void* param_0) {
 	}
 }
 
+/**
+ * Creates the video decode thread (stack 0x64000, started suspended) and its texture queues. With a non-NULL
+ * `param_1` (the movie in memory) it runs the on-memory variant. Returns FALSE on failure.
+ */
 static BOOL daMP_CreateVideoDecodeThread(OSPriority prio, u8* param_1) {
     if (param_1 != NULL) {
         if (!OSCreateThread(&daMP_VideoDecodeThread, daMP_VideoDecoderForOnMemory, param_1, daMP_VideoDecodeThreadStack + sizeof(daMP_VideoDecodeThreadStack), sizeof(daMP_VideoDecodeThreadStack), prio, 1)) {
@@ -2893,12 +3162,18 @@ static BOOL daMP_CreateVideoDecodeThread(OSPriority prio, u8* param_1) {
     return TRUE;
 }
 
+/**
+ * Resumes the video decode thread if it exists.
+ */
 static void daMP_VideoDecodeThreadStart() {
     if (daMP_VideoDecodeThreadCreated) {
         OSResumeThread(&daMP_VideoDecodeThread);
     }
 }
 
+/**
+ * Cancels the video decode thread, if it exists.
+ */
 void daMP_VideoDecodeThreadCancel() {
     if (daMP_VideoDecodeThreadCreated) {
         OSCancelThread(&daMP_VideoDecodeThread);
@@ -2914,18 +3189,27 @@ static u8 daMP_AudioDecodeThreadStack[0x64000];
 
 static OSMessageQueue daMP_FreeAudioBufferQueue;
 
+/**
+ * Blocks until an audio buffer is free and returns it.
+ */
 static void* daMP_PopFreeAudioBuffer() {
     OSMessage buffer;
     OSReceiveMessage(&daMP_FreeAudioBufferQueue, &buffer, OS_MESSAGE_BLOCK);
     return buffer;
 }
 
+/**
+ * Returns an audio buffer to the free pool.
+ */
 static void daMP_PushFreeAudioBuffer(void* buffer) {
     OSSendMessage(&daMP_FreeAudioBufferQueue, buffer, OS_MESSAGE_NOBLOCK);
 }
 
 static OSMessageQueue daMP_DecodedAudioBufferQueue;
 
+/**
+ * Takes the next decoded audio buffer, or returns NULL if none is ready and `flags` is non-blocking (0).
+ */
 static void* daMP_PopDecodedAudioBuffer(s32 flags) {
     OSMessage buffer;
     if (OSReceiveMessage(&daMP_DecodedAudioBufferQueue, &buffer, flags) == 1) {
@@ -2935,10 +3219,17 @@ static void* daMP_PopDecodedAudioBuffer(s32 flags) {
     return NULL;
 }
 
+/**
+ * Queues a decoded audio buffer for the mixer.
+ */
 static void daMP_PushDecodedAudioBuffer(void* buffer) {
     OSSendMessage(&daMP_DecodedAudioBufferQueue, buffer, OS_MESSAGE_BLOCK);
 }
 
+/**
+ * Decodes the audio component of one frame into a free audio buffer (interleaved PCM) and queues it. The track
+ * chosen by `curAudioTrack` starts `curAudioTrack * size` bytes into the component.
+ */
 static void daMP_AudioDecode(daMP_THPReadBuffer* readBuffer) {
     THPAudioBuffer* audioBuf;
 	s32 i;
@@ -2966,6 +3257,9 @@ static void daMP_AudioDecode(daMP_THPReadBuffer* readBuffer) {
 	}
 }
 
+/**
+ * Audio decode thread (streaming mode): decodes each filled read buffer, then passes it to the video decoder.
+ */
 static void* daMP_AudioDecoder(void* param_0) {
     daMP_THPReadBuffer* buf;
 
@@ -2976,6 +3270,9 @@ static void* daMP_AudioDecoder(void* param_0) {
     }
 }
 
+/**
+ * Audio decode thread for "on memory" playback; walks the movie data like `daMP_VideoDecoderForOnMemory`.
+ */
 static void* daMP_AudioDecoderForOnMemory(void* param_0) {
     s32 size;
 	s32 readSize;
@@ -3012,6 +3309,10 @@ static OSMessage daMP_FreeAudioBufferMessage[3];
 
 static OSMessage daMP_DecodedAudioBufferMessage[3];
 
+/**
+ * Creates the audio decode thread (started suspended) and its two 3-entry queues. A non-NULL `param_1` selects
+ * the on-memory variant. Returns FALSE on failure.
+ */
 static BOOL daMP_CreateAudioDecodeThread(OSPriority prio, u8* param_1) {
     if (param_1 != NULL) {
         if (!OSCreateThread(&daMP_AudioDecodeThread, daMP_AudioDecoderForOnMemory, param_1, daMP_AudioDecodeThreadStack + sizeof(daMP_AudioDecodeThreadStack), sizeof(daMP_AudioDecodeThreadStack), prio, 1)) {
@@ -3032,12 +3333,18 @@ static BOOL daMP_CreateAudioDecodeThread(OSPriority prio, u8* param_1) {
     return TRUE;
 }
 
+/**
+ * Resumes the audio decode thread if it exists.
+ */
 void daMP_AudioDecodeThreadStart() {
     if (daMP_AudioDecodeThreadCreated) {
         OSResumeThread(&daMP_AudioDecodeThread);
     }
 }
 
+/**
+ * Cancels the audio decode thread, if it exists.
+ */
 void daMP_AudioDecodeThreadCancel() {
     if (daMP_AudioDecodeThreadCreated) {
         OSCancelThread(&daMP_AudioDecodeThread);
@@ -3045,6 +3352,9 @@ void daMP_AudioDecodeThreadCancel() {
     }
 }
 
+/**
+ * Puts the GX state touched by the movie draw back to the simple one-texture REPLACE setup the 2D draw code expects.
+ */
 static void daMP_THPGXRestore() {
     GXSetZMode(GX_ENABLE, GX_ALWAYS, GX_DISABLE);
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_SET);
@@ -3063,12 +3373,19 @@ static void daMP_THPGXRestore() {
     GXSetTevSwapModeTable(GX_TEV_SWAP3, GX_CH_BLUE, GX_CH_BLUE, GX_CH_BLUE, GX_CH_ALPHA);
 }
 
+/**
+ * Unused. Exists only to place the 100.0f and 60.0f literals in the right order for the matching build.
+ */
 static f32 dummyLiteral() {
     f32 temp = 100.0f;
     temp += 60.0f;
     return temp;
 }
 
+/**
+ * Sets up GX to draw a YUV 4:2:0 frame as RGB: an orthographic projection over the render mode's size and a
+ * TEV pipeline that combines three I8 textures (Y on map 0, U on map 1, V on map 2) per pixel.
+ */
 static void daMP_THPGXYuv2RgbSetup(const GXRenderModeObj* rmode) {
     s32 w, h;
     f32 var_f31;
@@ -3079,6 +3396,7 @@ static void daMP_THPGXYuv2RgbSetup(const GXRenderModeObj* rmode) {
     h = rmode->efbHeight;
     var_f31 = 0.0f;
 
+    // Vertical offset used to centre the picture when the display is not widescreen.
     #if WIDESCREEN_SUPPORT
     if (!mDoGph_gInf_c::isWide()) {
         var_f31 = (rmode->efbHeight - (h * 808.0f) / 608.0f) * 0.5f;
@@ -3114,6 +3432,9 @@ static void daMP_THPGXYuv2RgbSetup(const GXRenderModeObj* rmode) {
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXSetVtxAttrFmt(GX_VTXFMT7, GX_VA_POS, GX_CLR_RGBA, GX_RGBA4, 0);
     GXSetVtxAttrFmt(GX_VTXFMT7, GX_VA_TEX0, GX_CLR_RGBA, GX_RGBX8, 0);
+    // TEV, four stages: stages 0 and 1 add the U and V contributions using the constant colours K0 and K1 with the
+    // signed bias held in colour register 0 (`spA8`); stage 2 adds the luma from texture map 0; stage 3 applies K2.
+    // Together they implement the YUV -> RGB matrix, so the conversion is done by the GPU.
     GXSetNumTevStages(4);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD1, GX_TEXMAP1, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_TEXC, GX_CC_KONST, GX_CC_C0);
@@ -3160,6 +3481,10 @@ static void daMP_THPGXYuv2RgbSetup(const GXRenderModeObj* rmode) {
     GXSetTevSwapModeTable(GX_TEV_SWAP0, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE, GX_CH_ALPHA);
 }
 
+/**
+ * Draws one frame: loads the Y plane (full size) and the U and V planes (half size) as I8 textures and draws a
+ * textured quad of `polygonWidth` x `polygonHeight` at (`x`, `y`).
+ */
 static void daMP_THPGXYuv2RgbDraw(u8* y_data, u8* u_data, u8* v_data, s16 x,
                                   s16 y, s16 textureWidth, s16 textureHeight, s16 polygonWidth,
                                   s16 polygonHeight) {
@@ -3191,6 +3516,7 @@ static void daMP_THPGXYuv2RgbDraw(u8* y_data, u8* u_data, u8* v_data, s16 x,
     GXEnd();
 }
 
+// Volume curve: index 0-127 -> 16-bit gain (0x8000 is full scale, roughly quadratic).
 static u16 daMP_VolumeTable[] = {
     0x0000, 0x0002, 0x0008, 0x0012, 0x0020, 0x0032, 0x0049, 0x0063,
     0x0082, 0x00A4, 0x00CB, 0x00F5, 0x0124, 0x0157, 0x018E, 0x01C9,
@@ -3212,6 +3538,12 @@ static u16 daMP_VolumeTable[] = {
 
 #pragma push
 #pragma optimization_level 3
+/**
+ * Fills `destination` with `sample` stereo frames from the decoded audio buffers, applying the player volume
+ * (with per-sample ramping) and the 0.7 headroom scale, and downmixing to mono if the output mode requires it.
+ * Writes silence when the player is not playing or the decoder has fallen behind. Called from the audio
+ * driver's mix callback.
+ */
 static void daMP_MixAudio(s16* destination, s16*, u32 sample) {
     if (daMP_ActivePlayer.open && daMP_ActivePlayer.internalState == 2 && daMP_ActivePlayer.audioExist) {
 		u32 sampleNum;
@@ -3226,6 +3558,8 @@ static void daMP_MixAudio(s16* destination, s16*, u32 sample) {
 		dst = destination;
 
         BOOL loop = TRUE;
+		// Fill `requestSample` frames, consuming decoded buffers one after another. A buffer that is used up goes back
+		// to the free queue; if no decoded buffer is available the rest of the output is silence.
 		do {
 			do {
 				if (daMP_ActivePlayer.playAudioBuffer == (THPAudioBuffer*)NULL) {
@@ -3266,6 +3600,7 @@ static void daMP_MixAudio(s16* destination, s16*, u32 sample) {
 				if (r_mix > 32767)
 					r_mix = 32767;
 
+                // Mono output: both channels become the average of left and right.
                 if (JASDriver::getOutputMode() == JAS_OUTPUT_MONO) {
                     l_mix = r_mix = ((r_mix >> 1) + (l_mix >> 1));
                     r_mix = (s16)r_mix;
@@ -3325,6 +3660,10 @@ static s32 daMP_AudioSystem;
 
 static u8 daMP_SoundBuffer[2][0x8C0] ATTRIBUTE_ALIGN(32);
 
+/**
+ * Mix callback registered with the audio driver. Alternates between two sound buffers, mixes `sample` frames
+ * into one and returns it, or returns NULL (nothing to mix) when the movie is not playing sound.
+ */
 static s16* daMP_audioCallbackWithMSound(s32 sample) {
     if (daMP_ActivePlayer.open == 0 || daMP_ActivePlayer.internalState != 2 || daMP_ActivePlayer.audioExist == 0) {
         return NULL;
@@ -3337,18 +3676,30 @@ static s16* daMP_audioCallbackWithMSound(s32 sample) {
     return (s16*)daMP_SoundBuffer[daMP_SoundBufferIndex];
 }
 
+/**
+ * Registers `daMP_audioCallbackWithMSound` as the driver's interleaved mix callback.
+ */
 static void daMP_audioInitWithMSound() {
     JASDriver::registerMixCallback(daMP_audioCallbackWithMSound, MIX_MODE_INTERLEAVE);
 }
 
+/**
+ * Unregisters the mix callback.
+ */
 static void daMP_audioQuitWithMSound() {
     JASDriver::registerMixCallback(NULL, MIX_MODE_MONO);
 }
 
+/**
+ * Queues a texture set that is no longer displayed; it is freed after the next `GXDrawDone`.
+ */
 static void daMP_PushUsedTextureSet(void* tex) {
     OSSendMessage(&daMP_UsedTextureSetQueue, tex, OS_MESSAGE_NOBLOCK);
 }
 
+/**
+ * Takes the next no-longer-displayed texture set, or NULL if there is none.
+ */
 static void* daMP_PopUsedTextureSet() {
     OSMessage tex;
     if (OSReceiveMessage(&daMP_UsedTextureSetQueue, &tex, OS_MESSAGE_NOBLOCK) == 1) {
@@ -3358,6 +3709,10 @@ static void* daMP_PopUsedTextureSet() {
     return NULL;
 }
 
+/**
+ * Initialises the player: clears its state, enables the locked cache, initialises the decoder and registers the
+ * mix callback. `param_0` is the audio system flag (0-2). Returns 1 on success, 0 on failure.
+ */
 static int daMP_THPPlayerInit(s32 param_0) {
     BOOL enable;
 
@@ -3389,6 +3744,9 @@ static int daMP_THPPlayerInit(s32 param_0) {
     return 1;
 }
 
+/**
+ * Shuts the player down: disables the locked cache, unregisters the mix callback and clears the errors.
+ */
 static void daMP_THPPlayerQuit() {
     LCDisable();
     daMP_audioQuitWithMSound();
@@ -3397,6 +3755,12 @@ static void daMP_THPPlayerQuit() {
     daMP_ActivePlayer.videoError = 0;
 }
 
+/**
+ * Opens a THP file and reads its header (magic "THP", version 0x11000), frame component list and the video and
+ * audio parameters. Fails if the player is not initialised or already open. Returns TRUE on success.
+ *
+ * @param onMemory TRUE to load the whole movie into memory later instead of streaming it.
+ */
 static BOOL daMP_THPPlayerOpen(char const* filename, BOOL onMemory) {
     s32 offset;
 	s32 i;
@@ -3492,6 +3856,9 @@ static BOOL daMP_THPPlayerOpen(char const* filename, BOOL onMemory) {
     return 1;
 }
 
+/**
+ * Closes the file. Only allowed while stopped; returns TRUE on success.
+ */
 static BOOL daMP_THPPlayerClose() {
     if (daMP_ActivePlayer.open && daMP_ActivePlayer.state == 0) {
         daMP_ActivePlayer.open = 0;
@@ -3502,6 +3869,10 @@ static BOOL daMP_THPPlayerClose() {
     return FALSE;
 }
 
+/**
+ * Bytes needed by `daMP_THPPlayerSetBuffer` for the opened movie: the movie itself (on memory) or ten read buffers,
+ * three Y/U/V texture sets, the audio buffers if there is sound, and 0x1000 for decoder scratch. 0 if not open.
+ */
 static u32 daMP_THPPlayerCalcNeedMemory() {
     if (daMP_ActivePlayer.open) {
 		u32 size = daMP_ActivePlayer.onMemory
@@ -3522,6 +3893,10 @@ static u32 daMP_THPPlayerCalcNeedMemory() {
 	return 0;
 }
 
+/**
+ * Divides `buffer` (at least `daMP_THPPlayerCalcNeedMemory()` bytes, 32-byte aligned) into the movie data or read
+ * buffers, the texture sets, the audio buffers and the decoder work area, in that order.
+ */
 static BOOL daMP_THPPlayerSetBuffer(u8* buffer) {
     u32 i;
 	u8* ptr;
@@ -3576,6 +3951,9 @@ static BOOL daMP_THPPlayerSetBuffer(u8* buffer) {
 	return FALSE;
 }
 
+/**
+ * Puts every buffer into its free queue and creates the prepare-ready queue.
+ */
 static void daMP_InitAllMessageQueue() {
     int i;
 	if (daMP_ActivePlayer.onMemory == FALSE) {
@@ -3597,6 +3975,9 @@ static void daMP_InitAllMessageQueue() {
 	OSInitMessageQueue(&daMP_PrepareReadyQueue, &daMP_PrepareReadyMessage, 1);
 }
 
+/**
+ * TRUE if now is the right video field to start on: field 0 if `videoType` bit 0 is set, field 1 if bit 1 is set, any time otherwise.
+ */
 static BOOL daMP_ProperTimingForStart() {
     if (daMP_ActivePlayer.videoInfo.videoType & 1) {
 		if (VIGetNextField() == 0)
@@ -3610,6 +3991,11 @@ static BOOL daMP_ProperTimingForStart() {
 	return FALSE;
 }
 
+/**
+ * TRUE if a new video frame is due at this retrace. Interlaced movies change frame on a fixed field. Progressive
+ * ones convert the retrace count to a frame count at the movie's frame rate (59.94 Hz NTSC, 50 Hz PAL) and
+ * change frame when that count changes.
+ */
 static BOOL daMP_ProperTimingForGettingNextFrame() {
     if ((daMP_ActivePlayer.videoInfo.videoType & 1)) {
 		if (VIGetNextField() == 0) {
@@ -3636,12 +4022,19 @@ static BOOL daMP_ProperTimingForGettingNextFrame() {
 	return FALSE;
 }
 
+/**
+ * VI post-retrace callback that drives playback while the state is 2. Chains the previous callback, then on each
+ * retrace picks the next decoded frame to show (with sound, only if video is not more than one frame ahead of
+ * the audio), retires the previous one, and detects the end of a non-looping movie (state 3). A decode or disc
+ * error sets state 5.
+ */
 static void daMP_PlayControl(u32 retraceCnt) {
     THPTextureSet* decodedTexture;
 
 	if (daMP_OldVIPostCallback != NULL)
 		daMP_OldVIPostCallback(retraceCnt);
 
+	// Sentinel: -1 means no new frame was due this retrace. NULL means one was due but the decoder had none ready.
 	decodedTexture = (THPTextureSet*)-1;
 	if (daMP_ActivePlayer.open && daMP_ActivePlayer.state == 2) {
 		if (daMP_ActivePlayer.dvdError || daMP_ActivePlayer.videoError) {
@@ -3652,6 +4045,8 @@ static void daMP_PlayControl(u32 retraceCnt) {
 
 		++daMP_ActivePlayer.retaceCount;
 
+		// First retrace of playback: wait for the right field, then show the first frame. Audio is switched on
+		// (`internalState` 2) once video is in step, and at the latest on the next retrace.
 		if (daMP_ActivePlayer.retaceCount == 0) {
 			if (daMP_ProperTimingForStart()) {
 				if (daMP_ActivePlayer.audioExist) {
@@ -3686,12 +4081,15 @@ static void daMP_PlayControl(u32 retraceCnt) {
 			}
 		}
 
+		// A new frame replaces the displayed one, which goes to the used queue until the GPU is done with it.
 		if (decodedTexture != NULL && decodedTexture != (THPTextureSet*)-1) {
 			if (daMP_ActivePlayer.dispTextureSet != NULL)
 				daMP_PushUsedTextureSet(daMP_ActivePlayer.dispTextureSet);
 			daMP_ActivePlayer.dispTextureSet = decodedTexture;
 		}
 
+		// Not looping: finished once every frame was consumed (with sound: all audio played out; without: the last
+		// frame is displayed and no newer one is pending).
 		if ((daMP_ActivePlayer.playFlag & 1) == 0) {
 			if (daMP_ActivePlayer.audioExist) {
 				s32 audioFrame = daMP_ActivePlayer.curAudioNumber + daMP_ActivePlayer.initReadFrame;
@@ -3715,6 +4113,9 @@ static void daMP_PlayControl(u32 retraceCnt) {
 	}
 }
 
+/**
+ * Blocks until the decoder reports whether the first frame was decoded. Returns TRUE if it was.
+ */
 BOOL daMP_WaitUntilPrepare() {
     OSMessage msg;
     OSReceiveMessage(&daMP_PrepareReadyQueue, &msg, 1);
@@ -3726,13 +4127,25 @@ BOOL daMP_WaitUntilPrepare() {
 	}
 }
 
+/**
+ * Reports the result of preparing the first frame (TRUE ready, FALSE failed) to `daMP_WaitUntilPrepare`.
+ */
 void daMP_PrepareReady(BOOL msg) {
     OSSendMessage(&daMP_PrepareReadyQueue, (OSMessage)(uintptr_t)msg, 1);
 }
 
+/**
+ * Gets a stopped movie ready to play: seeks to `frame` (needs the file's offset table when not 0), picks the audio
+ * track, starts the decode threads (and the reader when streaming), waits for the first frame to be decoded and
+ * installs `daMP_PlayControl` on the VI retrace. Leaves the player in state 1. Returns TRUE on success.
+ *
+ * @param frame Frame to start at. @param flag Bit 0 = loop. @param audioTrack Audio track to play.
+ */
 static BOOL daMP_THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
     u8* threadData;
 	if (daMP_ActivePlayer.open && daMP_ActivePlayer.state == 0) {
+		// Seeking: the file's offset table gives the position of the requested frame (and of the next one, whose
+		// difference is the size). Starting at frame 0 uses the header's first frame size instead.
 		if (frame > 0) {
 			if (daMP_ActivePlayer.header.offsetDataOffsets == 0) {
                 OSReport("This thp file doesn't have the offset data\n");
@@ -3771,6 +4184,8 @@ static BOOL daMP_THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
 		daMP_ActivePlayer.playFlag = flag;
 		daMP_ActivePlayer.videoDecodeCount = 0;
 
+		// Threads and priorities (a lower number is more urgent): reader 8, audio decode 12, video decode 20.
+		// On memory the whole movie is read here and the decoders start at the requested frame; no reader runs.
 		if (daMP_ActivePlayer.onMemory) {
 			if (DVDReadPrio(&daMP_ActivePlayer.fileInfo, daMP_ActivePlayer.movieData, daMP_ActivePlayer.header.movieDataSize, daMP_ActivePlayer.header.movieDataOffsets, 2) < 0) {
 				OSReport("Fail to read all movie data from THP file\n");
@@ -3815,6 +4230,9 @@ static BOOL daMP_THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
 	return FALSE;
 }
 
+/**
+ * Waits for the GPU to finish drawing, then recycles the texture sets that are no longer displayed.
+ */
 static void daMP_THPPlayerDrawDone() {
     GXDrawDone();
 
@@ -3829,6 +4247,9 @@ static void daMP_THPPlayerDrawDone() {
     }
 }
 
+/**
+ * Starts (or resumes) playback from the prepared or paused state. Returns TRUE if it did.
+ */
 static BOOL daMP_THPPlayerPlay() {
     if (daMP_ActivePlayer.open != 0 && (daMP_ActivePlayer.state == 1 || daMP_ActivePlayer.state == 4)) {
         daMP_ActivePlayer.state = 2;
@@ -3841,6 +4262,10 @@ static BOOL daMP_THPPlayerPlay() {
     return FALSE;
 }
 
+/**
+ * Stops playback: restores the previous retrace callback, cancels the reader and decoder threads, drops the
+ * pending textures and ends any volume ramp.
+ */
 static void daMP_THPPlayerStop() {
     if (daMP_ActivePlayer.open != 0 && daMP_ActivePlayer.state != 0) {
         daMP_ActivePlayer.internalState = 0;
@@ -3867,6 +4292,9 @@ static void daMP_THPPlayerStop() {
     }
 }
 
+/**
+ * Pauses a playing movie. Returns 1 if it was playing.
+ */
 static int daMP_THPPlayerPause() {
     if (daMP_ActivePlayer.open != 0 && daMP_ActivePlayer.state == 2) {
         daMP_ActivePlayer.internalState = 4;
@@ -3877,6 +4305,10 @@ static int daMP_THPPlayerPause() {
     return 0;
 }
 
+/**
+ * Draws the frame being displayed at (`x`, `y`) with a `polygonW` x `polygonH` quad, and fades the screen in if a
+ * fade is active. Returns the movie frame number shown, or -1 if there is none.
+ */
 static int daMP_THPPlayerDrawCurrentFrame(const GXRenderModeObj* rmode, u32 x,
                                           u32 y, u32 polygonW, u32 polygonH) {
     s32 frame;
@@ -3900,6 +4332,9 @@ static int daMP_THPPlayerDrawCurrentFrame(const GXRenderModeObj* rmode, u32 x,
 	return -1;
 }
 
+/**
+ * Copies the video parameters into `info`. Returns 1 if a movie is open, else 0.
+ */
 static int daMP_THPPlayerGetVideoInfo(THPVideoInfo* info) {
     if (daMP_ActivePlayer.open != 0) {
         memcpy(info, &daMP_ActivePlayer.videoInfo, sizeof(THPVideoInfo));
@@ -3909,6 +4344,9 @@ static int daMP_THPPlayerGetVideoInfo(THPVideoInfo* info) {
     return 0;
 }
 
+/**
+ * Copies the audio parameters into `info`. Returns 1 if a movie is open, else 0.
+ */
 static int daMP_THPPlayerGetAudioInfo(THPAudioInfo* info) {
     if (daMP_ActivePlayer.open != 0) {
         memcpy(info, &daMP_ActivePlayer.audioInfo, sizeof(THPAudioInfo));
@@ -3918,6 +4356,9 @@ static int daMP_THPPlayerGetAudioInfo(THPAudioInfo* info) {
     return 0;
 }
 
+/**
+ * Number of frames in the movie, or 0 if none is open.
+ */
 static u32 daMP_THPPlayerGetTotalFrame() {
     if (daMP_ActivePlayer.open != 0) {
         return daMP_ActivePlayer.header.numFrames;
@@ -3926,10 +4367,18 @@ static u32 daMP_THPPlayerGetTotalFrame() {
     return 0;
 }
 
+/**
+ * Current player state (0 stopped ... 5 error).
+ */
 static int daMP_THPPlayerGetState() {
     return daMP_ActivePlayer.state;
 }
 
+/**
+ * Sets the volume (0-127) and ramps to it over `duration` milliseconds (0 = immediately; at most 60000). The ramp
+ * is counted in output samples (32 or 48 per millisecond depending on the DSP sample rate). Returns TRUE if
+ * the movie has sound.
+ */
 static BOOL daMP_THPPlayerSetVolume(s32 vol, s32 duration) {
     u32 numSamples;
 	BOOL interrupt;
@@ -3977,6 +4426,11 @@ static u32 daMP_DrawPosY;
 
 static void* daMP_buffer;
 
+/**
+ * Opens and prepares the movie at `moviePath`: reads its parameters, centres it on screen, allocates the buffer
+ * from the archive heap and prepares frame 0. With several audio tracks one is picked from the tick counter.
+ * Returns 1 on success, 0 on failure (an assert in debug builds).
+ */
 static BOOL daMP_ActivePlayer_Init(char const* moviePath) {
     daMP_THPPlayerInit(0);
     
@@ -4025,6 +4479,9 @@ static BOOL daMP_ActivePlayer_Init(char const* moviePath) {
     return 1;
 }
 
+/**
+ * Stops, closes and shuts down the player and frees its buffer.
+ */
 static void daMP_ActivePlayer_Finish() {
     daMP_THPPlayerStop();
     daMP_THPPlayerClose();
@@ -4035,6 +4492,9 @@ static void daMP_ActivePlayer_Finish() {
     }
 }
 
+/**
+ * Per-frame check: if playback failed (state 5), stops the player, closes it and frees its buffer.
+ */
 static void daMP_ActivePlayer_Main() {
     if (daMP_THPPlayerGetState() == 5) {
         daMP_THPPlayerStop();
@@ -4048,6 +4508,10 @@ static void daMP_ActivePlayer_Main() {
     }
 }
 
+/**
+ * Draws the current frame. Once frames are showing and no overlap transition is pending, a button press or the
+ * last frame ends the event and fades the movie volume out.
+ */
 static void daMP_ActivePlayer_Draw() {
     int frame = daMP_THPPlayerDrawCurrentFrame(JUTVideo::getManager()->getRenderMode(), daMP_DrawPosX, daMP_DrawPosY, daMP_videoInfo.xSize, daMP_videoInfo.ySize);
     daMP_THPPlayerDrawDone();
@@ -4060,6 +4524,10 @@ static void daMP_ActivePlayer_Draw() {
 
 static BOOL daMP_Fail_alloc;
 
+/**
+ * Frames left after the one displayed: 0 on failure, error or a single-frame movie, and -1 (as `u32`) if no frame is
+ * displayed yet or the player is not open.
+ */
 static u32 daMP_Get_MovieRestFrame() {
     int temp_r31;
     if (daMP_Fail_alloc != 0 || daMP_THPPlayerGetState() == 5) {
@@ -4088,6 +4556,10 @@ static u32 daMP_Get_MovieRestFrame() {
     return (temp_r3 - 1) - temp_r31;
 }
 
+/**
+ * Sets the movie volume from `volume` over one second: at least 1.0 is full (127), at most 0.0 is silent.
+ * NOTE: values in between are divided by 127 instead of multiplied, so they come out as 0.
+ */
 static void daMP_Set_PercentMovieVolume(f32 volume) {
     if (!daMP_Fail_alloc) {
         s32 player_vol;
@@ -4103,14 +4575,25 @@ static void daMP_Set_PercentMovieVolume(f32 volume) {
     }
 }
 
+/**
+ * Demo number from the actor parameters (bits 7-13).
+ */
 int daMP_c::daMP_c_Get_arg_demoNo() {
     return ((u32)(fopAcM_GetParam(this) >> 7)) & 0x7F;
 }
 
+/**
+ * Movie number from the actor parameters (bits 0-6).
+ */
 int daMP_c::daMP_c_Get_arg_movieNo() {
     return fopAcM_GetParam(this) & 0x7F;
 }
 
+/**
+ * Actor create: builds the path `/Movie/demo_movie<demoNo>_<movieNo>.thp`, starts the player (remembering a
+ * failure in `daMP_Fail_alloc`, after which the actor does nothing) and exposes the player controls through
+ * the function pointers used by `m_myObj` callers.
+ */
 int daMP_c::daMP_c_Init() {
     JUT_ASSERT(9469, m_myObj == NULL);
 
@@ -4141,37 +4624,58 @@ int daMP_c::daMP_c_Init() {
     return cPhs_COMPLEATE_e;
 }
 
+/**
+ * Actor delete: shuts the player down.
+ */
 int daMP_c::daMP_c_Finish() {
     daMP_ActivePlayer_Finish();
     m_myObj = NULL;
     return 1;
 }
 
+/**
+ * Actor execute: runs the per-frame player check.
+ */
 int daMP_c::daMP_c_Main() {
     daMP_ActivePlayer_Main();
     return 1;
 }
 
+/**
+ * Draw-list callback: draws the movie frame.
+ */
 void daMP_Dlst_base_c::draw() {
     daMP_ActivePlayer_Draw();
 }
 
 static daMP_Dlst_base_c daMP_c_Dlst_base;
 
+/**
+ * Actor draw: queues the movie on the 2D opaque draw list.
+ */
 int daMP_c::daMP_c_Draw() {
     dComIfGd_set2DOpa(&daMP_c_Dlst_base);
     return 1;
 }
 
+/**
+ * Process create method: constructs the actor and runs `daMP_c_Init`.
+ */
 int daMP_c::daMP_c_Callback_Init(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, daMP_c);
     return ((daMP_c*)i_this)->daMP_c_Init();
 }
 
+/**
+ * Process delete method.
+ */
 int daMP_c::daMP_c_Callback_Finish(daMP_c* i_this) {
     return i_this->daMP_c_Finish();
 }
 
+/**
+ * Process execute method; does nothing if the player failed to start.
+ */
 int daMP_c::daMP_c_Callback_Main(daMP_c* i_this) {
     #if PLATFORM_WII || PLATFORM_SHIELD
     mDoGph_gInf_c::resetDimming();
@@ -4184,6 +4688,9 @@ int daMP_c::daMP_c_Callback_Main(daMP_c* i_this) {
     return i_this->daMP_c_Main();
 }
 
+/**
+ * Process draw method; does nothing if the player failed to start.
+ */
 int daMP_c::daMP_c_Callback_Draw(daMP_c* i_this) {
     if (daMP_Fail_alloc) {
         return 1;
@@ -4192,6 +4699,9 @@ int daMP_c::daMP_c_Callback_Draw(daMP_c* i_this) {
     return i_this->daMP_c_Draw();
 }
 
+/**
+ * Process "is delete" method: not needed, always returns 1.
+ */
 static int daMP_Callback_Dummy(daMP_c* i_this) {
     return 1;
 }
@@ -4204,6 +4714,9 @@ static actor_method_class daMP_METHODS = {
     (process_method_func)daMP_c::daMP_c_Callback_Draw,
 };
 
+/**
+ * Process profile of the movie player actor (list ID 7).
+ */
 actor_process_profile_definition g_profile_MOVIE_PLAYER = {
     /* Layer ID     */ fpcLy_CURRENT_e,
     /* List ID      */ 7,

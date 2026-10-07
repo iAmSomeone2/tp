@@ -32,24 +32,25 @@ Useful `configure.py` flags: `--map`, `--non-matching`, `--debug`, `--warn all|o
 
 ### CMake build (host Clang/GCC, GameCube only)
 
-Needs CMake 4.0+ and Ninja; no disc image or Metrowerks tools. Targets GameCube USA by default; Wii/Shield-only features (widescreen, `DEBUG`, HostIO, `Z2AudioCS`, ...) are deliberately not part of it. Details in `docs/port/cmake.md`.
+Needs CMake 4.0+ and Ninja and no Metrowerks tools; a disc image in `orig/<version>/` is needed only for the four TUs that include generated `assets/*.h` (see `tp_generate_assets`). Targets GameCube USA by default; Wii/Shield-only features (widescreen, `DEBUG`, HostIO, `Z2AudioCS`, ...) are deliberately not part of it. Details in `docs/port/cmake.md`.
 
 ```sh
 cmake --preset default                    # also: debug, release; output in build/cmake/<preset>
 cmake --build --preset default -- -k 0    # -k 0 keeps going past files that still fail
 cmake -S . -B build/cmake/pal -G Ninja -DTP_VERSION=GZ2P01   # GZ2E01 (default) / GZ2P01 / GZ2J01
+cmake --build --preset default --target tp_generate_assets   # assets/*.h from the disc image in orig/<ver> (also a dependency of the libraries that need them)
 cmake --preset default -DTP_BUILD_TESTS=ON && ctest --test-dir build/cmake/default   # unit tests (GoogleTest)
 python3 tools/utilities/gen_cmake_sources.py [--check]       # regenerate / verify the sources.cmake lists
 ```
 
-Status: 313 of 1,280 TUs compile with clang. The typedefs in `types.h` were just made fixed-width (32-bit `u32`/`s32`, needed for 64-bit Linux), and the 85 remaining error sites, mostly pointer casts, are section F of `docs/port/compiler-fixes.md` (1,275 compiled before that change). Nothing links yet (no SDK implementation or entry point). GCC is untested.
+Status: 1,274 of 1,280 TUs compile with clang. The six that do not are four that need generated `assets/*.h` (`d_error_msg`'s disc-error screen, which needed three of them, was removed; the `tp_generate_assets` target makes them when a disc image is present) plus `d_a_movie_player` (PPC-asm-only pointer casts, left alone on purpose). The `types.h` typedefs are fixed-width (32-bit `u32`/`s32`, needed for 64-bit Linux) and the pointer-cast fallout of that change is fixed too; see `docs/port/compiler-fixes.md`. The executable target `tp` (`src/m_Do/`, entry point `m_Do_main.cpp`) is defined but cannot link yet (no SDK implementation); the unit tests link the real libraries. GCC is untested.
 
 Tests (GoogleTest, `-DTP_BUILD_TESTS=ON`) mirror the source tree without the `src`/`include` levels, e.g. `tests/JSystem/JMessage/` for `libs/JSystem/src/JMessage/`; add new ones with `tp_add_test()` in that directory's `CMakeLists.txt`. They link the real engine libraries, leniently, since the SDK implementation is not built (stand-ins for what they execute are in `tests/support/`). `src/nightfall/platform/` (`nf_platform`) holds the host definitions of SDK globals that the Dolphin headers only declare outside Metrowerks. See `docs/port/cmake.md`.
 
 Port-analysis scripts (host clang, no disc image needed); each takes a minute or two and rewrites a generated page under `docs/port/`:
 
 ```sh
-python3 tools/utilities/clang_sweep.py --report docs/port/compile-sweep.md        # how many TUs parse with stock clang
+python3 tools/utilities/clang_sweep.py --report docs/port/compile-sweep.md        # how many of the CMake build's TUs parse with stock clang (--all-files: every .cpp)
 python3 tools/utilities/dup_symbol_check.py --report docs/port/duplicate-symbols.md  # symbols that would collide in a static link
 python3 tools/utilities/port_survey.py                                            # writes docs/port/survey-data.md
 python3 tools/utilities/gen_actor_index.py                                        # writes docs/actor-index.md

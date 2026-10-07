@@ -16,8 +16,8 @@ cmake --build --preset default    # add `-- -k 0` to keep going past failing fil
 Measured with Apple clang 21, `debug` preset (C++20), GameCube USA:
 
 * **1,280 translation units** are compiled (1,281 for PAL/JPN).
-* **313 compile; 967 do not.** The count was 1,275 of 1,280 compiling (only the five files that need generated `assets/*.h` failing) until `libs/dolphin/include/dolphin/types.h` was switched to `<cstdint>` types, which made `u32`/`s32` 32-bit on 64-bit hosts. The 967 come from 85 distinct error sites, 79 of them pointer casts, tracked as section F of [compiler-fixes.md](compiler-fixes.md); two headers account for nearly all the failing files. Earlier history: 1,215, then 1,248, then 1,265 compiling.
-* **Nothing is linked yet.** There is no executable target: the SDK implementation is missing and the libraries have not been checked for duplicate symbols ([duplicate-symbols.md](duplicate-symbols.md)).
+* **1,274 compile; 6 do not.** Four need generated `assets/*.h` from a disc image (`d_a_grass`, `d_a_mant`, `d_a_player`, `m_Do_ext`; `d_error_msg` needed them too until its disc-error screen was removed, so it should now compile without a disc image, but the count here has not been re-measured) and need no source change. The sixth, `d_a_movie_player`, has six `(u32)&(h->maxCode)` sites that exist only in the PowerPC-assembly path and are deliberately left alone. History: 1,215, 1,248, 1,265, then 1,275 of 1,280 until `libs/dolphin/include/dolphin/types.h` was switched to `<cstdint>` types (which made `u32`/`s32` 32-bit on 64-bit hosts) dropped it to 313, then back up as the pointer casts and type mismatches of section F were fixed ([compiler-fixes.md](compiler-fixes.md)).
+* **The executable `tp` is defined but cannot link yet.** `m_Do_main.cpp` is its entry point and `tp::engine` supplies everything else, but the SDK implementation is missing. The unit tests do link the real libraries, leniently (see Tests below), and the actor duplicate-symbol check is in [duplicate-symbols.md](duplicate-symbols.md).
 * **GCC is untested** (not installed on the machine this was written on). The flags are all standard GCC options and are probed with `check_compiler_flag`, but expect the GCC-only diagnostics listed in `compiler-fixes.md`.
 
 ## What is built, and what is not
@@ -26,7 +26,8 @@ Targets mirror the libraries in `configure.py` and are static libraries named `t
 
 | Target | Directory | Contents |
 |---|---|---|
-| `tp_machine` | `src/m_Do` | machine glue (`m_Do_*`) |
+| `tp_machine` | `src/m_Do` | machine glue (`m_Do_*`), without `m_Do_main.cpp` |
+| `tp` | `src/m_Do` | the game **executable**: `m_Do_main.cpp` (which holds `main`) plus `tp::engine` |
 | `tp_c` | `src/c` | dynamic-link name table, damage-reaction data |
 | `tp_framework`, `tp_f_pc_profile_lst`, `tp_DynamicLink` | `src` | process framework (`f_ap`/`f_op`/`f_pc`), profile table, REL name linking |
 | `tp_dolzel` | `src/d` | game logic, including the 9 actors that live in the DOL |
@@ -71,6 +72,8 @@ Each directory with sources has a hand-written `CMakeLists.txt` and a **generate
 | `TP_ENABLE_WARNINGS` | `OFF` | `-Wall -Wextra`. Off adds `-w`, because the sources are very noisy at this stage. |
 | `TP_ASSET_DIR` | `assets/<TP_VERSION>` | committed asset headers |
 | `TP_GENERATED_INCLUDE_DIR` | `build/<TP_VERSION>/include` | headers generated from a disc image (`assets/*.h`); the same place the Metrowerks flow writes them |
+| `TP_GENERATE_ASSETS` | `AUTO` | add the `tp_generate_assets` target (see "Generated asset headers"): `AUTO` when a disc image is found in `orig/<TP_VERSION>`, `ON` to require one, `OFF` to skip |
+| `TP_DTK_PATH` | (empty) | decomp-toolkit binary for that target; empty downloads the release pinned in `configure.py` to `build/tools/` |
 
 `DEBUG`, widescreen (`WIDESCREEN_SUPPORT`) and `ENABLE_REGHIO` are never defined: this is the GameCube retail configuration. A CMake `Debug` build type means "unoptimised", not the game's `DEBUG` macro.
 
@@ -109,12 +112,20 @@ cmake --build build/cmake/default --target tp_check_sources
 
 Objects are included by *existence in the GameCube splits*, regardless of their matching status (`Matching`, `NonMatching`, `Equivalent`): a host build has no reason to skip files that do not byte-match. Which library an object belongs to, and where that library lives in the CMake tree, is the `GROUPS` table at the top of the script.
 
+## Generated asset headers
+
+Four translation units (`d_a_grass`, `d_a_mant`, `d_a_player`, `m_Do_ext`) include `assets/*.h`: textures and display lists read out of the user's own disc image, so they are not in the repository. The `tp_generate_assets` target makes them with `tools/utilities/gen_asset_headers.py`, which runs what `configure.py`/ninja runs:
+
+1. `dtk dol split config/<ver>/config.yml build/<ver>` (decomp-toolkit, downloaded to `build/tools/` on first use at the tag `configure.py` pins) reads the DOL and RELs from `orig/<ver>` and writes `build/<ver>/include/assets/*.h`;
+2. `tools/converters/matDL_dis.py` converts the assets marked `custom_type: matDL`, which dtk leaves without a header.
+
+The output is the directory `TP_GENERATED_INCLUDE_DIR` already points at, shared with the Metrowerks build. `tp_machine`, `tp_dolzel` and `tp_actors` depend on the target, so a normal build generates the headers first; it reruns only when the disc image, `config/<ver>/config.yml` or the scripts change. With `TP_GENERATE_ASSETS=AUTO` (default) the target exists only if `orig/<TP_VERSION>` holds a disc image; without one, those five files fail to compile as before. The script also runs standalone (`python3 tools/utilities/gen_asset_headers.py --version GZ2E01 [--dtk <binary>]`). The split also writes assembly and `config.json` into `build/<ver>`, the same tree the ninja build uses.
+
 ## Known gaps and decisions for later
 
-* **Linking and a platform layer.** Needs an SDK implementation for `tp::dolphin`, an entry point (`m_Do_main.cpp` has `void main`), and a check of cross-library duplicate symbols. `tp::engine` already uses a rescanned link group where the linker supports one, because the libraries reference each other freely.
+* **Linking and a platform layer.** Needs an SDK implementation for `tp::dolphin` and a check of cross-library duplicate symbols. `tp::engine` already uses a rescanned link group where the linker supports one, because the libraries reference each other freely.
 * **Precompiled headers.** The Metrowerks build uses `d/dolzel.pch` and friends; on stock compilers those are ordinary includes. CMake `target_precompile_headers` on `dolzel` would speed up builds but has not been tried.
-* **Generated asset headers.** Five TUs (`d_a_grass`, `d_a_mant`, `d_a_player`, `d_error_msg`, `m_Do_ext`) need `assets/*.h` extracted from a disc image by the existing decomp-toolkit flow. CMake only exposes the include path; it does not generate them.
-* **`u32`/`s32` are now fixed-width** (`<cstdint>`) on every compiler, so they are 32-bit on 64-bit Linux. Finishing the pointer-cast fallout is the current work item; see section F of `compiler-fixes.md`.
+* **`u32`/`s32` are now fixed-width** (`<cstdint>`) on every compiler, so they are 32-bit on 64-bit Linux. The pointer-cast fallout is fixed apart from `d_a_movie_player`; see section F of `compiler-fixes.md`. Casts that compile but still truncate (a `u32` holding a pointer) are the remaining risk.
 * **Per-REL libraries.** All actors share one library. Keeping the REL boundaries would mean ~750 targets and is not useful once RELs are linked statically.
 
 ## Tests

@@ -15,7 +15,7 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 | # | Phase | Size | Exit criteria |
 |---|---|:---:|---|
 | 0 | **Groundwork** | S | CMake/VitaSDK project builds a "hello" that links a few libraries (`SSystem`, `JKernel`). `platform/` skeleton exists (empty shims for `OS`, `DVD`, `PAD`, `VI`, `CARD`, `AR`). Compiler flags from [toolchain.md](toolchain.md) applied. |
-| 1 | **Everything compiles and links** | M | `clang_sweep.py` reports 0 failing TUs for the GameCube configuration (fix the ~37: `switch` scopes, `<cstdarg>`, header guards for Wii-only code). Actors link statically; `dup_symbol_check.py` reports 0 duplicates (~18 fixes). Enable the layout `STATIC_ASSERT`s. Link with stub SDK (functions that abort with a message). |
+| 1 | **Everything compiles and links** | M | `clang_sweep.py` reports 0 failing TUs for the GameCube configuration (6 of 1,280 remain: five that need generated assets and `d_a_movie_player`'s PPC-asm casts). Actors link statically; `dup_symbol_check.py` reports 0 duplicates (18 left). Enable the layout `STATIC_ASSERT`s. Link with stub SDK (functions that abort with a message). |
 | 2 | **Boot to the framework loop** | M | `main` → `main01` → `mDoMch_Create` → `fapGm_Create` → `fpcM_Management` runs a frame with a stub GPU. Heaps allocated from `malloc`; `OS` threads/queues/mutexes work; logging works. The process manager schedules `LOGO_SCENE` (no drawing yet). |
 | 3 | **File I/O and archives** | M | `DVD*` shim over the extracted data directory; `JKRArchive` opens `.arc`; Yaz0 decompression verified. *Requires the archive header fix-ups from [endianness.md](endianness.md).* |
 | 4 | **Data fix-ups (endianness)** | L | Loaders for J3D models/animations, `ResTIMG`, `.dzs/.dzr/.dzb`, BMG, events, JPC, STB byte-swap correctly. Golden-dump tests pass for many files. Loading a full stage (`F_SP103`, Ordon Village) completes with no asserts. |
@@ -40,8 +40,8 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 
 Small, independent, and useful whichever way the rest goes:
 
-1. Fix the `switch`-scope errors (`d_a_mg_rod`, `d_a_kago`, `d_a_e_gb`, `Z2Creature`) so the sweep drops by 4 TUs. (The shared `DEG_TO_RAD`/`RAD_TO_DEG` macros are done; they cleared 35.)
-2. Make `__OSExecParams`/`__OSAppLoaderOffset` `extern` and `static`-ify `l_HIO`, `hio_set`, `l_arcName`, etc. (the 20 duplicates).
+1. ~~Fix the `switch`-scope errors~~ (done, along with the shared `DEG_TO_RAD`/`RAD_TO_DEG` macros, the integer typedefs and the pointer casts). The sweep now covers only the files the GameCube build compiles; what is left for it is the generated asset headers and `d_a_movie_player`.
+2. `static`-ify `l_HIO`, `hio_set`, `l_arcName`, etc. (the 18 remaining duplicates; `__OSExecParams`/`__OSAppLoaderOffset` are already `extern`).
 3. Write `platform/endian.h` and convert the choke points (`JSUInputStream`, `JASSeqReader`, `JKR*Archive`) behind a `PLATFORM_LITTLE_ENDIAN` switch, keeping the original big-endian build unaffected.
 4. Implement the `DVD*` file shim and `JUTGamePad` over `sceCtrl` (both are tiny and unblock everything).
 5. Build a **reference asset dumper** (Python with big-endian `struct`) for RARC and J3D to serve as the oracle for phase 4.

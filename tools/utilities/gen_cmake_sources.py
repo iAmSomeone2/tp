@@ -166,6 +166,26 @@ def build_outputs(libs, units):
     return outputs
 
 
+def sources_for_version(version):
+    """Repo-relative paths of every translation unit the CMake build compiles for `version`.
+
+    Same selection as the generated sources.cmake files, so other tools (clang_sweep.py) can
+    check exactly the file set that the build uses.
+    """
+    libs = load_libs()
+    units = units_per_version()
+    paths = set()
+    for _, _, names in GROUPS:
+        paths |= {p.as_posix() for p, v in collect(libs, units, names) if version in v}
+    for lib in libs:
+        if lib.get("src_dir") != JSYSTEM_SRC_DIR:
+            continue
+        for p, v in collect(libs, units, [lib["lib"]]):
+            if version in v and str(p).startswith(JSYSTEM_SRC_DIR + "/"):
+                paths.add(p.as_posix())
+    return sorted(paths)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="do not write; exit 1 if any file would change")

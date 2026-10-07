@@ -16,12 +16,14 @@ project(Nightfall
 include(TPChecks)
 include(TPConfig)
 include(TPLibrary)
+include(TPAssets)
 
 add_subdirectory(libs)
 add_subdirectory(src)
 
 tp_add_engine_target()
 tp_add_maintenance_targets()
+tp_add_asset_target()
 
 if(TP_BUILD_TESTS)
     enable_testing()

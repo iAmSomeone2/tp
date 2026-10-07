@@ -4,23 +4,23 @@ The code was written for Metrowerks CodeWarrior (`mwcceppc`) targeting 32-bit bi
 
 ## How far is the tree from a stock compiler?
 
-`tools/utilities/clang_sweep.py` runs `clang++ -std=c++20 -fsyntax-only` over every translation unit under `src/` and `libs/JSystem/src`, **without any Metrowerks or MSL headers** (GameCube USA configuration, `DEBUG` off, host pointer size). Result, from [compile-sweep.md](compile-sweep.md):
+`tools/utilities/clang_sweep.py` runs `clang++ -std=c++20 -fsyntax-only` over the translation units that the CMake build compiles for a GameCube version (the same set as `gen_cmake_sources.py`: `configure.py` plus the splits), **without any Metrowerks or MSL headers** (USA by default, `DEBUG` off, host pointer size). `--all-files` sweeps every `.cpp` under `src/` and `libs/JSystem/src` instead, which also covers files that only exist in other versions. Result, from [compile-sweep.md](compile-sweep.md):
 
-* **1,346 of 1,383 TUs (97.3%) parse cleanly.** (This was 1,293 before the `DEG_TO_RAD`/`RAD_TO_DEG` macros moved into `include/nightfall/compat/globals.hpp`, which `global.h` includes on non-Metrowerks compilers and which needs C++20, and the narrowing, `case`-label and `main` fixes that followed.)
-* The 37 remaining failures fall into a handful of mechanical categories:
+* **1,274 of 1,280 TUs (99.5%) parse cleanly**, which is exactly what the CMake build compiles. (This was 1,293 of 1,383 before the `DEG_TO_RAD`/`RAD_TO_DEG` macros moved into `include/nightfall/compat/globals.hpp`, which `global.h` includes on non-Metrowerks compilers and which needs C++20, and 1,346 before the integer-typedef and pointer-cast work.) The six failures are the five TUs that need generated `assets/*.h` and `d_a_movie_player` (six PPC-asm-only pointer casts, left alone on purpose).
+* With `--all-files` (1,384 TUs, 27 failures) the same sweep also trips over files that exist only in other versions, so those failures are expected and need no change for a GameCube build:
 
 | Cause | Files | Fix |
 |---|---|---|
 | ~~`DEG_TO_RAD` / `RAD_TO_DEG` missing (provided by MSL `<cmath>`)~~ | ~~37~~ 0 | Fixed: defined in `include/nightfall/compat/globals.hpp` using `std::numbers::pi_v<float>`. |
-| `switch` jumps past initialisation (`cannot jump from switch statement to this case label`) | 4 (38 errors, mostly `d_a_mg_rod.cpp`) | Wrap the case bodies in braces. |
-| ~~Narrowing in template arguments/case labels, e.g. `-offsetof(...)` in `JUTConsole.h`~~ | ~~21~~ 0 | Fixed with explicit casts. |
+| ~~`switch` jumps past initialisation (`cannot jump from switch statement to this case label`)~~ | ~~4~~ 0 | Fixed. |
+| ~~Narrowing in template arguments/case labels, e.g. `-offsetof(...)` in `JUTConsole.h`~~ | ~~21~~ 1 | Fixed with explicit casts, except 3 `case` labels in `d_event_debug.cpp` (debug-only). |
 | Wii/Shield-only SDK headers (`revolution/…`) | 14 | Not part of a GameCube configuration: `Z2AudioCS` (8 files, Wii-remote speaker), `m_Re` (remote pad), `d_cursor_mng`, `d_home_button`, `Z2SoundPlayer`, and 2 HostIO/MCC files. Exclude, or reimplement if you want touch/gyro-driven equivalents. |
-| Debug-only HostIO classes (`JORReflexible`, `getJORServer`, …) | ~8 | Compile out (`DEBUG` off) or drop HostIO entirely. |
-| `va_start`/`va_end`, `stricmp`/`strnicmp`, `JAUSectionHeap` declaration, `asm` in `m_Do_printf.cpp` (the last only because the sweep forces `-D__GEKKO__`) | 6 | Include `<cstdarg>`, provide the two string helpers, include or forward-declare `JAUSectionHeap`. (`main`'s return type is fixed.) |
+| Debug-only HostIO classes (`JORReflexible`, `getJORServer`, …) | 5 | `JAHioNode`, `JORServer`, `Z2DebugSys`, `d_event_debug`, plus `JGadget/define.cpp` and `std-streambuf.cpp`. All are ShieldD-only (`DEBUG=1`), so no GameCube build has them. Drop HostIO entirely, or build it under `DEBUG=1` if the debug tools are ever wanted. |
+| ~~`va_start`/`va_end`, `stricmp`/`strnicmp`, `JAUSectionHeap` declaration, `asm` in `m_Do_printf.cpp`~~ | ~~7~~ 0 | Fixed. (The `m_Do_printf` `asm` error was an artifact of the sweep forcing `-D__GEKKO__`, which it no longer does.) |
 | Generated asset headers missing (`assets/…`) | 5 | Produced from your disc image by the build (see [../01-project-overview.md](../01-project-overview.md)). |
-| Pointer cast to a smaller integer | 2 | Only fails on 64-bit hosts; fine on 32-bit ARM. Use `uintptr_t`. |
+| Pointer cast to a smaller integer | 4 | `JAHFrameNode` and `JAHioNode` (HostIO), `d_event_debug` (debug-only) and `d_a_movie_player` (six sites in the PPC-asm path, left alone on purpose). Everything else is converted to `uintptr_t`. |
 
-A deeper check confirms the picture: compiling all actor TUs to **object code** (`-c -O0`) succeeds for 758 of 765 files (the same failure list), so the game-object layer is very close to building.
+A deeper check confirms the picture: compiling all actor TUs to **object code** (`-c -O0`) succeeds for 761 of 765 files (the same failure list), so the game-object layer is very close to building.
 
 This is not evidence that the game *works*: it is a syntax/codegen pass on a 64-bit host. It does say the remaining language-level work is small compared with the platform work (graphics, audio, I/O, data).
 
@@ -45,7 +45,7 @@ The original build flags (`configure.py`) encode assumptions the source relies o
 ## Type sizes and layout
 
 * **Pointers and `long` are 4 bytes on both** the PowerPC EABI and 32-bit ARM. Structs annotated `/* 0x.. */` and file-embedded pointer-sized fields (e.g. `ResTIMG::imageOffset` is a `uintptr_t`) keep their layout. A 64-bit desktop build would break these; the Vita build does not. This is a genuine advantage of the target.
-* `u32`/`s32` (and the other integer typedefs) are now defined from `<cstdint>` in `libs/dolphin/include/dolphin/types.h`, so they are 32-bit on 64-bit Linux as well as on ARM; before, `unsigned long`/`long` made them 64-bit on LP64. Fixing the pointer casts that fell out of this is in progress; see section F of [compiler-fixes.md](compiler-fixes.md).
+* `u32`/`s32` (and the other integer typedefs) are now defined from `<cstdint>` in `libs/dolphin/include/dolphin/types.h`, so they are 32-bit on 64-bit Linux as well as on ARM; before, `unsigned long`/`long` made them 64-bit on LP64. The pointer casts that fell out of this are fixed apart from `d_a_movie_player`; see section F of [compiler-fixes.md](compiler-fixes.md).
 * **Bit-fields** (62 in 7 files, mostly JAudio2 `JAISound.h`, `JASTrack.h`, `Z2SeqMgr.h`) allocate from the most significant bit on big-endian and from the least significant on little-endian. Fine for purely in-memory state, wrong if the struct overlays file/hardware data. See [endianness.md](endianness.md).
 * **Pointer-to-member** types appear in ~610 places (336 files), mostly state-machine tables such as `typedef void (dFoo_c::*procFunc)()`. Their size differs between MWCC (12 bytes) and the Itanium ABI used on ARM (8 bytes). It only matters where code depends on absolute offsets into such classes; the many `/* 0x… */` offset comments and `STATIC_ASSERT(sizeof(X) == 0x..)` (788 of them) will not hold for classes containing member pointers.
 * **Virtual tables and multiple inheritance** follow different ABIs; nothing in the game depends on vtable layout, but decomp-era hacks that reorder or force vtable/`weak` emission are irrelevant on a new toolchain.
@@ -75,8 +75,7 @@ The original loads ~750 actor RELs on demand through `DynamicModuleControl` (`sr
 
 * `cDyl_*` and `fpcLd_*` become trivial (every process is "already linked"); `DMC[]` slots are `NULL` in the original for DOL-resident code, and the same logic can apply to everything.
 * The profile list `g_fpcPfLst_ProfileList[]` is already a plain table of `&g_profile_*` (see `src/f_pc/f_pc_profile_lst.cpp`), so it works as-is once the profiles are in the same binary. Keep it ordered by `fpcNm_*_e`.
-* **Symbol collisions.** Because each REL was its own link unit, actor TUs can define the same non-static global. `tools/utilities/dup_symbol_check.py` compiled 752 of 765 actor TUs and found only **20 duplicated strong symbols** ([duplicate-symbols.md](duplicate-symbols.md)):
-  * `__OSExecParams` and `__OSAppLoaderOffset`: header-defined SDK globals emitted into every TU because `AT_ADDRESS` is empty off-MWCC. Make them `extern` in the header, define once.
+* **Symbol collisions.** Because each REL was its own link unit, actor TUs can define the same non-static global. `tools/utilities/dup_symbol_check.py` compiled 761 of 765 actor TUs and found only **18 duplicated strong symbols** ([duplicate-symbols.md](duplicate-symbols.md)). The header-defined SDK globals `__OSExecParams` and `__OSAppLoaderOffset` were the other two; they are `extern` now and defined once in `src/nightfall/platform/os_globals.cpp`.
   * `l_HIO` (24 files), `hio_set` (6), `l_arcName` (3), `l_evtList` (2), `target_info*`, `jv_offset`, `jc_data`, `c_start`: file-local names that should be `static`.
   * `dummy()`, `dummy2()`, `dummyLiteral()`, `dummyString()`, `dummy_lit_3931()`: decomp-only ordering hacks; delete.
   * `daB_DS_c::getHandPosL/R`, `daObj_SSBase_c::setSoldOut`, `useHeapInit`: real functions defined in more than one TU.
