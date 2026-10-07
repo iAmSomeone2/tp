@@ -10,6 +10,9 @@ project(Nightfall
     LANGUAGES CXX
 )
 
+# Nothing uses C++20 modules yet; scanning every TU for them roughly doubles the build graph.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 # This build is independent of configure.py/ninja (the Metrowerks matching build). It
 # compiles the game and JSystem sources with a stock Clang or GCC; see docs/port/cmake.md.
 

@@ -11,3 +11,8 @@ target_include_directories(tp_dolphin INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/dolphin"
 )
+
+# Outside Metrowerks the headers only declare the SDK's fixed-address globals (__OSBusClock, ...);
+# nf_platform defines them. Linking it here puts it after every library that uses them, which
+# single-pass linkers such as GNU ld need.
+target_link_libraries(tp_dolphin INTERFACE nf_platform)

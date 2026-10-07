@@ -18,7 +18,7 @@ Measured with Apple clang 21, `debug` preset (C++20), GameCube USA:
 * **1,280 translation units** are compiled (1,281 for PAL/JPN).
 * **1,274 compile; 6 do not.** Four need generated `assets/*.h` from a disc image (`d_a_grass`, `d_a_mant`, `d_a_player`, `m_Do_ext`; `d_error_msg` needed them too until its disc-error screen was removed, so it should now compile without a disc image, but the count here has not been re-measured) and need no source change. The sixth, `d_a_movie_player`, has six `(u32)&(h->maxCode)` sites that exist only in the PowerPC-assembly path and are deliberately left alone. History: 1,215, 1,248, 1,265, then 1,275 of 1,280 until `libs/dolphin/include/dolphin/types.h` was switched to `<cstdint>` types (which made `u32`/`s32` 32-bit on 64-bit hosts) dropped it to 313, then back up as the pointer casts and type mismatches of section F were fixed ([compiler-fixes.md](compiler-fixes.md)).
 * **The executable `tp` is defined but cannot link yet.** `m_Do_main.cpp` is its entry point and `tp::engine` supplies everything else, but the SDK implementation is missing. The unit tests do link the real libraries, leniently (see Tests below), and the actor duplicate-symbol check is in [duplicate-symbols.md](duplicate-symbols.md).
-* **GCC is untested** (not installed on the machine this was written on). The flags are all standard GCC options and are probed with `check_compiler_flag`, but expect the GCC-only diagnostics listed in `compiler-fixes.md`.
+* **GCC 16.2 (Fedora 44, `default` preset, GameCube USA, disc image present): 1,279 of 1,280 library TUs compile**; only `d_a_movie_player` fails, as with clang. Getting there needed two include-case fixes (`JASDSPInterface.h`, `J2DOrthoGraph.h`; the earlier macOS filesystem ignored case) and `std::isinf` in `JUTException.cpp` (libstdc++'s `<cmath>` has no global `isinf`). With GCC 16, CMake also scans every C++20 TU for modules, which roughly doubles the build graph; the top-level `CMakeLists.txt` turns that off (`CMAKE_CXX_SCAN_FOR_MODULES OFF`) until something uses modules. All 75 unit tests pass (see Tests below for the GNU ld link-order fix).
 
 ## What is built, and what is not
 
@@ -140,6 +140,7 @@ Unit tests use GoogleTest and are off by default (`-DTP_BUILD_TESTS=ON`, then `c
   * `JUtility`: the `JUTCacheFont` page list.
   * `JKernel`: `JKRArchive::check_mount_already` (including mount keys that differ only above bit 31), the `JKRDecomp` thread loop with its callback, and the type contract of the async-load callback. The callback call inside `JKRDvdAramRipper::loadToAram_Async` is not executed, because it needs the DVD/ARAM stack; the test file says so.
 * Each group was checked against deliberately broken versions of the code to confirm that it fails.
+* **GNU ld link order.** GNU ld searches each archive once, in order, so `nf_platform` has to come after the libraries that use its globals. Under `--unresolved-symbols=ignore-all`, if it comes too early, `__OSBusClock` resolves to address 0 and every test segfaults in `JUTGamePad.cpp`'s global initialiser. `tp::dolphin` therefore links `nf_platform` (`libs/dolphin/CMakeLists.txt`), which puts it after every engine library. ld64 on macOS is not order-sensitive, which is why this did not show up there.
 
 ## Platform layer
 
