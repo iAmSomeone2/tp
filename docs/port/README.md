@@ -36,6 +36,7 @@ The console figures are approximate and only here for context. The important asy
 | [compile-sweep.md](compile-sweep.md) | *Generated.* Per-file results of the modern-compiler sweep. |
 | [cmake.md](cmake.md) | The host-agnostic CMake/Ninja build of the GameCube engine: layout, options, flag mapping from `configure.py`, status, known gaps. |
 | [compiler-fixes.md](compiler-fixes.md) | Hand-written punch list for getting the tree to compile on stock Clang and GCC (file, line, suggested fix). |
+| [math.md](math.md) | Plan for `nf_math`: host versions of the SDK's `MTX`/`VEC` library and of JSystem's paired-single asm (some of which currently compiles to empty functions), then NEON for the hot paths. |
 
 ## Decisions that shape everything (recommendations in bold)
 

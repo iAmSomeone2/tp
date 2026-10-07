@@ -20,11 +20,11 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 | 3 | **File I/O and archives** | M | `DVD*` shim over the extracted data directory; `JKRArchive` opens `.arc`; Yaz0 decompression verified. *Requires the archive header fix-ups from [endianness.md](endianness.md).* |
 | 4 | **Data fix-ups (endianness)** | L | Loaders for J3D models/animations, `ResTIMG`, `.dzs/.dzr/.dzb`, BMG, events, JPC, STB byte-swap correctly. Golden-dump tests pass for many files. Loading a full stage (`F_SP103`, Ordon Village) completes with no asserts. |
 | 5 | **GX layer + 2D** | XL | GX API subset implemented over GXM; ubershader TEV; immediate-mode batching; textures converted. J2D screens render: the Nintendo logo and title screen appear. |
-| 6 | **3D world** | XL | J3D models decode and draw (option C in [graphics.md](graphics.md)): stage geometry, Link with skeletal animation, lighting and fog, sky. Draw-order passes match the original. Walk around Ordon Village with input working. |
+| 6 | **3D world** | XL | J3D models decode and draw (option C in [graphics.md](graphics.md)): stage geometry, Link with skeletal animation, lighting and fog, sky. Draw-order passes match the original. Needs host versions of the SDK and JSystem matrix math first ([math.md](math.md)). Walk around Ordon Village with input working. |
 | 7 | **Input, save, misc I/O** | S–M | Vita controls mapped ([sdk-surface.md](sdk-surface.md#input-pad-si)); file-backed memory card; the message box, HUD and menu run; game can be saved/loaded. |
 | 8 | **Audio** | L | Software mixer behind `JASDSPChannel`; sequenced music, sound effects and streaming work; Z2 3D positioning correct. Silence is acceptable until here; *do not block phases 5–7 on it.* |
 | 9 | **Effects and special cases** | L | Particles, shadows, bloom, depth-of-field, indirect-texture water/warp, mirrors, cloth, rain; THP video replacement (or skip cutscene movies initially). |
-| 10 | **Performance, memory, polish** | L | Batching/precompiled shaders; NEON for hot math; texture/mesh cooking; profile the 30 Hz frame on device; touch UI; widescreen HUD decision; suspend/resume. |
+| 10 | **Performance, memory, polish** | L | Batching/precompiled shaders; NEON for hot math ([math.md](math.md)); texture/mesh cooking; profile the 30 Hz frame on device; touch UI; widescreen HUD decision; suspend/resume. |
 
 ### Milestones you can announce
 
