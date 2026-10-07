@@ -36,6 +36,27 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 * **M6** – First dungeon playable end to end.
 * **M7** – Full game; performance target reached.
 
+## Stretch goal: frame rates above 30 Hz
+
+Not part of the port proper; consider it once M7 is reached. Size: L.
+
+**Approach: fixed-rate simulation, interpolated rendering.** The game logic stays at its fixed 30 Hz tick (`d_s_play.cpp` sets `mDoGph_gInf_c::setTickRate(OS_TIMER_CLOCK / 30)`; the logo scene uses 60 Hz). Rendering runs at the display rate and blends between the two most recent ticks by a fraction `alpha` in [0, 1): actor base matrices, joint animation (the frame value, or the computed joint matrices), the camera (eye, center, field of view) and 2D element positions. Gameplay, physics and timings are unchanged; motion is smoother. The PC ports of Ocarina of Time and Majora's Mask (Ship of Harkinian, 2 Ship 2 Harkinian) took a 20 Hz game to high frame rates this way.
+
+**Rejected: converting to delta time.** The game logic assumes a fixed step throughout. Per-tick velocity (`speedF`) appears on 3,974 lines of actor code, and the per-tick chase/ease helpers `cLib_chaseF`/`cLib_addCalc*` on about 7,400 lines; `addCalc` applies a fixed fraction per tick, so a correct delta-time version needs `pow()` and changes the tuning at every call site. Add frame-count timers, animation frame counters, collision tuned to the step size and the `d_a_alink` state machine, and every one of ~750 actors becomes a bug hunt.
+
+**Work involved:**
+
+* Split the frame loop: `fpcM_Management`'s execute step on simulation ticks only, the draw step on every display frame, with `alpha` available to the draw path.
+* Make draw handlers idempotent. They would run several times per tick, so any draw code that advances a counter, draws from the RNG or changes state has to move into execute. This needs an audit of the actors.
+* Snap instead of blending across discontinuities: camera cuts, warps, respawns, room changes, and actors created or deleted between ticks. The SoH approach tags each recorded matrix with a stable ID and only blends matching IDs.
+* Particles (JPA) and many J2D animations step once per tick; interpolate their output or step them per frame.
+* CPU cost: recomputing J3D joint matrices per display frame roughly doubles that work (see [math.md](math.md); GPU skinning helps most).
+* Input latency stays at the 30 Hz tick; only the presentation gets smoother.
+
+**On the Vita** the display is 60 Hz, so the target there is interpolated 60 Hz, and only if a stable 30 Hz leaves headroom. A desktop host build is where higher refresh rates pay off.
+
+**Do now:** nothing to implement, but design the GX → GXM layer so this stays cheap later; see [graphics.md](graphics.md#designing-for-frame-interpolation).
+
 ## Concrete first tasks
 
 Small, independent, and useful whichever way the rest goes:
