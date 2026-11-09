@@ -87,7 +87,7 @@ Small, independent, and useful whichever way the rest goes:
 
 1. **Base version**: GameCube USA (recommended; fully matching, best-understood) vs. a Wii or Shield base (widescreen and newer code, but less decompiled).
 2. **Aspect ratio**: pillar-boxed 4:3 first, then widescreen (port the Wii `WIDESCREEN_SUPPORT` paths), or widescreen from the start?
-3. **Shader strategy** (graphics.md): ubershader first with offline precompilation later, or runtime generation from the beginning?
+3. **Shader strategy** (graphics.md): ubershader first with offline precompilation later, or runtime generation from the beginning? The static-analysis plan for the precompiled set is in [shader-analysis.md](shader-analysis.md).
 4. **Endianness**: convert on load first (recommended), then cook assets; or cook up front?
 5. **Save compatibility**: native little-endian saves only, or importing original GameCube saves?
 6. **Audio ambition**: faithful DSP behaviour (effects, filters, Dolby pan) or a simpler mixer to start?

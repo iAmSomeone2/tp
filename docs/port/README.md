@@ -31,6 +31,9 @@ The console figures are approximate and only here for context. The important asy
 | [sdk-surface.md](sdk-surface.md) | Every SDK family the code touches (OS, DVD, PAD, CARD, VI, audio HW, MTX…): how much, where, and what replaces it. |
 | [endianness.md](endianness.md) | Where big-endian data is parsed, per format, and strategies (convert on load vs. cook once). |
 | [graphics.md](graphics.md) | GX usage, what J3D/J2D/JPA emit, options for a GXM back end, textures, render targets, screen size. |
+| [shader-analysis.md](shader-analysis.md) | Finding every GX shader configuration statically (disc data + a small set of code transforms) so GXM programs can be precompiled: method, pseudocode IR, results, next steps. Tools in `tools/gx_shaders/`. |
+| [shader-survey.md](shader-survey.md) | *Generated* from the user's disc by `tools/gx_shaders/scan.py`: distinct shader programs per canonicalisation level, coverage, shared patterns. |
+| [shader-code-paths.md](shader-code-paths.md) | *Generated* from the source by `tools/gx_shaders/gxcalls.py`: GX state set by code, per draw site, and the programs it implies. |
 | [roadmap.md](roadmap.md) | Phased plan, milestones, risks, and open decisions. |
 | [survey-data.md](survey-data.md) | *Generated.* Full tables behind the numbers in these pages. |
 | [compile-sweep.md](compile-sweep.md) | *Generated.* Per-file results of the modern-compiler sweep. |

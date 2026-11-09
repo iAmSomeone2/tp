@@ -56,6 +56,16 @@ python3 tools/utilities/port_survey.py                                          
 python3 tools/utilities/gen_actor_index.py                                        # writes docs/actor-index.md
 ```
 
+GX shader analysis (`tools/gx_shaders/`, method and results in `docs/port/shader-analysis.md`): derives the discrete shader programs the game needs from disc data and from GX calls in code. `scan.py` and `check_equiv.py` need the disc's `files/res` extracted; `gxcalls.py` uses the system libclang. Each runs in seconds. Outputs under `build/gx_shaders/` come from the disc and are not committed.
+
+```sh
+build/tools/dtk vfs cp orig/GZ2E01/GZ2E01.iso:files/res <dir>                          # extract (decompresses Yaz0)
+python3 tools/gx_shaders/scan.py --disc <dir> --report docs/port/shader-survey.md      # disc materials -> programs
+python3 tools/gx_shaders/gxcalls.py --data-programs build/gx_shaders/draws.csv --report docs/port/shader-code-paths.md  # code paths
+python3 tools/gx_shaders/shader.py                                                     # canonicaliser self-check
+python3 tools/gx_shaders/check_equiv.py --disc <dir>                                   # numeric check vs a TEV reference
+```
+
 When their numbers change, also update prose that quotes them (e.g. in `docs/port/README.md` and `docs/port/toolchain.md`).
 
 ## Architecture (big picture)
