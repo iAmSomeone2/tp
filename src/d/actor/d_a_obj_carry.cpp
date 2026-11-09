@@ -1314,7 +1314,7 @@ int daObjCarry_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, getArcName());
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, data().m_heapSize)) {
             return cPhs_ERROR_e;
         }

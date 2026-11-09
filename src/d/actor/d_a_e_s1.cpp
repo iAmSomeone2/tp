@@ -2085,7 +2085,7 @@ static int daE_S1_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, e_s1_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "E_S2");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_S1 PARAM %x\n", fopAcM_GetParam(i_this));
         OS_REPORT("E_S1 AZ    %x\n", i_this->current.angle.z);
         l_no_fail = false;

@@ -276,7 +276,7 @@ static char* l_dzbName[3] = {
 int daZdoor_c::create1st() {
     mDoorType = getType();
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName[mDoorType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName[mDoorType], l_dzbName[mDoorType]);
         JUT_ASSERT(604, dzb_id != -1);
         

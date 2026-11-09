@@ -735,7 +735,7 @@ int daE_FK_c::Create() {
     fopAcM_ct(this, daE_FK_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_fk");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_FK PARAM %x\n", fopAcM_GetParam(this));
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1C20)) {
             return cPhs_ERROR_e;

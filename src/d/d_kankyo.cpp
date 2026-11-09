@@ -8291,7 +8291,7 @@ static int dKy_Create(void* i_this) {
     }
     #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dKy_Method = {

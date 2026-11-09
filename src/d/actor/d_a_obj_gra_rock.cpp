@@ -208,7 +208,7 @@ int daObjGraRock_c::create() {
         if (rv == cPhs_ERROR_e || rv == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (rv == cPhs_COMPLEATE_e) {
+        if (rv == cPhs_COMPLETE_e) {
             completedNum++;
         }
     }

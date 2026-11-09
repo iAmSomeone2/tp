@@ -78,7 +78,7 @@ cPhs_Step daObjGrzRock_c::create() {
             return cPhs_ERROR_e;
         }
 
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             dzb_id++;
         }
     }

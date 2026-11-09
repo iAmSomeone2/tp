@@ -43,7 +43,7 @@ int daCowdoor_c::CreateHeap() {
 int daCowdoor_c::create() {
     fopAcM_ct(this, daCowdoor_c);
     int phase = dComIfG_resLoad(&field_0x5a0, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, l_dzbName);
         JUT_ASSERT(169, dzb_id != -1);
         phase = MoveBGCreate(l_arcName, dzb_id, dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL);

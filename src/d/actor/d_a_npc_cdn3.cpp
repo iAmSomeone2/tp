@@ -382,7 +382,7 @@ inline int daNpcCdn3_c::create() {
         JUT_ASSERT(175, FALSE);
     }
     int rv = loadResrc(m_type, mObjNum);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         int heapSize = 0x2890;
 #if DEBUG
         heapSize |= fopAcM::HeapSkipMargin;

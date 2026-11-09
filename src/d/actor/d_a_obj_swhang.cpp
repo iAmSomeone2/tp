@@ -177,7 +177,7 @@ int daObjSwHang_c::create1st() {
     fopAcM_ct(this, daObjSwHang_c);
     mType = getType_private();
     int rv = dComIfG_resLoad(&mPhase, l_arcName[mType]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName[mType],
              l_dzbIdx2[mType], NULL,
              l_heap_size[mType], NULL);

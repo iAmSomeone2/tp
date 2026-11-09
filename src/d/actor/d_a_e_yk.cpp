@@ -1452,7 +1452,7 @@ static int daE_YK_Create(fopAc_ac_c* i_this) {
 
     int phase_step = dComIfG_resLoad(&yk->mPhase,"E_YK");
 
-    if (phase_step == cPhs_COMPLEATE_e) {
+    if (phase_step == cPhs_COMPLETE_e) {
         s32 param = fopAcM_GetParam(yk) >> 24;
 
         if (param != 0xFF && dComIfGs_isSwitch(param,fopAcM_GetRoomNo(yk))) {

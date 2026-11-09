@@ -406,7 +406,7 @@ static int daE_TK_BALL_Create(fopAc_ac_c* i_this) {
         size = 0xEE0;
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_tk_BALL PARAM %x\n", fopAcM_GetParam(i_this));
         actor->mArg1 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;
         if (actor->mArg1 == 0xff) {

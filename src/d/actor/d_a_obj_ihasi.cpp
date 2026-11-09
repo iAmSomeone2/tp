@@ -155,7 +155,7 @@ static int daObj_Ihasi_Create(fopAc_ac_c* i_actor) {
 
     cPhs_Step step = dComIfG_resLoad(&i_this->mPhaseReq, "Obj_ihasi");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_IHASI PARAM %x\n", fopAcM_GetParam(i_actor));
         u32 param1;
         u32 param2;

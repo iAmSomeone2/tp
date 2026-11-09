@@ -154,7 +154,7 @@ cPhs_Step daObjMirrorScrew_c::create() {
     }
 
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0xc760, NULL);
         if (step == cPhs_ERROR_e) {
             return step;
@@ -203,7 +203,7 @@ int daObjMirrorScrew_c::Create() {
     mpSand = NULL;
 
     setAction(ACT_WAIT);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjMirrorScrew_c::Execute(Mtx** i_mtxP) {

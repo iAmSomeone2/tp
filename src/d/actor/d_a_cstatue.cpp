@@ -235,7 +235,7 @@ int daCstatue_c::create() {
         mResName = l_arcName;
     }
     int result = dComIfG_resLoad(&mPhaseReq, mResName);
-    if (result == cPhs_COMPLEATE_e) {
+    if (result == cPhs_COMPLETE_e) {
         mParam0 = fopAcM_GetParam(this) & 0xff;
         mParam1 = (fopAcM_GetParam(this) >> 12) & 0xff;
         mParam2 = (fopAcM_GetParam(this) >> 20) & 0x3f;

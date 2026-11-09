@@ -50,7 +50,7 @@ int daTagSppath_c::create() {
         mHeight = 100.0;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagSppath_Create(fopAc_ac_c* i_this) {

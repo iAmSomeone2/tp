@@ -178,7 +178,7 @@ static int daObj_Lv3waterB_Create(fopAc_ac_c* i_this) {
 
     int phase_state = dComIfG_resLoad(&actor->mBWaterPhase, "L3_bwater");
     int octhibi_phase_state = dComIfG_resLoad(&actor->mOcthibiPhase, "S_octhibi");
-    if (phase_state == cPhs_COMPLEATE_e && octhibi_phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e && octhibi_phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_LV3WATERB PARAM %x\n", fopAcM_GetParam(i_this));
         OS_REPORT("OBJ_LV3WATERB//////////////OBJ_LV3WATERB SET 1 !!\n");
 
@@ -206,7 +206,7 @@ static int daObj_Lv3waterB_Create(fopAc_ac_c* i_this) {
 
         daObj_Lv3waterB_Execute(actor);
         return phase_state;
-    } else if (phase_state == cPhs_COMPLEATE_e) {
+    } else if (phase_state == cPhs_COMPLETE_e) {
         return octhibi_phase_state;
     }
 

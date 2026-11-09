@@ -218,7 +218,7 @@ int daDsh_c::create() {
     static const char* l_resName[] = {l_arcName[mType], ""};
 
     int phase = mResLoader.load(l_resName, NULL);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName[mType], l_dzb[mType], dBgS_MoveBGProc_Typical,
                              l_heap_size[mType], NULL);
         if (phase == cPhs_ERROR_e) {

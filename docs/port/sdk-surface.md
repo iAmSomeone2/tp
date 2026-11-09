@@ -101,7 +101,7 @@ The Vita screen also offers touch for menus and map selection; the item wheel (`
 
 ## Math library (`MTX`, `VEC`, `QUAT`)
 
-1,794 calls to 62 functions (`MTXCopy` 930, `MTXConcat` 122, `MTXMultVec` 50, `MTXIdentity`, `VECScale`, `MTXInverse`, …) in 419 files. The SDK ships hand-written paired-single assembly (`PSMTX*`, in `libs/dolphin/src/mtx/`) and C reference versions (`C_MTX*`). For the port use straightforward C first, then NEON for the hot ones (`MTXConcat`, `MTXMultVec`, skinning). J3D has its own `J3DPSMtxArrayConcat`-style matrix code (guarded `asm` with C fallbacks).
+1,794 calls to 62 functions (`MTXCopy` 930, `MTXConcat` 122, `MTXMultVec` 50, `MTXIdentity`, `VECScale`, `MTXInverse`, …) in 419 files. The SDK ships hand-written paired-single assembly (`PSMTX*`, in `libs/dolphin/src/mtx/`) and C reference versions (`C_MTX*`). For the port use straightforward C first, then NEON for the hot ones (`MTXConcat`, `MTXMultVec`, skinning). J3D and JMath have their own paired-single matrix and vector code. Most of it has no C fallback: on a host it is either undefined (`J3DPSMtxArrayConcat`) or compiles to an empty function. See [math.md](math.md).
 
 ## What you can delete
 

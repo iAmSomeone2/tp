@@ -283,7 +283,7 @@ cPhs_Step daNpc_Kolinb_c::create() {
     mTwilight = false;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, modelType:%02x<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo, (getModelType() >> 32) & 0xFF, fopAcM_GetParam(this));
 
         if (isDelete()) {

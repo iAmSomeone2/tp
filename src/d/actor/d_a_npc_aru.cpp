@@ -392,7 +392,7 @@ cPhs_Step daNpc_Aru_c::create() {
     mTwilight = false;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x<%08x> ", fopAcM_getProcNameString(this),
                   mType, mFlowNodeNo, getPathID(), fopAcM_GetParam(this));
 
@@ -475,7 +475,7 @@ int daNpc_Aru_c::CreateHeap() {
     for (u16 i = 0; i < mdlData_p->getJointNum(); i++) {
         mdlData_p->getJointNodePointer(i)->setCallBack(ctrlJointCallBack);
     }
-    model->setUserArea((u32)this);
+    model->setUserArea(reinterpret_cast<uintptr_t>(this));
 
     mpMatAnm[0] = new daNpcT_MatAnm_c();
     if (mpMatAnm[0] == NULL) {

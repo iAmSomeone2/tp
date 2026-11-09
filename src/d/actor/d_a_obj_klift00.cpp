@@ -119,7 +119,7 @@ cPhs_Step daObjKLift00_c::create1st() {
     mNumChains = mNumChainModels + 1;
 
     cPhs_Step phase = static_cast<cPhs_Step>(dComIfG_resLoad(this, l_arcName));
-    if(phase == cPhs_COMPLEATE_e) {
+    if(phase == cPhs_COMPLETE_e) {
         #if DEBUG
         phase = static_cast<cPhs_Step>(MoveBGCreate(l_arcName, l_dzbidx[0], dBgS_MoveBGProc_TypicalRotY, 0x2000, NULL));
         #else

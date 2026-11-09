@@ -85,7 +85,7 @@ static char* l_arcName = "BHBridge";
 inline int daObjBhbridge_c::create() {
     fopAcM_ct(this, daObjBhbridge_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_BHbridge.dzb");
         JUT_ASSERT(109, dzb_id != -1);
         rv = MoveBGCreate(l_arcName, dzb_id, dBgS_MoveBGProc_TypicalRotY, 0x15a0, NULL);
@@ -123,7 +123,7 @@ inline int daObjBhbridge_c::Create() {
     fopAcM_setCullSizeBox(this, -400.0f, -800.0f, -1000.0f, 400.0f, 300.0f, 1000.0f);
     initBaseMtx();
     mpBgW->SetRideCallback(rideCallBack);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 inline int daObjBhbridge_c::Execute(f32 (**i_mtxP)[3][4]) {

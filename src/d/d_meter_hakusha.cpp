@@ -98,7 +98,7 @@ int dMeterHakusha_c::_create() {
 
     mButtonAPosX = 0.0f;
     mButtonAPosY = 0.0f;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMeterHakusha_c::_execute(u32 i_flags) {

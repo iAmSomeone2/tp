@@ -1165,7 +1165,7 @@ static int daE_SG_Create(fopAc_ac_c* i_this) {
 
     cPhs_Step step = dComIfG_resLoad(&a_this->mPhaseReq, "E_sg");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(i_this, useHeapInit, 4000)) {
             return cPhs_ERROR_e;
         }

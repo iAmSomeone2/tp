@@ -107,7 +107,7 @@ Find the model's `Draw`: `g_env_light.settingTevStruct(type, &pos, &tevStr)` the
 * **`.inc` files are not standalone.** `d_a_alink_*.inc`, `d_grass.inc`, `d_flower.inc`, `kn_*.inc`, `zra.inc`, HIO data `.inc` files are `#include`d in the middle of a `.cpp`; edit/read them in that context.
 * **Weak-function order and "AUDIO_INSTANCES"** – match-critical oddities (dummy functions such as `dummy()`/`dummy2()`/`dummy5()` exist only to influence compiler output order or pull in inline functions).
 * **`JUT_ASSERT(line, …)` line numbers** are literal; don't renumber them.
-* **Misspellings are canonical** (`cPhs_COMPLEATE_e`, `d_resorce`, `d_tresure`, `_wether`, `Distanse`).
+* **Misspellings are canonical** (`d_resorce`, `d_tresure`, `_wether`, `Distanse`). This fork renamed one, `cPhs_COMPLEATE_e`, to `cPhs_COMPLETE_e`.
 * **Two vocabularies of "layer"** (process layers vs. story layers) and **of "scene"** (`scene_class` process vs. stage) – see glossary.
 * **Actors are addressed by ID**, not pointer: `fpc_ProcID` + `fopAcM_SearchByID`; pointers may dangle after deletion.
 * **Debug-only code** (`#if DEBUG`) is often the only place a subsystem's real names survive.

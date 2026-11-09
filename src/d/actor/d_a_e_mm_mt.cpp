@@ -760,7 +760,7 @@ static int daE_MM_MT_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_mm_mt_class);
 
     int phase = dComIfG_resLoad(&helmasaurShell->m_phase, "E_MM_MT");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_MM_MT PARAM %x\n", fopAcM_GetParam(i_this));
         helmasaurShell->parameters = fopAcM_GetParam(i_this);
         OS_REPORT("E_MM_MT//////////////E_MM_MT SET 1 !!\n");

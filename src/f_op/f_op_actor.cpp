@@ -540,7 +540,7 @@ static int fopAc_Create(void* i_this) {
     fopAcM_assert(1113, actor, fopAcM_CheckCondition(actor, fopAcCnd_INIT_e), "fopAcM_ct No Call !!");
     #endif
 
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         fopDwTg_ToDrawQ(&actor->draw_tag, fpcM_DrawPriority(actor));
     } else if (ret == cPhs_ERROR_e) {
         fopAcM_OnCondition(actor, 0x10);

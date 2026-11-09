@@ -36,7 +36,7 @@ int daObjHBarrel_c::create() {
     fopAcM_ct(this, daObjHBarrel_c);
 
     s32 loadResult = dComIfG_resLoad(this, l_arcName);
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daObjHBarrel_c_createHeap, 0x1000)) {
             return cPhs_ERROR_e;
         }

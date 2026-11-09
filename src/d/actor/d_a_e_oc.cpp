@@ -2739,9 +2739,9 @@ cPhs_Step daE_OC_c::create() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhaseReqs[0], mName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = dComIfG_resLoad(&mPhaseReqs[1], "E_ocb");
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             OS_REPORT("E_OC PARAM %x\n", fopAcM_GetParam(this));
             if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x2e40)) {
                 return cPhs_ERROR_e;

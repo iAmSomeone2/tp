@@ -2078,7 +2078,7 @@ static int daB_GM_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, b_gm_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "B_gm");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("B_gm PARAM %x\n", fopAcM_GetParam(i_this));
         OS_REPORT("B_gm//////////////B_GM SET 1 !!\n");
 

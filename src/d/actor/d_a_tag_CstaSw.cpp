@@ -38,7 +38,7 @@ int daTagCstaSw_c::create() {
     l_HIO.entryHIO("石像ＳＷタグ");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 fopAc_ac_c* daTagCstaSw_c::searchSekizoAct(void* i_actor, void* param_1) {

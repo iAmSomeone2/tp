@@ -14,7 +14,7 @@ static const char* l_arcName = "K_jgjs";
 
 int daObjKJgjs_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         setMtx();
         field_0x60c = getType();
         if (field_0x60c < 0) {

@@ -52,13 +52,13 @@ int daObjZraMark_c::Create() {
     int phase_state = cPhs_ERROR_e;
     for (int i = 0; i < 1; i++) {
         phase_state = dComIfG_resLoad(&mPhase[i], l_arcName[i]);
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             OS_REPORT("リソース読み込み失敗！！ :: %s \n", l_arcName[i]);
             return phase_state;
         }
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x85B0)) {
             return cPhs_ERROR_e;
         }

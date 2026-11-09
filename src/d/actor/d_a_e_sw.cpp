@@ -1683,7 +1683,7 @@ cPhs_Step daE_SW_c::create() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, "E_SW");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_SW PARAM %x %d %d\n", fopAcM_GetParam(this), field_0x696, fopAcM_GetID(this));
         shape_angle.x = 0;
         current.angle.x = 0;

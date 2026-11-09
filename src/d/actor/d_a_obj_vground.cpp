@@ -67,7 +67,7 @@ int daObjVGnd_c::CreateHeap() {
 int daObjVGnd_c::create() {
     fopAcM_ct(this, daObjVGnd_c);
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, (heapCallbackFunc)CheckCreateHeap, 0x960)) {
             return cPhs_ERROR_e;
         } else if (!Create()) {

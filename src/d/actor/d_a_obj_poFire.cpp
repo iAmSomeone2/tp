@@ -80,7 +80,7 @@ int daPoFire_c::create() {
     fopAcM_ct(this, daPoFire_c);
 
     int phase = dComIfG_resLoad(&mPhase, "poFire");
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return cPhs_INIT_e;
     }
     fopAcM_setRoomLayer(this, fopAcM_GetRoomNo(this));
@@ -108,7 +108,7 @@ int daPoFire_c::create() {
     l_HIO.entryHIO("ポウ炎");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daPoFire_c::Execute() {

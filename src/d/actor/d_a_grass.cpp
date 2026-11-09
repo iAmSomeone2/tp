@@ -351,7 +351,7 @@ int daGrass_c::create() {
 
     m_myObj = this;
     fopAcM_setStageLayer(this);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daGrass_c::Delete() {

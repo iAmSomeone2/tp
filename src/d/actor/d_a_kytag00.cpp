@@ -456,7 +456,7 @@ static int daKytag00_Create(fopAc_ac_c* i_this) {
     g_env_light.mMoyaCount = 0;
 
     wether_tag_efect_move(a_this);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag00_Method = {

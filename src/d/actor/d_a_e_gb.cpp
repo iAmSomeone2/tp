@@ -394,7 +394,7 @@ static void e_gb_damage(e_gb_class* i_this) {
 
     i_this->invulnerabilityTimer = 35;
     switch (i_this->mode) {
-    case 0:
+    case 0: {
         i_this->mode = 1;
         s16 angleDiff = i_this->angleYTarget - actor->current.angle.y;
         if (angleDiff < 0) {
@@ -414,6 +414,7 @@ static void e_gb_damage(e_gb_class* i_this) {
         actor->speed.z = fabsf(actor->current.pos.z - i_this->currentPosTarget.z) * 0.2f;
         i_this->timer[0] = KREG_S(7) + 15;
         // fallthrough
+    }
     case 1:
         if (i_this->timer[0] == 0) {
             if (actor->health <= 0) {
@@ -1651,7 +1652,7 @@ static cPhs_Step daE_GB_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, e_gb_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->phase, "E_gb");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_gb PARAM %x\n", fopAcM_GetParam(actor));
         u8 sw_bit = (fopAcM_GetParam(actor) & 0xFF0000) >> 16;
         if (sw_bit != 0xFF) {

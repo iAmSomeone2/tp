@@ -112,7 +112,7 @@ int daPoTbox_c::create() {
     mStat = getStat();
     
     int phase_state = dComIfG_resLoad(&mPhase, l_type[mStat]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_type[mStat], l_dzbIdx[mStat], dBgS_MoveBGProc_Typical, 0x6EA0, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

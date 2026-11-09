@@ -148,7 +148,7 @@ int daObjMirrorSand_c::create() {
     fopAcM_ct(this, daObjMirrorSand_c);
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x1AD0)) {
             return cPhs_ERROR_e;
         }

@@ -127,7 +127,7 @@ int daDoorPush_c::CreateHeap() {
 
 int daDoorPush_c::create1st() {
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 8, NULL, 0x8600, NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;

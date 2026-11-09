@@ -13,7 +13,7 @@ const int l_dzbidx = 3;
 
 int daObjLv6EGate_c::create1st() {
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         setMtx();
         phase_state = MoveBGCreate(l_arcName, l_dzbidx, dBgS_MoveBGProc_TypicalRotY, 0x7B0, &field_0x5a8);
         if (phase_state == cPhs_ERROR_e) {

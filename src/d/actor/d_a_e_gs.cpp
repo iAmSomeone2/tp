@@ -191,7 +191,7 @@ static int daE_GS_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_gs_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_gs");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_gs PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->arg0 = fopAcM_GetParam(i_this);
         a_this->arg1 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;

@@ -737,7 +737,7 @@ static int daE_TK_Create(fopAc_ac_c* actor) {
     fopAcM_ct(i_this, e_tk_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhaseReq, "E_tk");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_tk PARAM %x\n", fopAcM_GetParam(actor));
         i_this->mArg0 = (fopAcM_GetParam(actor) & 0xFF) >> 0;
         i_this->mArg1 = (fopAcM_GetParam(actor) & 0xF00) >> 8;

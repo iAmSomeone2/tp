@@ -46,7 +46,7 @@ int daObjKWheel00_c::create1st() {
     JUT_ASSERT(118, m_type == 0 || m_type == 1);
 
     cPhs_Step phase = static_cast<cPhs_Step>(dComIfG_resLoad(this, l_arcName[m_type]));
-    if(phase == cPhs_COMPLEATE_e) {
+    if(phase == cPhs_COMPLETE_e) {
         setMtx();
 
         phase = static_cast<cPhs_Step>(MoveBGCreate(l_arcName[m_type], l_dzbidx[m_type], NULL, 0x4000, &mNewBgMtx));

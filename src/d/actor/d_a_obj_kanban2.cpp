@@ -1702,7 +1702,7 @@ int daObj_Kanban2_c::create() {
     fopAcM_ct(this, daObj_Kanban2_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "Obj_kn2");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_KANBAN2 PARAM %x %d %d %d %d \n", fopAcM_GetParam(this), current.angle.x, shape_angle.x, current.angle.z, shape_angle.z);
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x9800)) {
             return cPhs_ERROR_e;

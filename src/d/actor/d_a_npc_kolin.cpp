@@ -428,7 +428,7 @@ cPhs_Step daNpc_Kolin_c::create() {
     }
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo,
                   (getPathID() >> 32) & 0xFF, getBitSW() & 0xFF, fopAcM_GetParam(this));
 

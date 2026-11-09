@@ -46,7 +46,7 @@ int daPoCandle_c::create() {
     fopAcM_ct(this, daPoCandle_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "P_PCNDL");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate("P_PCNDL", 7, dBgS_MoveBGProc_TypicalRotY, 0x1600, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

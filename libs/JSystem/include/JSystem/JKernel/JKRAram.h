@@ -42,7 +42,7 @@ public:
     static void checkOkAddress(u8*, u32, JKRAramBlock*, u32);
     static void changeGroupIdIfNeed(u8*, int);
     static JKRAramBlock* mainRamToAram(u8*, u32, u32, JKRExpandSwitch, u32, JKRHeap*, int, u32*);
-    static u8* aramToMainRam(u32, u8*, u32, JKRExpandSwitch, u32, JKRHeap*, int, u32*);
+    static u8* aramToMainRam(uintptr_t, u8*, u32, JKRExpandSwitch, u32, JKRHeap*, int, u32*);
     static void dump(void);
 
     static JKRAram* getManager() { return sAramObject; }
@@ -79,7 +79,7 @@ inline void JKRFreeToAram(JKRAramBlock* block) {
     JKRAram::getAramHeap()->free(block);
 }
 
-inline u8* JKRAramToMainRam(u32 p1, u8* p2, u32 p3, JKRExpandSwitch p4, u32 p5, JKRHeap* p6,
+inline u8* JKRAramToMainRam(uintptr_t p1, u8* p2, u32 p3, JKRExpandSwitch p4, u32 p5, JKRHeap* p6,
                              int p7, u32* p8) {
     return JKRAram::aramToMainRam(p1, p2, p3, p4, p5, p6, p7, p8);
 }

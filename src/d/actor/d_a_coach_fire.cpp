@@ -152,7 +152,7 @@ static int daCoachFire_Delete(daCoachFire_c* i_this) {
 static int daCoachFire_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, daCoachFire_c);
     static_cast<daCoachFire_c*>(i_this)->create_init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static char* stringBase_80658454 = "Coach";

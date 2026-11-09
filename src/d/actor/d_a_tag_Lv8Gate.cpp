@@ -50,7 +50,7 @@ inline int daTagLv8Gate_c::create() {
         return cPhs_ERROR_e;
     } else {
         step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x1600)) {
                 return cPhs_ERROR_e;
             } else {

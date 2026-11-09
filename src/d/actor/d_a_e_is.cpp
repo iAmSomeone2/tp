@@ -632,7 +632,7 @@ static int daE_IS_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_is_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_IS");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_IS PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->field_0x5b4 = fopAcM_GetParam(i_this);
         if (a_this->field_0x5b4 == 0xFF) {

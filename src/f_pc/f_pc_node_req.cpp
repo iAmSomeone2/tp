@@ -103,7 +103,7 @@ int fpcNdRq_Execute(node_create_request* i_request) {
     case cPhs_INIT_e:
     case cPhs_LOADING_e:
         return cPhs_INIT_e;
-    case cPhs_COMPLEATE_e:
+    case cPhs_COMPLETE_e:
         return cPhs_NEXT_e;
     case cPhs_ERROR_e:
     case cPhs_UNK3_e:
@@ -156,7 +156,7 @@ int fpcNdRq_Handler() {
                 return 0;
             }
             break;
-        case cPhs_COMPLEATE_e:
+        case cPhs_COMPLETE_e:
             node = NODE_GET_NEXT(node);
             if (fpcNdRq_Delete(req) == 0) {
                 return 0;

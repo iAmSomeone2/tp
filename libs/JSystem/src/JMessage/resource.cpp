@@ -61,7 +61,7 @@ u16 JMessage::TResource::toMessageIndex_messageID(u32 uMsgID, u32 upperHalf, boo
         return 0xFFFF;
     }
 
-    int nMsgNumber = oParse_TBlock_messageID_.get_number();
+    const int nMsgNumber = oParse_TBlock_messageID_.get_number();
 
     const u32* pContent = oParse_TBlock_messageID_.getContent();
     JUT_ASSERT(131, pContent!=NULL);

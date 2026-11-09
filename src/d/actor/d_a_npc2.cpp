@@ -769,7 +769,7 @@ int daBaseNpc_moveBgActor_c::MoveBGCreate(char const* i_arcName, int i_dzbId, Mo
         return 4;
     }
 #else
-    //return Create() ? cPhs_COMPLEATE_e : cPhs_ERROR_e;  // using enums here changes code gen
+    //return Create() ? cPhs_COMPLETE_e : cPhs_ERROR_e;  // using enums here changes code gen
     return Create() ? 4 : 5;
 #endif
 }

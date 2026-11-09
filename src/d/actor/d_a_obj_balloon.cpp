@@ -239,7 +239,7 @@ int daObj_Balloon_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, "Obj_bal");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("Obj_Balloon PARAM %x\n", fopAcM_GetParam(this));
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0xD60)) {
             return cPhs_ERROR_e;

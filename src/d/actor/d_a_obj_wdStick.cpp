@@ -47,7 +47,7 @@ dCcD_SrcGObjInf const daWdStick_c::mCcDObjInfo = {
 int daWdStick_c::create() {
     fopAcM_ct(this, daWdStick_c);
     int rv = dComIfG_resLoad(&mPhase, "H_Kinobou");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, createHeapCallBack, 0x820) == 0) {
             return cPhs_ERROR_e;
         }

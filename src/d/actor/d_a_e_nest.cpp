@@ -965,7 +965,7 @@ static cPhs_Step daE_Nest_Create(fopAc_ac_c* i_this) {
     e_nest_class* _this = static_cast<e_nest_class*>(i_this);
 
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, "E_nest");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mBrokenSwitch = (u8)((u16)_this->current.angle.z >> 8);
         _this->shape_angle.z = 0;
         _this->current.angle.z = 0;

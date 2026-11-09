@@ -213,12 +213,12 @@ int daNpcRafrel_c::Create() {
     int phase_state = cPhs_ERROR_e;
     for (int i = 0; l_loadRes_list[mType][i] >= 0; i++) {
         phase_state = dComIfG_resLoad(&mPhase[i], l_arcNames[l_loadRes_list[mType][i]]);
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             return phase_state;
         }
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heapsize = 0;
         switch (mType) {
         case 0:

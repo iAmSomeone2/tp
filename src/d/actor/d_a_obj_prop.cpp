@@ -33,7 +33,7 @@ int daObjProp_c::create() {
     fopAcM_ct(this, daObjProp_c);
 
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, (heapCallbackFunc)daObjProp_c_createHeap, 0x1000)) {
             return cPhs_ERROR_e;
 

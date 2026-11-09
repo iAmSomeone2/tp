@@ -1482,7 +1482,7 @@ static int phase_4(dScnPly_c* i_this) {
     }
 
     if (preLoadNo < 0) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     OS_REPORT("\x1b[32mプリロードやります\n\x1b[m");
@@ -1503,7 +1503,7 @@ static int phase_5(dScnPly_c* i_this) {
 
             for (int i = 0; i < resNameNum; i++) {
                 int load_phase = dComIfG_resLoad(&resPhase[i], resNames[i]);
-                if (load_phase != cPhs_COMPLEATE_e) {
+                if (load_phase != cPhs_COMPLETE_e) {
                     phase_state = cPhs_INIT_e;
                 } else {
                     goodLoads++;
@@ -1514,7 +1514,7 @@ static int phase_5(dScnPly_c* i_this) {
             OS_REPORT("\x1b[32mリソースプリロード %d/%d\n\x1b[m", goodLoads, loadNum);
         }
     
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             resPreLoadTime1 = OSGetTime();
             OS_REPORT("\x1b[32mリソースプリロード %lld ms\n\x1b[m", OSTicksToMilliseconds(resPreLoadTime1 - resPreLoadTime0));
         }
@@ -1538,7 +1538,7 @@ static int phase_6(dScnPly_c* i_this) {
 
             for (int i = 0; i < dylKeyTblNum; i++) {
                 int load_phase = cDylPhs::Link(&dylPhase[i], dylKeyTbl[i]);
-                if (load_phase != cPhs_COMPLEATE_e) {
+                if (load_phase != cPhs_COMPLETE_e) {
                     phase_state = cPhs_INIT_e;
                 } else {
                     goodLoads++;
@@ -1549,7 +1549,7 @@ static int phase_6(dScnPly_c* i_this) {
             OS_REPORT("\x1b[32mダイナミックリンクプリロード %d/%d\n\x1b[m", goodLoads, loadNum);
         }
 
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             dylPreLoadTime1 = OSGetTime();
             OS_REPORT("\x1b[32mダイナミックリンクプリロード %lld ms\n\x1b[m", OSTicksToMilliseconds(dylPreLoadTime1 - dylPreLoadTime0));
         }
@@ -1561,7 +1561,7 @@ static int phase_6(dScnPly_c* i_this) {
 }
 
 static int phase_compleate(void* i_this) {
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int dScnPly_Create(scene_class* i_this) {

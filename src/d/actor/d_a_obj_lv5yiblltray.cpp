@@ -16,7 +16,7 @@ static char* l_arcName = "YIblltray";
 
 int daObjYIblltray_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         setMtx();
 
         phase = MoveBGCreate(l_arcName, 12, dBgS_MoveBGProc_TypicalRotY, 0x1210, &field_0x5c0);

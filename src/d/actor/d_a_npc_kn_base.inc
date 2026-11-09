@@ -75,11 +75,11 @@ int daNpc_Kn_c::loadRes(const s8* i_ptrn_list, const char** i_arcname_list) {
                 break;
             }
 
-            return cPhs_COMPLEATE_e;
+            return cPhs_COMPLETE_e;
         }
 
         phase = dComIfG_resLoad(&mPhase[i], i_arcname_list[i_ptrn_list[i]]);
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             ++resLoad_cnt;
         }
 

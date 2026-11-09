@@ -44,7 +44,7 @@ int daObjWCover_c::create() {
     }
 
     int rv = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         rv = MoveBGCreate(l_arcName, 7, NULL, 0xd90, NULL);
         if (rv == cPhs_ERROR_e) {
             return rv;

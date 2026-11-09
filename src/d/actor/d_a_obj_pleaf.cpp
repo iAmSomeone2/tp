@@ -41,7 +41,7 @@ int daObj_Pleaf_c::create() {
     fopAcM_ct(this, daObj_Pleaf_c);
     mType = getType();
     int phase = dComIfG_resLoad(&mPhaseReq, getResName());
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

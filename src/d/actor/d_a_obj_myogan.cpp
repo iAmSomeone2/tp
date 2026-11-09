@@ -133,7 +133,7 @@ static int daObj_Myogan_Create(fopAc_ac_c* i_this) {
     obj_myogan_class* a_this = (obj_myogan_class*)i_this;
 
     int phase = dComIfG_resLoad(&a_this->mPhase, "S_YOGAN");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(a_this, useHeapInit, 0x4B000)) {
             return cPhs_ERROR_e;
         }

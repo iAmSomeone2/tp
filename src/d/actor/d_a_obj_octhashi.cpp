@@ -307,7 +307,7 @@ int daObjOCTHASHI_c::create() {
     mPieceNum = 8 - mPieceNum;
     int iVar1 = mPieceNum * 0x8d3;
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName[0]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         BOOL is_stage_boss_enemy = dComIfGs_isStageBossEnemy();
         if (is_stage_boss_enemy && dComIfGp_getStartStageRoomNo() == '2') {
             if (strcmp("D_MN01A", dComIfGp_getStartStageName()) == 0) {

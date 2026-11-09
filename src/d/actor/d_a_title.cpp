@@ -124,7 +124,7 @@ int daTitle_c::create() {
     fopAcM_ct(this, daTitle_c);
     
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 

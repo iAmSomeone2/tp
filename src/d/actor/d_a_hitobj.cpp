@@ -54,7 +54,7 @@ static int daHitobj_Create(fopAc_ac_c* i_this) {
 
     int ret = dComIfG_resLoad(&hitobj->mPhase,"Hitobj");
 
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         hitobj->field_0x570 = fopAcM_GetParam(hitobj);
         hitobj->field_0x574.Init(0xff,0xff,hitobj);
         hitobj->field_0x5b0.Set(cc_sph_src);

@@ -48,7 +48,7 @@ int daObjMBox_c::create() {
     fopAcM_ct(this, daObjMBox_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0xc40, 0);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;

@@ -37,7 +37,7 @@ int daTimeFire_c::create() {
     }
     field_0x568 = 0;
     field_0x569 = 0;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daTimeFire_c::lightInit() {

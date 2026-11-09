@@ -3261,7 +3261,7 @@ cPhs_Step daB_YO_c::create() {
     if (mIsInactive == 1) {
         step = dComIfG_resLoad(&mPhase2, "L5_R50");
 
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             if (!daMirror_c::remove()) {
                 return cPhs_INIT_e;
             }
@@ -3293,11 +3293,11 @@ cPhs_Step daB_YO_c::create() {
         return step;
 
     } else {
-        if ((step = dComIfG_resLoad(&mPhase1, "B_YO"), step == cPhs_COMPLEATE_e)
-            && (step = dComIfG_resLoad(&mPhase2, "L5_R50"), step == cPhs_COMPLEATE_e)
-            && (step = dComIfG_resLoad(&mPhase3, "ykW"), step == cPhs_COMPLEATE_e)
-            && (step = dComIfG_resLoad(&mPhase4, "ykW1"), step == cPhs_COMPLEATE_e)
-            && (step = dComIfG_resLoad(&mPhase5, "E_FZ"), step == cPhs_COMPLEATE_e))
+        if ((step = dComIfG_resLoad(&mPhase1, "B_YO"), step == cPhs_COMPLETE_e)
+            && (step = dComIfG_resLoad(&mPhase2, "L5_R50"), step == cPhs_COMPLETE_e)
+            && (step = dComIfG_resLoad(&mPhase3, "ykW"), step == cPhs_COMPLETE_e)
+            && (step = dComIfG_resLoad(&mPhase4, "ykW1"), step == cPhs_COMPLETE_e)
+            && (step = dComIfG_resLoad(&mPhase5, "E_FZ"), step == cPhs_COMPLETE_e))
         {
             if (cDmr_SkipInfo != 0 && !daMirror_c::remove()) {
                 return cPhs_INIT_e;

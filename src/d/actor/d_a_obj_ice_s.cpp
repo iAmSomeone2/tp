@@ -182,7 +182,7 @@ static int daObjIce_s_Create(fopAc_ac_c* i_this) {
 int daObjIce_s_c::create() {
     fopAcM_ct(this, daObjIce_s_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("ICE_S PARAM %x\n", fopAcM_GetParam(this));
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "Ice_s.dzb");
         JUT_ASSERT(185, dzb_id != -1);
@@ -240,7 +240,7 @@ int daObjIce_s_c::CreateHeap() {
 int daObjIce_s_c::Create() {
     initBaseMtx();
     mpBgW->SetRideCallback(rideCallBack);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjIce_s_c::Execute(f32 (**param_1)[3][4]) {

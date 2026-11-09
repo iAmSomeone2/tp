@@ -35,7 +35,7 @@ nObjMHasu::daObjMHasu_c::daObjMHasu_c() :
 
 int nObjMHasu::daObjMHasu_c::create1st() {
     cPhs_Step phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e)
+    if (phase == cPhs_COMPLETE_e)
     {
         setMtx();
         phase = MoveBGCreate(l_arcName, l_dzbidx, dBgS_MoveBGProc_TypicalRotY, 0x1450, &mMtx);

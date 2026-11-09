@@ -228,8 +228,8 @@ int daShopItem_c::_create() {
 
     int phase_state = dComIfG_resLoad(&mPhase, getShopArcname());
     switch (phase_state) {
-    case cPhs_COMPLEATE_e:
-        if (phase_state == cPhs_COMPLEATE_e) {
+    case cPhs_COMPLETE_e:
+        if (phase_state == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, CheckShopItemCreateHeap, getHeapSize())) {
                 return cPhs_ERROR_e;
             }

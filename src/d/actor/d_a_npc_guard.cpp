@@ -499,7 +499,7 @@ int daNpcGuard_c::create() {
     m_type = cLib_getRndValue(0, 2);
     mObjNum = 2;
     int phase = loadResrc(m_type, mObjNum);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2220)) {
             // Failed to create actor!
             OS_REPORT("アクター生成失敗しました！\n");

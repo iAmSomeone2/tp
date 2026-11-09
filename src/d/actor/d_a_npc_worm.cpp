@@ -359,7 +359,7 @@ static int daNPC_WORM_Create(fopAc_ac_c* a_this) {
     npc_worm_class* i_this = (npc_worm_class*)a_this;
     int rv =
         dComIfG_resLoad(&i_this->mPhase, "Alink");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_WORM PARAM %x\n", fopAcM_GetParam(i_this));
         i_this->field_0x598 = fopAcM_GetParam(i_this);
         OS_REPORT("NPC_WORM//////////////NPC_WORM SET 1 !!\n");

@@ -24,7 +24,7 @@ char* daTag_Evt_c::mEvtCutList[] = {
 int daTag_Evt_c::create() {
     fopAcM_ct(this, daTag_Evt_c);
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_resFileName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         eventInfo.setArchiveName(l_resFileName);
         strcpy(field_0x568, "TagEvt");
         getParam();

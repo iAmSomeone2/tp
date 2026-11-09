@@ -683,7 +683,7 @@ static int daFr_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(i_this, fr_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "Fr");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("FR PARAM %x\n", fopAcM_GetParam(actor));
 
         i_this->field_0x5b4 = fopAcM_GetParam(actor);

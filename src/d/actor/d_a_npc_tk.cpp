@@ -3248,7 +3248,7 @@ int daNPC_TK_c::create() {
 
     int loadRes = dComIfG_resLoad(&mPhase, "Npc_tk");
     eventInfo.setArchiveName("Npc_tk");
-    if (loadRes == cPhs_COMPLEATE_e) {
+    if (loadRes == cPhs_COMPLETE_e) {
         int unused;
         OS_REPORT("NPC_TK PARAM %x\n", fopAcM_GetParam(this));
 

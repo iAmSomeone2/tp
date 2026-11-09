@@ -7,7 +7,7 @@ class daTagSchedule_c : public fopAc_ac_c {
 public:
     int create() {
         fopAcM_ct(this, daTagSchedule_c);
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     int getSeqNum() { return (fopAcM_GetParam(this) >> 6) & 0x3f; }

@@ -82,7 +82,7 @@ int daObjGWall2_c::create1st() {
         return cPhs_ERROR_e;
     }
     cPhs_Step phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 11, NULL, 0x6100, NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;

@@ -117,7 +117,7 @@ int daCanoe_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, mArcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daCanoe_createHeap, heap_size)) {
             return cPhs_ERROR_e;
         }

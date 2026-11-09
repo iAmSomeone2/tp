@@ -251,13 +251,13 @@ cPhs_Step daNpcAsh_c::Create() {
     int arcIndex;
     while (arcIndex = l_loadRes_list[mType][i], arcIndex >= 0) {
         step = dComIfG_resLoad(&mPhase[i], l_arcNames[arcIndex]);
-        if (step != cPhs_COMPLEATE_e) {
+        if (step != cPhs_COMPLETE_e) {
             return step;
         }
         i++;
     }
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         u32 heapSize = 0;
         switch (mType) {
         case TYPE_BAR:

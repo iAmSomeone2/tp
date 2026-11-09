@@ -203,7 +203,7 @@ int daPillar_c::create1st() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName[mMdlType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName[mMdlType], l_dzb[mMdlType], dBgS_MoveBGProc_Typical, l_heap_size[mMdlType], NULL);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;

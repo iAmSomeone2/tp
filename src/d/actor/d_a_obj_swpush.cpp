@@ -110,11 +110,11 @@ bool daObjSwpush::Act_c::create_heap() {
 
 cPhs_Step daObjSwpush::Act_c::create_res_load() {
     cPhs_Step phase = dComIfG_resLoad(&mPhase, M_arcname[mMdl]);
-    if (phase != cPhs_COMPLEATE_e) {
+    if (phase != cPhs_COMPLETE_e) {
         return phase;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 u32 const daObjSwpush::Act_c::M_heap_size[3] = {0x1000, 0x1000, 0x1000};
@@ -214,7 +214,7 @@ cPhs_Step daObjSwpush::Act_c::Mthd_Create() {
     }
 
     cPhs_Step phase = create_res_load();
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         scale.x *= attr().scale;
         scale.z *= attr().scale;
 

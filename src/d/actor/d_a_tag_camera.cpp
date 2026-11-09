@@ -196,7 +196,7 @@ int daTag_Cam_c::create() {
     }
 
     mCheckFunc = check_func[func_index];
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_Cam_c::execute() {

@@ -30,7 +30,7 @@ static const char* l_arcName = "S_Zbridge";
 
 int daObjSZbridge_c::create1st() {
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         setMtx();
         rv = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_Typical, 0x11190, &mBgMtx);
         if (rv == cPhs_ERROR_e) {

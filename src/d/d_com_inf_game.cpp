@@ -1272,7 +1272,7 @@ static int phase_2(char* i_arcName) {
 }
 
 static int phase_3(char*) {
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 /**
@@ -1281,14 +1281,14 @@ static int phase_3(char*) {
  * calling dComIfG_getObjectRes / dComIfG_getStageRes
  * @param i_phase Pointer to phase request for handling resource loading process
  * @param i_arcName Name of archive to be loaded
- * @return Loading phase state. cPhs_COMPLEATE_e if loaded successfully
+ * @return Loading phase state. cPhs_COMPLETE_e if loaded successfully
  */
 int dComIfG_resLoad(request_of_phase_process_class* i_phase, char const* i_arcName) {
     static int (*l_method[3])(void*) = {(int (*)(void*))phase_1, (int (*)(void*))phase_2,
                                         (int (*)(void*))phase_3};
 
     if (i_phase->id == 2) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return dComLbG_PhaseHandler(i_phase, l_method, (void*)i_arcName);
@@ -1328,7 +1328,7 @@ static int phase_03(phaseParam_c*) {
  * @param i_phase Pointer to phase request for handling resource loading process
  * @param i_arcName Name of archive to be loaded
  * @param i_heap Pointer to heap to load resources into
- * @return Loading phase state. cPhs_COMPLEATE_e if loaded successfully
+ * @return Loading phase state. cPhs_COMPLETE_e if loaded successfully
  */
 int dComIfG_resLoad(request_of_phase_process_class* i_phase, char const* i_resName,
                     JKRHeap* i_heap) {
@@ -1336,7 +1336,7 @@ int dComIfG_resLoad(request_of_phase_process_class* i_phase, char const* i_resNa
                                         (int (*)(void*))phase_03};
 
     if (i_phase->id == 2) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     phaseParam_c param(i_resName, i_heap);
@@ -2697,7 +2697,7 @@ int dComIfG_resLoader_c::load(char const** i_resNameTbl, JKRHeap* i_heap) {
     mResNameTable = i_resNameTbl;
 
     int phase_state = dComIfG_resLoad(&mPhase, mResNameTable[mLoadIndex], i_heap);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (mResNameTable[mLoadIndex + 1][0] != 0) {
             mLoadIndex++;
             mPhase.id = cPhs_INIT_e;

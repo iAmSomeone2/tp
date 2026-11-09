@@ -1263,9 +1263,9 @@ int daE_TT_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhaseReq, mpResName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = dComIfG_resLoad(&mPhaseReq2, "E_TT");
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             OS_REPORT("E_TT PARAM %x\n", fopAcM_GetParam(this));
 
             if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1600)) {

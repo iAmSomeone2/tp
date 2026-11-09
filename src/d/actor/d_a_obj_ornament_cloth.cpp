@@ -232,7 +232,7 @@ int daObjOnCloth_c::createHeap() {
         J3DJoint* jointNode_p = mpModel->getModelData()->getJointNodePointer(i);
         if (jointNode_p != NULL) {
             jointNode_p->setCallBack(nodeCallBack);
-            mpModel->setUserArea((u32)this);
+            mpModel->setUserArea(reinterpret_cast<uintptr_t>(this));
         }
     }
 
@@ -291,7 +291,7 @@ cPhs_Step daObjOnCloth_c::create() {
     fopAcM_ct(this, daObjOnCloth_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x9A0)) {
             return cPhs_ERROR_e;
         }

@@ -110,8 +110,17 @@ On the Vita (a tile-based deferred renderer) each of these becomes "render to an
 | Screen effects | `d_ovlp_fade*`, `d_gameover`, `d_error_msg`, `d_menu_window`, `d_a_mirror` | Port after render targets work; simple quads/copies. |
 | World effects using raw primitives | `d_kankyo_rain`, `d_particle`, `d_a_alink_effect.inc`, `d_grass.inc`, `d_flower.inc`, `d_a_mant`, `d_a_obj_flag2/3`, `d_a_obj_*chain` | Immediate-mode calls; batching in the GX layer is usually enough. Candidates for later native rewrites (rain especially, 680 calls). |
 | Maps | `d_map`, `d_map_path*`, `d_menu_fmap_map`, `d_menu_dmap_map` | 2D primitives with palette/texture use. |
-| Video | `d_a_movie_player` | Replace the THP path with a video decoder that produces textures. |
+| Video | `d_a_movie_player` | Replace the THP path with a video decoder that produces textures. The CMake build already leaves it out and uses a stub in `src/nightfall/movie/` that skips every movie. |
 | Wii only | `d_home_button` | Skip on a GameCube base. |
+
+## Designing for frame interpolation
+
+Running above 30 Hz is a stretch goal ([roadmap.md](roadmap.md#stretch-goal-frame-rates-above-30-hz)): the simulation stays at its 30 Hz tick and rendering interpolates between the last two ticks. Nothing has to be built for it now, but two properties of the back end decide whether it is cheap or a rewrite later:
+
+* **The draw path can be issued more than once per simulation tick.** Keep "build this frame's draw lists" separate from "submit them to the GPU", and avoid back-end state that assumes one draw per execute (per-tick allocators reset in draw, resources freed after the first submission, display lists consumed once).
+* **Transforms pass through one well-defined boundary.** Interpolation needs to find, for every object, its matrices on the previous tick and on this one. If model, view and projection matrices reach the GPU at one place (matrix loads in the GX layer, `GXLoadPosMtxImm`/`GXSetProjection`, and the J3D packet submission of option C above) they can be recorded per tick, keyed by a stable ID, and blended there. If they are scattered across raw GX calls and baked display lists, every call site has to be touched.
+
+The camera (`dCamera`) and the J3D joint matrices are the main inputs; most of the 42 direct-GX files draw in screen space or from data that can be snapped instead of blended.
 
 ## Suggested milestones
 

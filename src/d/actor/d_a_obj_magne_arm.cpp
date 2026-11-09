@@ -335,7 +335,7 @@ int daObjMarm_c::CreateHeap() {
 cPhs_Step daObjMarm_c::phase_0() {
     mMoveType = getMoveType();
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 21, dBgS_MoveBGProc_Typical, 0x6000, NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;
@@ -369,7 +369,7 @@ cPhs_Step daObjMarm_c::phase_2() {
         }
         fopAcM_setCullSizeFar(m_hole_actor, 10.0f);
         mPhaseIndex++;
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
     return cPhs_INIT_e;
 }

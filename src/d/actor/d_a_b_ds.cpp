@@ -5430,7 +5430,7 @@ cPhs_Step daB_DS_c::create() {
     fopAcM_ct(this, daB_DS_c);
 
     cPhs_Step phase_state = dComIfG_resLoad(&mPhase, "B_DS");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (arg0 == TYPE_BATTLE_1 && dComIfGs_isStageBossEnemy()) {
             // "After B_DS defeated, so not re-setting\n"
             OS_REPORT("B_DS やられ後なので再セットしません\n");

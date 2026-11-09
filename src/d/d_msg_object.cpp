@@ -2346,8 +2346,16 @@ u8 dMsgObject_c::getMsgOutputType() {
     return dMsgObject_getMsgObjectClass()->getMsgOutputTypeLocal();
 }
 
+void dMsgObject_c::setWord(const char* i_word) {
+    dMsgObject_getMsgObjectClass()->setWordLocal(i_word);
+}
+
 const char* dMsgObject_c::getWord() {
     return dMsgObject_getMsgObjectClass()->getWordLocal();
+}
+
+void dMsgObject_c::setSelectWord(int i_no, const char* i_word) {
+    dMsgObject_getMsgObjectClass()->setSelectWordLocal(i_no, i_word);
 }
 
 const char* dMsgObject_c::getSelectWord(int idx) {

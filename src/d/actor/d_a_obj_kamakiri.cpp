@@ -768,7 +768,7 @@ int daObjKAM_c::create() {
     fopAcM_ct(this, daObjKAM_c);
 
     s32 loadResult = dComIfG_resLoad(&mPhase, "I_Kam");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("KAM PARAM %x\n", fopAcM_GetParam(this));
 
         field_0x9c0 = fopAcM_GetParam(this) & 0xf;

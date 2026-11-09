@@ -5483,7 +5483,7 @@ int daB_ZANT_c::create() {
     fopAcM_setStageLayer(this);
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_zan");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x8F80)) {
             return cPhs_ERROR_e;
         }

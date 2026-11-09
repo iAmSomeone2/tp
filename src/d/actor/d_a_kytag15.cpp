@@ -114,7 +114,7 @@ static int daKytag15_Create(fopAc_ac_c* i_this) {
     }
 
     int phase = dComIfG_resLoad(&a_this->mPhase, "Kytag15");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(a_this, useHeapInit, 0)) {
             return cPhs_ERROR_e;
         }

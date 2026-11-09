@@ -11,7 +11,7 @@
 int daTagTheBHint_c::create() {
     fopAcM_ct(this, daTagTheBHint_c);
     field_0x568 = std::pow(scale.x * 100.0f,2.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagTheBHint_c::execute() {

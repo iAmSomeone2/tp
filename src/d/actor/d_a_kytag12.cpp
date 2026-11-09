@@ -1016,7 +1016,7 @@ static int daKytag12_Create(fopAc_ac_c* i_this) {
     g_env_light.field_0x1054 = 0;
     g_env_light.field_0x1051 = i_this->home.roomNo;
     dKyr_evil_init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag12_Method = {

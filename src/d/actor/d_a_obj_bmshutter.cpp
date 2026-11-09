@@ -92,7 +92,7 @@ int daObjBmSh_c::create() {
     }
 
     int ret = dComIfG_resLoad(&mPhase, l_arcName);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         ret = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0x12a0, NULL);
         if (ret == cPhs_ERROR_e) {
             return ret;

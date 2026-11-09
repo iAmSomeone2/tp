@@ -21,7 +21,7 @@ void cPhs_UnCompleate(request_of_phase_process_class* phase) {
 
 int cPhs_Compleate(request_of_phase_process_class* phase) {
     phase->mpHandlerTable = NULL;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int cPhs_Next(request_of_phase_process_class* phase) {
@@ -39,7 +39,7 @@ int cPhs_Next(request_of_phase_process_class* phase) {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int cPhs_Do(request_of_phase_process_class* phase, void* data) {
@@ -56,9 +56,9 @@ int cPhs_Do(request_of_phase_process_class* phase, void* data) {
             if (cPhs_Next(phase) == cPhs_LOADING_e) {
                 return cPhs_NEXT_e;
             } else {
-                return cPhs_COMPLEATE_e;
+                return cPhs_COMPLETE_e;
             }
-        case cPhs_COMPLEATE_e:
+        case cPhs_COMPLETE_e:
             return cPhs_Compleate(phase);
         case cPhs_UNK3_e:
             cPhs_UnCompleate(phase);

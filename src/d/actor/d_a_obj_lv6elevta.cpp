@@ -31,7 +31,7 @@ static daObjLv6ElevtA_HIO_c l_HIO;
 
 int daObjLv6ElevtA_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         setMtx();
         phase = MoveBGCreate(l_arcName, l_dzbidx, dBgS_MoveBGProc_TypicalRotY, 0x55b0, &mMtx1);
         if (phase == cPhs_ERROR_e) {

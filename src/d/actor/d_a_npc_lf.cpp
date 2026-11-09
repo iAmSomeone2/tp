@@ -267,7 +267,7 @@ static cPhs_Step daNPC_LF_Create(fopAc_ac_c* i_this) {
 
     cPhs_Step phase = dComIfG_resLoad(&a_this->mPhase, "NPC_LF");
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         a_this->mParam1 = fopAcM_GetParam(a_this);
 
         if (a_this->mParam1 == 0xff) {

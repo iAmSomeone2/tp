@@ -34,7 +34,7 @@ void daTagGuard_c::createGuard(u32 i_parameters) {
 int daTagGuard_c::create() {
     fopAcM_ct(this, daTagGuard_c);
     create_init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daTagGuard_c::create_init() {

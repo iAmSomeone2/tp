@@ -504,12 +504,12 @@ public:
 
 class mDoExt_offCupOnAupPacket : public J3DPacket {
     virtual void draw();
-    virtual ~mDoExt_offCupOnAupPacket();
+    virtual ~mDoExt_offCupOnAupPacket() {}
 };
 
 class mDoExt_onCupOffAupPacket : public J3DPacket {
     virtual void draw();
-    virtual ~mDoExt_onCupOffAupPacket();
+    virtual ~mDoExt_onCupOffAupPacket() {}
 };
 
 class mDoExt_invJntPacket : public J3DPacket {

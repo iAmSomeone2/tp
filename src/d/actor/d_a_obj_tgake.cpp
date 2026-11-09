@@ -50,7 +50,7 @@ int daObjGake_c::CreateHeap() {
 
 int daObjGake_c::create1st() {
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;

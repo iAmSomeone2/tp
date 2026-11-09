@@ -2158,7 +2158,7 @@ int daE_WW_c::CreateHeap() {
     }
 
     J3DModel* model = mpModelMorf->getModel();
-    model->setUserArea((u32)this);
+    model->setUserArea(reinterpret_cast<uintptr_t>(this));
     for (u16 i = JNT_BODY01; i < model->getModelData()->getJointNum(); i++) {
         if (i == JNT_NECK || i == JNT_HEAD) {
             model->getModelData()->getJointNodePointer(i)->setCallBack(JointCallBack);
@@ -2177,7 +2177,7 @@ int daE_WW_c::create() {
     fopAcM_ct(this, daE_WW_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_WW");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_WW PARAM %x\n", fopAcM_GetParam(this));
 
         field_0x6b4 = fopAcM_GetParam(this) & 0xF;

@@ -90,7 +90,7 @@ int daAlink_c::loadModelDVD() {
                 changeLink(1);
             } else {
                 int phase_state = dComIfG_resLoad(&mPhaseReq, mArcName, mpArcHeap);
-                if (phase_state == cPhs_COMPLEATE_e) {
+                if (phase_state == cPhs_COMPLETE_e) {
                     mClothesChangeWaitTimer = 0;
 
                     if (mProcID == PROC_METAMORPHOSE || mProcID == PROC_METAMORPHOSE_ONLY) {
@@ -134,7 +134,7 @@ int daAlink_c::loadShieldModelDVD() {
             setShieldArcName();
         } else if (mShieldChangeWaitTimer == 1) {
             int phase_state = dComIfG_resLoad(&mShieldPhaseReq, mShieldArcName, mpShieldArcHeap);
-            if (phase_state == cPhs_COMPLEATE_e) {
+            if (phase_state == cPhs_COMPLETE_e) {
                 mShieldChangeWaitTimer = 0;
                 setShieldModel();
             } else {

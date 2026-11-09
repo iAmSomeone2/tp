@@ -2409,7 +2409,7 @@ static cPhs_Step daDo_Create(fopAc_ac_c* i_this) {
 
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, "Do");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mParam0 = fopAcM_GetParam(i_this) & 7;
         _this->mParam1 = fopAcM_GetParam(i_this) >> 4 & 0xf;
         _this->mParam2 = (u8)(fopAcM_GetParam(i_this) >> 8);

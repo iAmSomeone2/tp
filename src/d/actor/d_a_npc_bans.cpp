@@ -382,7 +382,7 @@ cPhs_Step daNpc_Bans_c::create() {
     mTwilight = dKy_darkworld_check();
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, MaxItem:%d, group:%d<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo,
                   getPathID(), getMaxNumItem(), getGroupId(), fopAcM_GetParam(this));
 

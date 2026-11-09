@@ -247,7 +247,7 @@ int daNpcChin_c::Create() {
     while (*idx >= 0) {
         OS_REPORT("--- arc : %s\n", l_arcNames[*idx]);
         phase_state = dComIfG_resLoad(&mPhases[i], l_arcNames[*idx]);
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             return phase_state;
         }
 
@@ -255,7 +255,7 @@ int daNpcChin_c::Create() {
         i++;
     }
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         field_0xe24 = 0;
         if (!mTwilight) {
             dKy_change_colpat(0);

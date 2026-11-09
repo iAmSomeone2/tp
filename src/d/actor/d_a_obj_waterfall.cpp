@@ -290,7 +290,7 @@ cPhs_Step daObjWaterFall_c::create() {
     l_HIO.entryHIO("滝"); // "Waterfall"
     #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjWaterFall_c::execute() {

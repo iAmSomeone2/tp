@@ -154,7 +154,7 @@ int daObjWarpOBrg_c::create1st() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heap_size;
         if (getNameArg() != 0) {
             heap_size = 0x3B40;

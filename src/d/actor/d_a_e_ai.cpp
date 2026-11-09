@@ -887,7 +887,7 @@ int e_ai_class::Create() {
     fopAcM_ct(this, e_ai_class);
 
     int phase_state = dComIfG_resLoad(&m_phase, "E_AI");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_AI PARAM %x\n", fopAcM_GetParam(this));
         field_0x5ba = fopAcM_GetParam(this);
 

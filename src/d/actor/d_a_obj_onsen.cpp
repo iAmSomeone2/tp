@@ -70,7 +70,7 @@ int daObjOnsen_c::CreateHeap() {
 int daObjOnsen_c::create1st() {
     mType = getType();
     int phase = dComIfG_resLoad(&mPhaseReq, l_arcName[mType]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName[mType], l_dzb[mType], NULL, l_heap_size[mType], NULL);
         if (phase == cPhs_ERROR_e) {
             return phase;

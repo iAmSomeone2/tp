@@ -75,7 +75,7 @@ int daObjCrystal_c::create() {
     fopAcM_ct(this, daObjCrystal_c);
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x4000)) {
             return cPhs_ERROR_e;
         }

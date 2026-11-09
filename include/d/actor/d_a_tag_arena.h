@@ -7,7 +7,7 @@ class daTagArena_c : public fopAc_ac_c {
 public:
     int create() {
         fopAcM_ct(this, daTagArena_c);
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     cXyz getArenaPos() { return home.pos; }

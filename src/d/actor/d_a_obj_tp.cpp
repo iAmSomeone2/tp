@@ -408,7 +408,7 @@ static int daObj_Tp_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, obj_tp_class);
     obj_tp_class* tp = (obj_tp_class*)i_this;
     int rv = dComIfG_resLoad(&tp->mPhase, "Obj_tp");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_TP bitSW2 %x\n", fopAcM_GetParam(tp));
         tp->field_0x594 = fopAcM_GetParam(tp) & 0xf;
         tp->field_0x5a0 = (fopAcM_GetParam(tp) & 0xf0) >> 4;

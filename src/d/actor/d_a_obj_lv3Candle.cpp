@@ -78,7 +78,7 @@ cPhs_Step daLv3Candle_c::create() {
     }
 
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_resNameIdx[mType]);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x900)) {
             return cPhs_ERROR_e;
         } else {

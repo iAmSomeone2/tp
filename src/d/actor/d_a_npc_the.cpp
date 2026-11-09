@@ -958,7 +958,7 @@ cPhs_Step daNpcThe_c::create() {
         if (step == cPhs_ERROR_e || step == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             resources_loaded++;
         }
     }
@@ -1008,7 +1008,7 @@ cPhs_Step daNpcThe_c::create() {
         reset();
         execute();
 
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return cPhs_INIT_e;

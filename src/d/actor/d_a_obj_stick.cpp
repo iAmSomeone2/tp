@@ -57,7 +57,7 @@ int daObj_Stick_c::create() {
     
     int phase_state = dComIfG_resLoad(&mPhase, getResName());
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

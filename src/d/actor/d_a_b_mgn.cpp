@@ -3499,9 +3499,9 @@ int daB_MGN_c::create() {
     mSwBit = fopAcM_GetParam(this);
 
     int phase_state = dComIfG_resLoad(&mMgnPhase, "B_mgn");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = dComIfG_resLoad(&mMgnePhase, "B_mgne");
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             OS_REPORT("B_MGN PARAM %x\n", fopAcM_GetParam(this));
 
             if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x11960)) {

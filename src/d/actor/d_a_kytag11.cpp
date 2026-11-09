@@ -104,7 +104,7 @@ static int daKytag11_Create(fopAc_ac_c* i_this) {
     a_this->mChangeTime = false;
     a_this->mInitTimeChange = false;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag11_Method = {

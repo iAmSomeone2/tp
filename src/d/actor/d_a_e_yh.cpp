@@ -2118,7 +2118,7 @@ static int daE_YH_Create(fopAc_ac_c* a_this) {
     e_yh_class* i_this = (e_yh_class*)a_this;
     fopAcM_ct(a_this, e_yh_class);
     int rv = dComIfG_resLoad(&i_this->mPhase, "E_yd");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("E_YH PARAM %x\n", fopAcM_GetParam(a_this));
         u8 cVar9 = (fopAcM_GetParam(a_this) >> 24) & 0xff;
         if (cVar9 != 0xff) {

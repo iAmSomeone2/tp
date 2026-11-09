@@ -357,7 +357,7 @@ static int daObjItaRope_Delete(daObjItaRope_c* i_this) {
 int daObjItaRope_c::create() {
     fopAcM_ct(this, daObjItaRope_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         field_0x635 = getJointNum() + 2;
         if (field_0x635 < 3) {
             field_0x635 = 3;

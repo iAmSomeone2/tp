@@ -102,7 +102,7 @@ cPhs_Step daObjIkada_c::create() {
     fopAcM_ct(this, daObjIkada_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_Ikada.dzb");
         JUT_ASSERT(108, dzb_id != -1);
         
@@ -134,7 +134,7 @@ static int daObjIkada_Create(fopAc_ac_c* a_this) {
 int daObjIkada_c::Create() {
     initBaseMtx();
     mpBgW->SetRideCallback(rideCallBack);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjIkada_c::Execute(Mtx** mtx) {

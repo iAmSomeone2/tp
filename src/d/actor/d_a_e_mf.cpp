@@ -3143,7 +3143,7 @@ static cPhs_Step daE_MF_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, e_mf_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_mf");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int swBit = fopAcM_GetParam(a_this) >> 24;
         if (swBit != 0xFF) {
             if (dComIfGs_isSwitch(swBit, fopAcM_GetRoomNo(a_this))) {

@@ -694,7 +694,7 @@ int daBgObj_c::create1st() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, daSetBgObj_c::getArcName(this));
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int resnameIdx =
             dComIfG_getObjctResName2Index(daSetBgObj_c::getArcName(this), getDzbName(0));
         phase = MoveBGCreate(daSetBgObj_c::getArcName(this), resnameIdx, NULL, 0x80022110, NULL);

@@ -90,7 +90,7 @@ int daObjDrop_c::create() {
     }
 
     OS_REPORT("DROP PARAM %x\n", fopAcM_GetParam(this));
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daObjDrop_c::dropGet() {

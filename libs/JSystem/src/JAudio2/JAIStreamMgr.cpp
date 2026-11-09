@@ -57,9 +57,9 @@ void JAIStreamMgr::freeDeadStream_() {
         JSULink<JAIStream>* next = i->getNext();
         if (stream->status_.isDead()) {
             mStreamList.remove(i);
-            void* aramAddr = stream->JAIStreamMgr_getAramAddr_();
+            const auto aramAddr = stream->JAIStreamMgr_getAramAddr_();
             if (aramAddr != NULL) {
-                bool result = mStreamAramMgr->deleteStreamAram((u32)aramAddr);
+                bool result = mStreamAramMgr->deleteStreamAram(aramAddr);
                 JUT_ASSERT(105, result);
             }
             

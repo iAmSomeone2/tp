@@ -364,7 +364,7 @@ static cPhs_Step daNpc_Df_Create(fopAc_ac_c* i_this) {
     npc_df_class* actor = (npc_df_class*)i_this;
 
     cPhs_Step phase = dComIfG_resLoad(&actor->mPhase, "Npc_df");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_DF PARAM %x\n", fopAcM_GetParam(i_this));
         actor->field_0x570 = fopAcM_GetParam(i_this);
         actor->mDragonflyCount = actor->field_0x570 + 1;

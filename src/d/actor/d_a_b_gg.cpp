@@ -4272,7 +4272,7 @@ int daB_GG_c::Create() {
     fopAcM_ct(this, daB_GG_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "B_gg");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("B_GG PARAM %x\n", fopAcM_GetParam(this));
         mType = fopAcM_GetParam(this);
         field_0x5cf = (fopAcM_GetParam(this) & 0xFF0000) >> 0x10;

@@ -57,7 +57,7 @@ int daTagMstop_c::create() {
     }
 
     shape_angle.y = fopAcM_searchPlayerAngleY(this);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagMstop_Create(fopAc_ac_c* i_this) {

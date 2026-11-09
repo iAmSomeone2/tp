@@ -168,7 +168,7 @@ int daPeru_c::create() {
     mFlowNodeNo = getFlowNodeNo();
     mTwilight = dKy_darkworld_check();
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, createHeapCallBack, 0x3200) == 0) {
             return cPhs_ERROR_e;
         }
@@ -267,7 +267,7 @@ int daPeru_c::typeInitialize() {
     } else if (mType == 2 && daNpcT_chkEvtBit(0x183) && !daNpcT_chkEvtBit(0x11f)) {
         return cPhs_ERROR_e;
     }
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daPeru_c::Delete() {

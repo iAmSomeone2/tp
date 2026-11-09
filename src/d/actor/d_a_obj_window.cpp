@@ -86,7 +86,7 @@ cPhs_Step daObjWindow_c::create1st() {
         mType = 0;
     }
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_arcName, 12, NULL, 0xee0, NULL);
         if (step == cPhs_ERROR_e) {
             return step;

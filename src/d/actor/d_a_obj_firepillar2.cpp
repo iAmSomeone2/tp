@@ -141,7 +141,7 @@ int daObjFPillar2_c::create() {
         home.angle.z = 0;
         mInitAngles = 1;
     }
-    int rv = cPhs_COMPLEATE_e;
+    int rv = cPhs_COMPLETE_e;
     if (getKind() == KIND_MAGMA_POLE) {
         #if DEBUG
         if (getSwNo() != 0xff) {
@@ -153,7 +153,7 @@ int daObjFPillar2_c::create() {
             return cPhs_ERROR_e;
         }
     }
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!Create()) {
             return cPhs_ERROR_e;
         }

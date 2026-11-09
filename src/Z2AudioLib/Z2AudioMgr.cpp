@@ -90,8 +90,8 @@ void Z2AudioMgr::init(JKRSolidHeap* heap, u32 memSize, void* baaData, JKRArchive
     seqMgr->getParams()->moveVolume(Z2Param::VOL_BGM_DEFAULT, 0);
 
     JAIStreamMgr* streamMgr = mSoundMgr.getStreamMgr();
-    JAUStreamStaticAramMgr_<1>* streamStaticAramMgr = new(heap, 0) JAUStreamStaticAramMgr_<1>();
-    streamStaticAramMgr->reserveAram(NULL, 0, 0x14);
+    auto* streamStaticAramMgr = new(heap, 0) JAUStreamStaticAramMgr_<1>();
+    streamStaticAramMgr->reserveAram(nullptr, 0, 0x14);
     streamMgr->setStreamAramMgr(streamStaticAramMgr);
     streamMgr->getParams()->moveVolume(Z2Param::VOL_BGM_DEFAULT, 0);
 

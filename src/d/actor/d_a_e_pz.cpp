@@ -2470,7 +2470,7 @@ int daE_PZ_c::create() {
     fopAcM_ct(this, daE_PZ_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_PZ");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_PZ PARAM %x\n", fopAcM_GetParam(this));
     
         arg0 = fopAcM_GetParam(this);

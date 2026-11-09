@@ -57,7 +57,7 @@ int daBullet_c::create() {
     mType = getTypeFromParam();
 
     int phase_state = dComIfG_resLoad(&mPhase, getResName());
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x810)) {
             return cPhs_ERROR_e;
         }

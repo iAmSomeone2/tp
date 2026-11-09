@@ -586,7 +586,7 @@ int daObjBATTA_c::create() {
 
     fopAcM_ct(this, daObjBATTA_c);
     int rv = dComIfG_resLoad(&mPhase, "Bat");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("BATTA PARAM %x\n", fopAcM_GetParam(this));
         field_0x9f0 = fopAcM_GetParam(this) & 3;
         if (field_0x9f0 == 3) {

@@ -22,7 +22,7 @@ int daTag_Telop_c::create() {
         mMessageStatus = 99;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daTag_Telop_c::execute() {

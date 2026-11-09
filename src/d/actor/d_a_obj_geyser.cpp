@@ -106,7 +106,7 @@ static const int l_dzb[] = {7, 8};
 
 int daObjGeyser_c::create1st() {
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
@@ -129,7 +129,7 @@ int daObjGeyser_c::create1st() {
         return cPhs_ERROR_e;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static const Vec l_scale[] = {

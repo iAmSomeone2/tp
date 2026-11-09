@@ -142,7 +142,7 @@ int daObjSwPr_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName[mModelType]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, l_heap_size[mModelType])) {
             return cPhs_ERROR_e;
         }

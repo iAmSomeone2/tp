@@ -59,7 +59,7 @@ int daBubbPilar_c::create() {
     fopAcM_ct(this, daBubbPilar_c);
     int rv = dComIfG_resLoad(&mPhase, "M_Crack");
     switch (rv) {
-    case cPhs_COMPLEATE_e:
+    case cPhs_COMPLETE_e:
         if (MoveBGCreate("M_Crack", 8, dBgS_MoveBGProc_Typical, 0x1900, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }
@@ -93,7 +93,7 @@ int daBubbPilar_c::create() {
         for (int i = 0; i < 4; i++) {
             mEmitters[i] = NULL;
         }
-        rv = cPhs_COMPLEATE_e;
+        rv = cPhs_COMPLETE_e;
         break;
     }
     return rv;

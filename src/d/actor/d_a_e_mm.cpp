@@ -1030,7 +1030,7 @@ static int daE_MM_Create(fopAc_ac_c* actor) {
     e_mm_class* i_this = (e_mm_class*)actor;
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "E_MM");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_MM PARAM %x\n", fopAcM_GetParam(actor));
         i_this->field_0x5b4 = fopAcM_GetParam(actor);
         i_this->bitSw = (fopAcM_GetParam(actor) & 0xFF00) >> 8;

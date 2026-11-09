@@ -645,7 +645,7 @@ int daObjNAN_c::create() {
     u8 uVar6 = (fopAcM_GetParam(this) & 0xf00) >> 8;
     fopAcM_ct(this, daObjNAN_c);
     int rv = dComIfG_resLoad(&mPhase, "I_Nan");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("NAN PARAM %x\n", fopAcM_GetParam(this));
         field_0x7fa = fopAcM_GetParam(this) & 3;
         if (field_0x7fa == 3) {

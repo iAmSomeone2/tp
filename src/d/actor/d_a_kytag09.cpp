@@ -125,12 +125,12 @@ static int daKytag09_Create(fopAc_ac_c* i_this) {
     int phase;
     if (a_this->mType != 1) {
         phase = dComIfG_resLoad(&a_this->mPhase, "Kytag09");
-        if (phase == cPhs_COMPLEATE_e && !fopAcM_entrySolidHeap(i_this, useHeapInit, 0x5EB0)) {
+        if (phase == cPhs_COMPLETE_e && !fopAcM_entrySolidHeap(i_this, useHeapInit, 0x5EB0)) {
             return cPhs_ERROR_e;
         }
     } else {
         phase = dComIfG_resLoad(&a_this->mPhase, "kytag09_2");
-        if (phase == cPhs_COMPLEATE_e && !fopAcM_entrySolidHeap(i_this, useHeapInit2, 0x1880)) {
+        if (phase == cPhs_COMPLETE_e && !fopAcM_entrySolidHeap(i_this, useHeapInit2, 0x1880)) {
             return cPhs_ERROR_e;
         }
     }

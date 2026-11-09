@@ -7342,7 +7342,7 @@ static int daNpc_Ks_Create(fopAc_ac_c* actor) {
     }
 
     int phase = dComIfG_resLoad(&i_this->mPhase, i_this->res_name);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_KS PARAM %x\n", fopAcM_GetParam(actor));
         i_this->monkey_room_no = fopAcM_GetParam(actor);
 

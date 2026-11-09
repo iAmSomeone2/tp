@@ -84,7 +84,7 @@ cPhs_Step daObjH_Saku_c::create() {
     fopAcM_ct(this, daObjH_Saku_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "H_Saku.dzb");
         JUT_ASSERT(113, dzb_id != -1);
 
@@ -253,7 +253,7 @@ static int daObjH_Saku_Create(fopAc_ac_c* a_this) {
 int daObjH_Saku_c::Create() {
     fopAcM_setCullSizeBox(this, -700.0f, -700.0f, -700.0f, 700.0f, 700.0f, 7000.0f);
     initBaseMtx();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjH_Saku_c::Execute(Mtx** mtx) {

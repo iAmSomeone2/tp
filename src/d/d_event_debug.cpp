@@ -149,7 +149,7 @@ void dEvM_HIO_c::listenPropertyEvent(const JORPropertyEvent* param_0) {
 
     JORReflexible::listenPropertyEvent(param_0);
 
-    switch (reinterpret_cast<u32>(param_0->id)) {
+    switch (reinterpret_cast<uintptr_t>(param_0->id)) {
     case BTN_READ:
         if(!debug_data) {
             // "Fly? Soar?" or maybe something along the lines of "Order change?", not entirely sure of translation...
@@ -260,7 +260,7 @@ void dEvM_play_HIO_c::listenPropertyEvent(const JORPropertyEvent* param_0) {
     JORReflexible::listenPropertyEvent(param_0);
 
     mEventCameraMode = UNSET;
-    switch (reinterpret_cast<u32>(param_0->id)) {
+    switch (reinterpret_cast<uintptr_t>(param_0->id)) {
     case BTN_PLAYBACK:
         mEventCameraMode = PLAYBACK;
         break;
@@ -311,7 +311,7 @@ void dEvM_bit_HIO_c::listenPropertyEvent(const JORPropertyEvent* param_0) {
     int i;
     JORReflexible::listenPropertyEvent(param_0);
 
-    switch (reinterpret_cast<u32>(param_0->id)) {
+    switch (reinterpret_cast<uintptr_t>(param_0->id)) {
     case BTN_UPDATE:
         update();
     case BTN_UPDATE + 1:
@@ -387,7 +387,7 @@ void dEvM_reg_HIO_c::listenPropertyEvent(const JORPropertyEvent* param_0) {
     int i;
     JORReflexible::listenPropertyEvent(param_0);
 
-    switch(reinterpret_cast<u32>(param_0->id)) {
+    switch(reinterpret_cast<uintptr_t>(param_0->id)) {
     case BTN_UPDATE:
         update();
     case BTN_UPDATE + 1:

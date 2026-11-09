@@ -56,7 +56,7 @@ cPhs_Step daObjHata_c::create() {
     fopAcM_ct(this, daObjHata_c);
 
     cPhs_Step phase_step = dComIfG_resLoad(this, l_arcName);
-    if (phase_step == cPhs_COMPLEATE_e) {
+    if (phase_step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daObjHata_c_createHeap, 0x870)) {
             return cPhs_ERROR_e;
         }

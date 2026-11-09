@@ -1,7 +1,7 @@
 #ifndef JASCHANNEL_H
 #define JASCHANNEL_H
 
-#include "JSystem/JAudio2/JASDspInterface.h"
+#include "JSystem/JAudio2/JASDSPInterface.h"
 #include "JSystem/JAudio2/JASHeapCtrl.h"
 #include "JSystem/JAudio2/JASLfo.h"
 #include "JSystem/JAudio2/JASOscillator.h"

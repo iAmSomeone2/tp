@@ -16,7 +16,6 @@
 #include "f_ap/f_ap_game.h"
 #include "f_op/f_op_camera_mng.h"
 #include "m_Do/m_Do_graphic.h"
-#include <cstdio>
 #include <cstring>
 
 dRes_info_c::dRes_info_c() {
@@ -475,7 +474,7 @@ int dRes_info_c::loadResource() {
                     void* bas;
 
                     if (chunk->some_data_offset != 0xFFFFFFFF) {
-                        bas = (void*)(chunk->some_data_offset + (u32)res);
+                        bas = reinterpret_cast<void*>(chunk->some_data_offset + reinterpret_cast<uintptr_t>(res));
                     } else {
                         bas = NULL;
                     }
@@ -835,7 +834,7 @@ int dRes_control_c::deleteRes(char const* i_arcName, dRes_info_c* i_resInfo, int
 dRes_info_c* dRes_control_c::getResInfo(char const* i_arcName, dRes_info_c* i_resInfo, int i_infoNum) {
     for (int i = 0; i < i_infoNum; i++) {
         if (i_resInfo->getCount() != 0) {
-            if (!stricmp(i_arcName, i_resInfo->getArchiveName())) {
+            if (!strcasecmp(i_arcName, i_resInfo->getArchiveName())) {
                 return i_resInfo;
             }
         }

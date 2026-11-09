@@ -36,7 +36,7 @@ int dalv4CandleTag_c::create() {
         init_modeWatch();
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dalv4CandleTag_c::Execute() {

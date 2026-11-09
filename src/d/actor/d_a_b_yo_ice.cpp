@@ -1014,7 +1014,7 @@ cPhs_Step daB_YOI_c::create() {
     fopAcM_ct(this, daB_YOI_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, "B_YO");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1CA0)) {
             return cPhs_ERROR_e;
         }

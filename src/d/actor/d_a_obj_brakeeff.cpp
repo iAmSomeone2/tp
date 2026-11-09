@@ -188,7 +188,7 @@ int daObj_Brakeeff_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(i_this, obj_brakeeff_class);
 
     int res_load_result = dComIfG_resLoad(&i_this->mRequestOfPhase, "Obj_Bef");
-    if (res_load_result == cPhs_COMPLEATE_e) {
+    if (res_load_result == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_BRAKEEFF PARAM %x\n", fopAcM_GetParam(a_this));
 
         i_this->mEffectType = fopAcM_GetParam(a_this);

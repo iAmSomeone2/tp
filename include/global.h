@@ -74,20 +74,24 @@
 
 #ifndef __MWERKS__
 // Silence clangd errors about MWCC PPC intrinsics by declaring them here.
-extern int __cntlzw(unsigned int);
 extern int __rlwimi(int, int, int, int, int);
 extern void __dcbf(void*, int);
 extern void __dcbz(void*, int);
 extern void __sync();
 extern int __abs(int);
-void* __memcpy(void*, const void*, int);
+
+// Host equivalents of the intrinsics the engine actually links against.
+#include <bit>
+#include <cstring>
+inline int __cntlzw(unsigned int x) { return std::countl_zero(x); }
+inline void* __memcpy(void* dst, const void* src, int n) { return std::memcpy(dst, src, n); }
 #endif
 
 #define FAST_DIV(x, n) (x >> (n / 2))
 
 #define SQUARE(x) ((x) * (x))
 
-#define POINTER_ADD_TYPE(type_, ptr_, offset_) ((type_)((unsigned long)(ptr_) + (unsigned long)(offset_)))
+#define POINTER_ADD_TYPE(type_, ptr_, offset_) ((type_)((uintptr_t)(ptr_) + (uintptr_t)(offset_)))
 #define POINTER_ADD(ptr_, offset_) POINTER_ADD_TYPE(__typeof__(ptr_), ptr_, offset_)
 
 // floating-point constants
@@ -175,7 +179,7 @@ static const float INF = 2000000000.0f;
 
 #ifndef __MWERKS__
 #if __cplusplus
-#include <cmath>
+#include "nightfall/compat/globals.hpp"
 using std::isnan;
 #endif
 #endif

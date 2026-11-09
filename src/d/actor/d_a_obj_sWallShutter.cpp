@@ -61,7 +61,7 @@ int daSwShutter_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_resNameIdx[mModelType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mModelType], l_dzbIdx[mModelType],
                          dBgS_MoveBGProc_TypicalRotY, 0x1000, NULL) == cPhs_ERROR_e)
         {

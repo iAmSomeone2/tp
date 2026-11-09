@@ -93,19 +93,20 @@ void daNpc_Tkj2_HIO_c::genMessage(JORMContext* ctx) {
 #endif
 
 static void anm_init(npc_tkj2_class* i_this, int i_index, f32 i_morf, u8 i_attr, f32 i_rate) {
-    i_this->mpModelMorf->setAnm((J3DAnmTransform*)dComIfG_getObjectRes("Tkj2", i_index), i_attr, i_morf, i_rate, 0.0f, -1.0f);
+    i_this->mpModelMorf->setAnm(
+        static_cast<J3DAnmTransform*>(dComIfG_getObjectRes("Tkj2", i_index)), i_attr, i_morf, i_rate, 0.0f, -1.0f);
     i_this->field_0x5f4 = i_index;
 }
 
-static int nodeCallBack(J3DJoint* i_joint, int param_2) {
+static int nodeCallBack(const J3DJoint* i_joint, const int param_2) {
     if (param_2 == 0) {
-        J3DJoint* joint = i_joint;
-        int jntNo = joint->getJntNo();
+        const J3DJoint* joint = i_joint;
+        const int jntNo = joint->getJntNo();
         J3DModel* model = j3dSys.getModel();
-        npc_tkj2_class* i_this = (npc_tkj2_class*)model->getUserArea();
-        int userArea = (int)i_this;
+        auto i_this = reinterpret_cast<npc_tkj2_class*>(model->getUserArea());
+        auto userArea = reinterpret_cast<intptr_t>(i_this);
 
-        if (i_this != NULL) {
+        if (i_this != nullptr) {
             MTXCopy(model->getAnmMtx(jntNo), *calc_mtx);
 
             if (jntNo == JNT_NECK1) {
@@ -1103,7 +1104,8 @@ static int useHeapInit(fopAc_ac_c* a_this) {
     model->setUserArea((uintptr_t)i_this);
 
     for (u16 i = 0; i < model->getModelData()->getJointNum(); i++) {
-        model->getModelData()->getJointNodePointer(i)->setCallBack(nodeCallBack);
+        model->getModelData()->getJointNodePointer(i)->setCallBack(
+            reinterpret_cast<J3DJointCallBack>(nodeCallBack));
     }
 
     i_this->mpBtkAnm = new mDoExt_btkAnm();
@@ -1132,7 +1134,7 @@ static cPhs_Step daNpc_Tkj2_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&tkj2->actor, npc_tkj2_class);
 
     cPhs_Step phase = dComIfG_resLoad(&tkj2->mPhase, "Tkj2");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_TKJ2 PARAM %x\n", fopAcM_GetParam(i_this));
 
         tkj2->field_0x5b4 = fopAcM_GetParam(i_this);

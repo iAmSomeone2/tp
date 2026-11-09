@@ -289,7 +289,7 @@ int daNpc_Maro_c::create() {
     }
 
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x, MaxItem:%d, group:%d<%08x> ", fopAcM_getProcNameString(this),
                   mType, mFlowNodeNo, getPathID(), getBitSW(), getMaxNumItem(), getGroupId(), fopAcM_GetParam(this));
         if (isDelete()) {

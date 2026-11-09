@@ -60,7 +60,7 @@ int daTagStream_c::create() {
     speed.set(cM_ssin(shape_angle.y) * cM_scos(shape_angle.x), -cM_ssin(shape_angle.x),
               cM_scos(shape_angle.y) * cM_scos(shape_angle.x));
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagStream_Create(fopAc_ac_c* i_this) {

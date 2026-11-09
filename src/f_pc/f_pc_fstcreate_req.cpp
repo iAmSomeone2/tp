@@ -15,7 +15,7 @@ int fpcFCtRq_Do(fast_create_request* i_createReq) {
     {
         return cPhs_UNK3_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 

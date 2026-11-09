@@ -224,7 +224,7 @@ static int daNPC_TR_Create(fopAc_ac_c* i_this) {
     npc_tr_class* npc_tr = (npc_tr_class*)i_this;
 
     int phase_state = dComIfG_resLoad(&npc_tr->mPhaseReq, "NPC_TR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         npc_tr->field_0x5b4 = fopAcM_GetParam(npc_tr);
 
         if (!fopAcM_entrySolidHeap(npc_tr, useHeapInit, 0x4B000)) {

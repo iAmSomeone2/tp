@@ -89,7 +89,7 @@ int daIceWall_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, "l5IceWall");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("l5IceWall", 8, dBgS_MoveBGProc_TypicalRotY, 0x2100, NULL) == cPhs_ERROR_e)
         {
             return cPhs_ERROR_e;

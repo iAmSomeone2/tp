@@ -1199,7 +1199,7 @@ int daE_HP_c::create() {
     fopAcM_ct(this, daE_HP_c);
 
     s32 loadResult = dComIfG_resLoad(&mPhaseReq, "E_HP");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("\n\n");
         OS_REPORT("E_HP PARAM %x\n", fopAcM_GetParam(this));
 

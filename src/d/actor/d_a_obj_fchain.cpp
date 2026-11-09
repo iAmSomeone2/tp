@@ -31,7 +31,7 @@ int daObjFchain_c::create() {
     fopAcM_ct(this, daObjFchain_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
     switch (rv) {
-    case cPhs_COMPLEATE_e:
+    case cPhs_COMPLETE_e:
         if (fopAcM_entrySolidHeap(this, daObjFchain_createHeap,
                                                       0x10) == 0) {
             return cPhs_ERROR_e;
@@ -64,7 +64,7 @@ int daObjFchain_c::create() {
             pdVar5++;
             local_48++;
         }
-        rv = cPhs_COMPLEATE_e;
+        rv = cPhs_COMPLETE_e;
         break;
     }
     return rv;

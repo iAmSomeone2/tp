@@ -644,29 +644,29 @@ int daNpcCd2_c::loadResrc(int idx, int param_1) {
     int result;
     if (mIsDarkWorld) {
         result = dComIfG_resLoad(&mPhase1, l_resNameTbl[idx][1]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
         result = dComIfG_resLoad(&mPhase4, l_resNameTbl[idx][5]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
     } else {
         result = dComIfG_resLoad(&mPhase1, l_resNameTbl[idx][0]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
         result = dComIfG_resLoad(&mPhase4, l_resNameTbl[idx][4]);
-        if (result != cPhs_COMPLEATE_e) {
+        if (result != cPhs_COMPLETE_e) {
             return result;
         }
     }
     result = dComIfG_resLoad(&mPhase2, l_resNameTbl[idx][2]);
-    if (result != cPhs_COMPLEATE_e) {
+    if (result != cPhs_COMPLETE_e) {
         return result;
     }
     result = dComIfG_resLoad(&mPhase3, l_resNameTbl[idx][3]);
-    if (result != cPhs_COMPLEATE_e) {
+    if (result != cPhs_COMPLETE_e) {
         return result;
     }
     return result;

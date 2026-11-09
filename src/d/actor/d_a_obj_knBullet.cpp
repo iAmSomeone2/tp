@@ -41,7 +41,7 @@ int daObjKnBullet_c::Create() {
         mEmtIds[i] = -1;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjKnBullet_c::Execute() {

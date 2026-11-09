@@ -43,7 +43,7 @@ int daTag_Msg_c::create() {
     fopAcM_ct(this, daTag_Msg_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, getResName());
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         attention_info.flags = (fopAc_AttnFlag_TALKCHECK_e | fopAc_AttnFlag_SPEAK_e);
         getParam();
 

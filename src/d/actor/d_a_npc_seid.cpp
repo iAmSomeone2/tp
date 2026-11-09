@@ -142,7 +142,7 @@ int daNpc_seiD_c::create() {
     mTwilight = false;
 
     int phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             return cPhs_ERROR_e;
         }

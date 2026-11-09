@@ -57,7 +57,7 @@ int daTag_AllMato_c::create() {
         return cPhs_ERROR_e;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_AllMato_c::Delete() {

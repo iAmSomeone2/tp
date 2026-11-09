@@ -112,7 +112,7 @@ int daNpc_solA_c::create() {
     mTwilight = false;
 
     int rv = loadRes(l_loadResPtrnList[field_0xf80], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0)) {
             return cPhs_ERROR_e;
         }

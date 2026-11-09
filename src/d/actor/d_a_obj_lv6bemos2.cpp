@@ -319,7 +319,7 @@ cPhs_Step daObjLv6Bm_c::create1st() {
     }
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, DZB_BM6, dBgS_MoveBGProc_TypicalRotY, 0x2FA0, NULL);
 
         if (phase == cPhs_ERROR_e) {

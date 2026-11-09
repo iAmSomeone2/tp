@@ -67,7 +67,7 @@ int daTagSpring_c::create() {
     l_HIO.entryHIO("精霊の泉");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagSpring_c::execute() {

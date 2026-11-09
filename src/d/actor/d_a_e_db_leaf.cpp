@@ -48,7 +48,7 @@ static int daE_DB_LEAF_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(leaf, e_db_leaf_class);
 
     int ret = dComIfG_resLoad(&leaf->mPhase, "E_DB");
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         if(!fopAcM_entrySolidHeap(leaf,useHeapInit,0xA80)) {
             return cPhs_ERROR_e;
         } else {

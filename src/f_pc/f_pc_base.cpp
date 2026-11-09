@@ -149,7 +149,7 @@ base_process_class* fpcBs_Create(s16 i_profname, fpc_ProcID i_procID, void* i_ap
 int fpcBs_SubCreate(base_process_class* i_proc) {
     switch (fpcMtd_Create(i_proc->methods, i_proc)) {
     case cPhs_NEXT_e:
-    case cPhs_COMPLEATE_e:
+    case cPhs_COMPLETE_e:
         fpcBs_DeleteAppend(i_proc);
         i_proc->state.create_phase = cPhs_NEXT_e;
         return cPhs_NEXT_e;

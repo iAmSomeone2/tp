@@ -165,13 +165,13 @@ static void pl_check(bd_class* i_this) {
     f32 var_f31;
 
     cXyz sp8 = i_this->field_0x5C4 - player->current.pos;
-    u32 var_r28 = 0;
+    uintptr_t var_r28 = 0;
     if (i_this->field_0x658 != 0 || i_this->field_0x5B6 >= 1) {
         return;
     }
 
     if ((i_this->field_0x618 & 0xF) == 0) {
-        var_r28 = (u32)fpcM_Search(s_a_sub, i_this);
+        var_r28 = reinterpret_cast<uintptr_t>(fpcM_Search(s_a_sub, i_this));
     }
 
     if (daPy_getPlayerActorClass()->checkHorseRide()) {
@@ -974,7 +974,7 @@ static int daBd_Create(fopAc_ac_c* i_act_this) {
     fopAcM_ct(&i_this->enemy, bd_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "Bd");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("BD PARAM %x\n", fopAcM_GetParam(i_act_this));
         i_this->field_0x5B4 = fopAcM_GetParam(i_act_this);
         i_this->field_0x5B5 = (fopAcM_GetParam(i_act_this) & 0xFF00) >> 8;

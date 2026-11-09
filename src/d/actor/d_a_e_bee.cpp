@@ -721,7 +721,7 @@ static cPhs_Step daE_Bee_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(_this, e_bee_class);
     
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, "E_bee");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         _this->mParam0 = (u8)fopAcM_GetParam(_this);
         _this->mParam1 = (u8)(fopAcM_GetParam(_this) >> 8);
         _this->mParam2 = (u8)(fopAcM_GetParam(_this) >> 16);

@@ -127,7 +127,7 @@ int daNpc_FairySeirei_c::create() {
     mCreating = true;
     Execute();
     mCreating = false;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daNpc_FairySeirei_c::Delete() {

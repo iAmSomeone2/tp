@@ -122,8 +122,8 @@ int fopOvlpReq_Handler(overlap_request_class* i_overlapReq) {
         return cPhs_INIT_e;
     case cPhs_LOADING_e:
         return cPhs_INIT_e;
-    case cPhs_COMPLEATE_e:
-        return cPhs_COMPLEATE_e;
+    case cPhs_COMPLETE_e:
+        return cPhs_COMPLETE_e;
     case cPhs_UNK3_e:
     case cPhs_ERROR_e:
         return cPhs_ERROR_e;

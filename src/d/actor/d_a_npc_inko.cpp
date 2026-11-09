@@ -458,7 +458,7 @@ static int daNpc_Inko_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, npc_inko_class);
 
     int phase_state = dComIfG_resLoad(&i_this->phase, "Npc_inko");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_INKO PARAM %x\n", fopAcM_GetParam(actor));
         i_this->field_0x570 = fopAcM_GetParam(actor);
 

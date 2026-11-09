@@ -2632,7 +2632,7 @@ static int useHeapInit(fopAc_ac_c* i_this) {
     }
 
     J3DModel* morfModel = a_this->mpMorf->getModel();
-    morfModel->setUserArea((s32)a_this);
+    morfModel->setUserArea(reinterpret_cast<uintptr_t>(a_this));
 
     for (u16 i = 0; i < morfModel->getModelData()->getJointNum(); i++) {
         morfModel->getModelData()->getJointNodePointer(i)->setCallBack(nodeCallBack);
@@ -2691,7 +2691,7 @@ static int daNpc_Henna_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&a_this->actor, npc_henna_class);
 
     cPhs_Step loadResult = dComIfG_resLoad(&a_this->phase, "Henna");
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("NPC_HENNA PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->arg0 = fopAcM_GetParam(i_this);
         OS_REPORT("NPC_HENNA//////////////NPC_HENNA SET 1 !!\n");

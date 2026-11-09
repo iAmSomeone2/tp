@@ -59,7 +59,7 @@ int daObj_Nougu_c::create() {
     mType = getType();
 
     int phase_state = dComIfG_resLoad(&mPhase, getResName());
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) <%08x> -> roomNo.%d", fopAcM_getProcNameString(this), getType(), fopAcM_GetParam(this), fopAcM_GetRoomNo(this));
 
         if (isDelete()) {

@@ -227,7 +227,7 @@ static int dOvlpFd2_Delete(dOvlpFd2_c* i_this) {
 
 static int dOvlpFd2_Create(void* i_this) {
     new (i_this) dOvlpFd2_c();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dOvlpFd2_Method = {

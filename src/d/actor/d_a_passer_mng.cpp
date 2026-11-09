@@ -521,7 +521,7 @@ static int daPasserMng_Create(fopAc_ac_c* i_this) {
 int daPasserMng_c::create() {
     fopAcM_ct(this, daPasserMng_c);
     create_init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daPasserMng_c::create_init() {

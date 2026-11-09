@@ -75,7 +75,7 @@ int daTogeRoll_c::create() {
 
     int phase = dComIfG_resLoad(&mPhase, "togeRol");
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("togeRol", -1, NULL, 0x900, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

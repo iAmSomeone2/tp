@@ -14,7 +14,7 @@ int daObjOnsenFire_c::create() {
     if (!dComIfGs_isEventBit(dSv_event_flag_c::saveBitLabels[377])) {
         return cPhs_ERROR_e;
     }
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjOnsenFire_c::execute() {

@@ -3,7 +3,7 @@
 
 #include "JSystem/JKernel/JKRDisposer.h" // IWYU pragma: keep
 #include "JSystem/JKernel/JKRHeap.h" // IWYU pragma: keep
-#include "JSystem/J2DGraph/J2DOrthograph.h" // IWYU pragma: keep
+#include "JSystem/J2DGraph/J2DOrthoGraph.h" // IWYU pragma: keep
 #include "JSystem/J3DGraphBase/J3DPacket.h" // IWYU pragma: keep
 #include "JSystem/J3DGraphAnimator/J3DJoint.h" // IWYU pragma: keep
 #include "JSystem/JUtility/JUTFont.h" // IWYU pragma: keep

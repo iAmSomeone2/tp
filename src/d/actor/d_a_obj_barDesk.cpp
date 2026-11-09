@@ -52,7 +52,7 @@ cPhs_Step daBarDesk_c::create() {
         return cPhs_ERROR_e;
     }
     cPhs_Step step = dComIfG_resLoad(&mPhase, "KHdesk");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (MoveBGCreate("KHdesk", 7, dBgS_MoveBGProc_TypicalRotY, 0xe50, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

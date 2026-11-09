@@ -26,7 +26,7 @@ int daTagSetBall_c::create() {
     if (!Create()) {
         return cPhs_ERROR_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 

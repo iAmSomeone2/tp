@@ -58,7 +58,7 @@ public:
     int create() {
         fopAcM_ct(this, daGuardMng_c);
         create_init();
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     u8 checkMerchantNum();

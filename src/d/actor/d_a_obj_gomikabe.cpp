@@ -280,7 +280,7 @@ int daObjGOMIKABE_c::create() {
     fopAcM_ct(this, daObjGOMIKABE_c);
 
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         s32 dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_Gomikabe.dzb");
         if (dzb_id == -1) {
             // "dzb data not found!<%s>"
@@ -339,7 +339,7 @@ int daObjGOMIKABE_c::Create() {
     fopAcM_setCullSizeBox(this, mBaseScale.x * -1000.0f, mBaseScale.y * -500.0f,
                           mBaseScale.z * -1000.0f, mBaseScale.x * 1000.0f, mBaseScale.y * 500.0f,
                           mBaseScale.z * 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjGOMIKABE_c::Execute(Mtx** i_mtx) {

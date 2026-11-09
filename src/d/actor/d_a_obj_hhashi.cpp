@@ -292,7 +292,7 @@ int daObjHHASHI_c::CreateHeap() {
 int daObjHHASHI_c::create() {
     fopAcM_ct(this, daObjHHASHI_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         gravity = -9.0f;
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "L_hhashi00.dzb");
         JUT_ASSERT(1112, dzb_id != -1);
@@ -317,7 +317,7 @@ static int daObjHHASHI_IsDelete(daObjHHASHI_c* param_0) {
 
 int daObjHHASHI_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjHHASHI_c::Execute(f32 (**param_1)[3][4]) {

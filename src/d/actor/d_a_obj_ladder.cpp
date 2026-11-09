@@ -216,11 +216,11 @@ int Act_c::Create() {
 int Act_c::Mthd_Create() {
     fopAcM_ct(this, Act_c);
     int phase_state = dComIfG_resLoad(&mPhase, M_arcname);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         mType = prm_get_type();
         phase_state = MoveBGCreate(M_arcname, attr_type(mType).field_0x2,
             dBgS_MoveBGProc_Trans, 0xcb0, NULL);
-        JUT_ASSERT(486, (phase_state == cPhs_COMPLEATE_e) || (phase_state == cPhs_ERROR_e));
+        JUT_ASSERT(486, (phase_state == cPhs_COMPLETE_e) || (phase_state == cPhs_ERROR_e));
 #if DEBUG
         L_hio.ct();
 #endif

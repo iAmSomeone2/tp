@@ -1645,7 +1645,7 @@ static int daObj_Brg_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, obj_brg_class);
 
     phase_state = dComIfG_resLoad(&a_this->mPhase, "Obj_brg");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         a_this->mType = fopAcM_GetParam(i_this);
         a_this->mType = 0;
         a_this->field_0xb1e9 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;

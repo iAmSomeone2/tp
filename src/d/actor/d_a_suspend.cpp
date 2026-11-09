@@ -30,7 +30,7 @@ int daSus_c::create() {
     }
 
     newData(roomNo, current.pos, scale, sw, arg0, arg1);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daSus_create(daSus_c* i_this) {

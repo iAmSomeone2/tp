@@ -47,7 +47,7 @@ void* JKRDecomp::run() {
         }
 
         if (command->mCallback) {
-            (*command->mCallback)((u32)command);
+            (*command->mCallback)(reinterpret_cast<uintptr_t>(command));
             continue;
         }
 

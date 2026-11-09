@@ -727,7 +727,7 @@ static int daObj_Keyhole_Create(fopAc_ac_c* a_this) {
 
     i_this->arcname = arc_name[i_this->arg0];
     int phase_state = dComIfG_resLoad(&i_this->phase, i_this->arcname);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_KEYHOLE PARAM %x\n", fopAcM_GetParam(a_this));
         u8 swbit = (fopAcM_GetParam(a_this) & 0xFF000000) >> 0x18;
         if (swbit != 0xFF && dComIfGs_isSwitch(swbit, fopAcM_GetRoomNo(a_this))) {

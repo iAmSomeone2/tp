@@ -157,7 +157,7 @@ static int daKytag16_Create(fopAc_ac_c* i_this) {
         break;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag16_Method = {

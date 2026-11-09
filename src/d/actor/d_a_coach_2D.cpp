@@ -152,7 +152,7 @@ int daCoach2D_c::createHeap() {
 
 int daCoach2D_c::create() {
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daCoach2D_createHeap, 0x5050)) {
             return cPhs_ERROR_e;
         }

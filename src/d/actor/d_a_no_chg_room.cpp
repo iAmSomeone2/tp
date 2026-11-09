@@ -130,7 +130,7 @@ int daNocrm_c::create() {
     scale *= getScaleType() ? 1000.0f : 100.0f;
     mRoomNo[0] = -1;
     mRoomNo[1] = -1;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daNocrm_create(daNocrm_c* i_this) {

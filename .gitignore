@@ -21,6 +21,7 @@ orig/*/*
 build/
 .ninja_*
 build.ninja
+cmake-build-*/
 
 # decompctx output
 ctx.*
@@ -29,9 +30,11 @@ ctx.*
 # Generated configs
 objdiff.json
 compile_commands.json
+CMakeUserPresets.json
 
 # Miscellaneous
 /*.txt
+!CMakeLists.txt
 *.exe
 
 # MacOS

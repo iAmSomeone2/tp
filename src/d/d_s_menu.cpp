@@ -1636,7 +1636,7 @@ int phase_2(dScnMenu_c* i_this) {
     dComIfGs_onEventBit(dSv_event_flag_c::M_068);
     /* dSv_event_flag_c::F_0550 - Main Event - Gain ability to use sense */
     dComIfGs_onEventBit(dSv_event_flag_c::saveBitLabels[550]);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dScnMenu_Create(scene_class* i_this) {

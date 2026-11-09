@@ -197,7 +197,7 @@ static int daKytag10_Create(fopAc_ac_c* i_this) {
     a_this->mpPath = set_path_info(i_this);
     a_this->mpEmitter1 = dComIfGp_particle_set(0x852B, &i_this->current.pos, NULL, NULL);
     a_this->mpEmitter2 = dComIfGp_particle_set(0x852C, &i_this->current.pos, NULL, NULL);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag10_Method = {

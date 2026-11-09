@@ -581,7 +581,7 @@ cPhs_Step daNpc_ykM_c::create() {
     mTwilight = false;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitTRB:%02x<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo,
                   getPathID(), getBitTRB() & 0xFF, fopAcM_GetParam(this));
 

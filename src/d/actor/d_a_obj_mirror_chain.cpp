@@ -481,7 +481,7 @@ cPhs_Step daObjMirrorChain_c::create() {
     fopAcM_ct(this, daObjMirrorChain_c);
 
     cPhs_Step phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x71b0)) {
             return cPhs_ERROR_e;
         }

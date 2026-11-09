@@ -76,7 +76,7 @@ cPhs_Step daObjZraRock_c::create() {
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
     if (step == cPhs_ERROR_e || step == cPhs_UNK3_e) {
         return cPhs_ERROR_e;
-    } else if (step == cPhs_COMPLEATE_e) {
+    } else if (step == cPhs_COMPLETE_e) {
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "H_ZoraRock.dzb");
         step = MoveBGCreate(l_arcName, dzb_id, dBgS_MoveBGProc_Trans, 0x2050, NULL);
         if (dComIfGs_isSwitch((fopAcM_GetParam(this) >> 8) & 0xff, fopAcM_GetRoomNo(this))) {

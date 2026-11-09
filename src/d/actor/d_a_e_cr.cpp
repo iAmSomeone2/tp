@@ -483,7 +483,7 @@ static int daE_CR_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_cr_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_CR");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_CR PARAM %x\n", fopAcM_GetParam(a_this));
         a_this->field_0x5b4 = fopAcM_GetParam(i_this);
         a_this->field_0x5b5 = (fopAcM_GetParam(i_this) & 0xF00) >> 8;

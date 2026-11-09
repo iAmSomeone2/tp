@@ -261,7 +261,7 @@ int dThunder_c::create() {
         mDoAud_mEnvSe_startFarThunderSe(&field_0x150);
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dThunder_Method = {

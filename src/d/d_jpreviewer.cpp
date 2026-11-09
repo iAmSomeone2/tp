@@ -16,7 +16,7 @@ public:
         u32 type = param_1.get_type();
         switch(type) {
         case 'JMSG':
-        case -1: {
+        case 0xFFFFFFFF: {
             char acStack_20[10];
             JStudio::stb::data::toString_block(acStack_20, type);
 

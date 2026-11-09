@@ -93,7 +93,7 @@ int daLv6SwGate_c::create() {
         return cPhs_ERROR_e;
     }
     int phase = dComIfG_resLoad(&mPhase, "L6SwGate");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L6SwGate", 7, dBgS_MoveBGProc_TypicalRotY, 0x1700, NULL) == cPhs_ERROR_e)
         {
             return cPhs_ERROR_e;

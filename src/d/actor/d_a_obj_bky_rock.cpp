@@ -41,7 +41,7 @@ int daBkyRock_c::create() {
         return cPhs_ERROR_e;
     }
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(
             this, daBkyRock_c_createHeap, 0x2000) == 0) {
             return cPhs_ERROR_e;

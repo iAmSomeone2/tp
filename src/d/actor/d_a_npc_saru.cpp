@@ -316,7 +316,7 @@ int daNpc_Saru_c::create() {
     mTwilight = dKy_darkworld_check();
 
     int phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, BitSW:%02x, PathID:%02x<%08x> ", fopAcM_getProcNameString(this), mType, mFlowNodeNo, 
                  getBitSW(), getPathID(), fopAcM_GetParam(this));
 

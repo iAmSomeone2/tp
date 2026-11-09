@@ -384,7 +384,7 @@ f64 TFunctionValue_composite::composite_subtract(TVector_pointer<TFunctionValue*
         TFunctionValue* piVar3 = *p;
         dVar4 -= piVar3->getValue(param_3);
     }
-    dVar4 -= param_2.f32data;
+    dVar4 -= param_2.float_data;
     return dVar4;
 }
 
@@ -424,7 +424,7 @@ f64 TFunctionValue_composite::composite_divide(TVector_pointer<TFunctionValue*> 
     TValue v = param_2.get_value();
     JGADGET_ASSERTWARN(0x2df, fData!=TValue(0));
 #endif
-    fData /= param_2.f32data;
+    fData /= param_2.float_data;
     return fData;
 }
 

@@ -384,7 +384,7 @@ static cPhs_Step daObjMirrorTable_Create(fopAc_ac_c* i_this) {
 cPhs_Step daObjMirrorTable_c::create() {
     fopAcM_ct(this, daObjMirrorTable_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0xdb50)) {
             return cPhs_ERROR_e;
         }

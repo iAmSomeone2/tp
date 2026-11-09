@@ -76,7 +76,7 @@ int daTkraDai_c::create() {
     fopAcM_ct(this, daTkraDai_c);
 
     cPhs_Step phase = static_cast<cPhs_Step>(dComIfG_resLoad(&mPhase, "M_TakaraD"));
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("M_TakaraD", 8, dBgS_MoveBGProc_Typical, 0x2e00, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

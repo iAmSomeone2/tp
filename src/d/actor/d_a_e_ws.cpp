@@ -927,7 +927,7 @@ int daE_WS_c::create() {
     fopAcM_ct(this, daE_WS_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, "E_WS");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_WS PARAM %x\n", fopAcM_GetParam(this));
     
         bitSw = (fopAcM_GetParam(this) & 0xFF00) >> 8;

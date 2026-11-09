@@ -3143,7 +3143,7 @@ int daCow_c::create() {
         return cPhs_ERROR_e;
     default:
         res = dComIfG_resLoad(&mPhase, "Cow");
-        if (res == cPhs_COMPLEATE_e) {
+        if (res == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, daCow_c::createHeapCallBack, 0x1df0)) {
                 return cPhs_ERROR_e;
             }

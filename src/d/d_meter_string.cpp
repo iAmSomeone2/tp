@@ -79,7 +79,7 @@ int dMeterString_c::_create() {
     mStringID2 = 0;
     field_0x3c = 0xFF;
     playBckAnimation(0.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMeterString_c::_execute(u32 unused) {

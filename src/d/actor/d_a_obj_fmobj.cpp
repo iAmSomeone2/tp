@@ -77,7 +77,7 @@ static int daObj_Fmobj_Create(fopAc_ac_c* i_this) {
     
     int phase;
     phase = dComIfG_resLoad(&a_this->mPhase, "Obj_Fmobj");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_FMOBJ PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->field_0x570 = fopAcM_GetParam(i_this) & 0xFF;
 

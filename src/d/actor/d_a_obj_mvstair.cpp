@@ -98,7 +98,7 @@ int daObjStair_c::create1st() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName[mResType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName[mResType], l_dzbName[mResType], dBgS_MoveBGProc_TypicalRotY, l_heap_size[mResType], NULL);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;

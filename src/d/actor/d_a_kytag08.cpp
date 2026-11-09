@@ -239,7 +239,7 @@ static int daKytag08_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, kytag08_class);
 
     int phase = dComIfG_resLoad(&a_this->mPhase, "Kytag08");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(i_this, useHeapInit, 0x550)) {
             return cPhs_ERROR_e;
         }

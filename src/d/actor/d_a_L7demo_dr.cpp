@@ -346,7 +346,7 @@ int daDr_c::create() {
     int phase_state;
     if (dComIfG_play_c::getLayerNo(0) == 3) {
         phase_state = dComIfG_resLoad(&mPhase, "B_dr");
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             OS_REPORT("dr PARAM %x\n", fopAcM_GetParam(this));
             OS_REPORT("dr//////////////DR SET 1 !!\n");
 
@@ -376,7 +376,7 @@ int daDr_c::create() {
             daDr_Execute(this);
         }
     } else {
-        phase_state = cPhs_COMPLEATE_e;
+        phase_state = cPhs_COMPLETE_e;
         mIsHide = TRUE;
         OS_REPORT("dr PARAM %x\n", fopAcM_GetParam(this));
 

@@ -374,7 +374,7 @@ int daObjBHASHI_c::create() {
     fopAcM_ct(this, daObjBHASHI_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         gravity = -9.0f + nREG_F(0);
 
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "Lv9_R07_pillar.dzb");
@@ -422,7 +422,7 @@ static int daObjBHASHI_IsDelete(daObjBHASHI_c* i_this) {
 
 int daObjBHASHI_c::Create() {
     fopAcM_setCullSizeBox(this, -1000.0f, -500.0f, -1000.0f, 1000.0f, 500.0f, 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjBHASHI_c::Execute(Mtx** param_0) {

@@ -112,7 +112,7 @@ extern "C" void __DSPHandler(__OSInterrupt interrupt, OSContext* context) {
 
 static u32 sync_stack[5];
 
-void DsyncFrame2(u32 param_0, u32 param_1, u32 param_2) {
+void DsyncFrame2(u32 param_0, uintptr_t param_1, uintptr_t param_2) {
     if (DspRunningStatus != 1) {
         sync_stack[0] = param_0;
         struct_80451309 = 1;

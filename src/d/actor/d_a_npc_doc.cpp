@@ -162,7 +162,7 @@ int daNpc_Doc_c::create() {
     mTwilight = dKy_darkworld_check();
 
     int phase_state = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x, OnHour:%2d, OffHour:%2d<%08x> ",
                   fopAcM_getProcNameString(this), mType, mFlowNodeNo, getPathID(), getBitSW(), getOnHour(), getOffHour(), fopAcM_GetParam(this) & 0xFF);
 

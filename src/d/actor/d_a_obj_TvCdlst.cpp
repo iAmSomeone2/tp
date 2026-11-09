@@ -58,7 +58,7 @@ const dCcD_SrcGObjInf daTvCdlst_c::mCcDObjInfo = {
 int daTvCdlst_c::create() {
     fopAcM_ct(this, daTvCdlst_c);
     int phase = dComIfG_resLoad(&mPhaseReq,"HShokudai");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this,createHeapCallBack,0x820) == 0) {
             return cPhs_ERROR_e;
         }

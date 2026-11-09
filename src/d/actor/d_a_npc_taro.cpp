@@ -288,7 +288,7 @@ int daNpc_Taro_c::create() {
         mTwilight = false;
     }
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x, BitSW2:%02x<%08x> ",
                   fopAcM_getProcNameString(this), mType, mFlowNodeNo, getPathID(), getBitSW(),
                   getBitSW2(), fopAcM_GetParam(this));

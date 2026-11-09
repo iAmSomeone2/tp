@@ -36,7 +36,7 @@ static char* l_arcName = "P_Lv4Chan";
 
 int daObjLv4Chan_c::create1st() {
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         for (int i = 0; i < 3; i++) {
             if (getArg0() == 0xf) {
                 mMdlLengths[i] = 18;

@@ -189,7 +189,7 @@ int daObjSwBallB_c::create() {
         home.angle.z = 0;
     }
     int res = dComIfG_resLoad(&field_0x57c, l_arcName);
-    if (res == cPhs_COMPLEATE_e) {
+    if (res == cPhs_COMPLETE_e) {
         if (fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x940) == 0) {
             return cPhs_ERROR_e;
         } else if (Create() == 0) {

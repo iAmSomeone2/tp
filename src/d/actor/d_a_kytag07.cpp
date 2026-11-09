@@ -59,7 +59,7 @@ static int daKytag07_Create(fopAc_ac_c* i_this) {
     a_this->field_0x58c = 0;
 
     dKy_plight_priority_set(&a_this->mLightInfluence);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static actor_method_class l_daKytag07_Method = {

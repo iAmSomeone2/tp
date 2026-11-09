@@ -65,7 +65,7 @@ int daObj_SMTile_c::create() {
     int rv = dComIfG_resLoad(
         &mPhase,
        l_resNameList[l_bmdData[mType][1]]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) SWBit:%02x<%08x> -> roomNo.%d", fopAcM_getProcNameString(this), getType(), getBitSW(), fopAcM_GetParam(this),
                               fopAcM_GetRoomNo(this));
         if (getBitSW() != 0xff) {

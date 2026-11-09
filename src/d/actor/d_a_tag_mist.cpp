@@ -110,7 +110,7 @@ int daTagMist_c::create() {
     l_HIO.entryHIO("霧の範囲タグ");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagMist_c::execute() {

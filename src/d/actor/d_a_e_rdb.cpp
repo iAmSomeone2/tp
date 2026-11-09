@@ -1822,7 +1822,7 @@ static int daE_RDB_Create(fopAc_ac_c* actor) {
 
     int phase = dComIfG_resLoad(&i_this->mPhase, "E_rdb");
     i_this->field_0x5b6 = fopAcM_GetParam(actor);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_rdb PARAM %x\n", fopAcM_GetParam(actor));
         if (strcmp(dComIfGp_getStartStageName(), "D_MN09") == 0 && dComIfGs_isStageMiddleBoss()) {
             return cPhs_ERROR_e;

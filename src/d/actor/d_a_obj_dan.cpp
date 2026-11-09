@@ -510,7 +510,7 @@ cPhs_Step daObjDAN_c::create() {
     fopAcM_ct(this, daObjDAN_c);
     cPhs_Step step = dComIfG_resLoad(&mPhase, "I_Dan");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         mLocation = fopAcM_GetParam(this) & 0xf;
         if (mLocation == LOC_UNK_2) {
             field_0x56c = 0;

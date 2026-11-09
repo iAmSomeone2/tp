@@ -728,7 +728,7 @@ cPhs_Step daObjKABUTO_c::create() {
     fopAcM_ct(this, daObjKABUTO_c);
     cPhs_Step step = dComIfG_resLoad(&mPhaseReq, "Kab_m");
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         mLocation = fopAcM_GetParam(this) & 0xf;
         if (mLocation == LOC_UNK_2) {
             field_0x56c = 0;

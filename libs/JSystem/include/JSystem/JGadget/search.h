@@ -14,7 +14,12 @@ struct TExpandStride_ {};
 
 template <>
 struct TExpandStride_<s32> {
-    static s32 get(s32 n) { return n << 3; }
+    static s32 get(const s32 n) { return n << 3; }
+};
+
+template <>
+struct TExpandStride_<ptrdiff_t> {
+    static ptrdiff_t get(const ptrdiff_t n) { return n << 3; }
 };
 
 struct TPR1IsEqual_string_ {

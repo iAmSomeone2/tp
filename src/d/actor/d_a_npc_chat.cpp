@@ -2495,38 +2495,38 @@ bool daNpcChat_c::isM_() {
 }
 
 cPhs_Step daNpcChat_c::loadResrc(int idx, int param_2) {
-    cPhs_Step rv = cPhs_COMPLEATE_e;
+    cPhs_Step rv = cPhs_COMPLETE_e;
     if (mTwilight) {
         rv = dComIfG_resLoad(&mPhase1, l_resNameTbl[idx][1]);
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
     } else {
         rv = dComIfG_resLoad(&mPhase1, l_resNameTbl[idx][0]);
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
     }
 
     rv = dComIfG_resLoad(&mPhase2, l_resNameTbl[idx][2]);
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
 
     if (param_2 != 0 || field_0xe51 == 1) {
         rv = dComIfG_resLoad(&mPhase3, l_resNameTbl[idx][3]);
-        if (rv != cPhs_COMPLEATE_e) {
+        if (rv != cPhs_COMPLETE_e) {
             return rv;
         }
 
         if (mTwilight) {
             rv = dComIfG_resLoad(&mPhase4, l_resNameTbl[idx][5]);
-            if (rv != cPhs_COMPLEATE_e) {
+            if (rv != cPhs_COMPLETE_e) {
                 return rv;
             }
         } else {
             rv = dComIfG_resLoad(&mPhase4, l_resNameTbl[idx][4]);
-            if (rv != cPhs_COMPLEATE_e) {
+            if (rv != cPhs_COMPLETE_e) {
                 return rv;
             }
         }
@@ -2702,7 +2702,7 @@ cPhs_Step daNpcChat_c::Create() {
     mMsgNo = getMessageNo();
 
     cPhs_Step phase = loadResrc(mType, mObjNum);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x800022E0)) {
             return cPhs_ERROR_e;
         }

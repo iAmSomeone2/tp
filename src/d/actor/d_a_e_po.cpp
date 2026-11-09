@@ -2898,7 +2898,7 @@ static int daE_PO_Create(fopAc_ac_c* i_act_this) {
     fopAcM_ct(i_act_this, e_po_class);
 
     int phase_state = dComIfG_resLoad(&i_this->mPhase, "E_PO");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (fopAcM_isSwitch(i_act_this, 0x26)) {
             return cPhs_ERROR_e;
         }

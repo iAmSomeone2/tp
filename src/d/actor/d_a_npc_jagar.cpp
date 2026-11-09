@@ -355,7 +355,7 @@ int daNpc_Jagar_c::create() {
     mFlowNodeNo = getFlowNodeNo();
     mTwilight = 0;
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

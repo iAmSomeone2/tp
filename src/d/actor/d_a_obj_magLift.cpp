@@ -45,7 +45,7 @@ const f32 daMagLift_c::mSpeed[16] = {
 int daMagLift_c::create() {
     fopAcM_ct(this, daMagLift_c);
     int phase = dComIfG_resLoad(&mPhaseReq,"L_maglift");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L_maglift", 7, dBgS_MoveBGProc_TypicalRotY, 0x4000, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

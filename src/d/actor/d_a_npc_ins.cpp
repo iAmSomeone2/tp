@@ -417,12 +417,12 @@ cPhs_Step daNpcIns_c::Create() {
     for (int i = 0; l_loadRes_list[mType][i] >= 0; i++) {
         phase = dComIfG_resLoad(&mPhases[i], l_arcNames[l_loadRes_list[mType][i]]);
 
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
             return phase;
         }
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x6200)) {
             return cPhs_ERROR_e;
         }

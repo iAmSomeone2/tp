@@ -52,7 +52,7 @@ static s32 phase_2(char* i_resName) {
     if (rt > 0) {
         return cPhs_INIT_e;
     } else {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 
@@ -67,7 +67,7 @@ static s32 resLoad(request_of_phase_process_class* i_phase, char* i_resName) {
 
 s32 dScnName_c::create() {
     int phase_state = resLoad(&phase, "fileSel");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         mHeap = JKRCreateExpHeap(0x180000, mDoExt_getGameHeap(), false);
         JUT_ASSERT(289, mHeap != NULL);
 

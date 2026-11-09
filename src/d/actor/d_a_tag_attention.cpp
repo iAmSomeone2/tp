@@ -117,7 +117,7 @@ int daAttp_c::create() {
     l_HIO.entryHIO("注目点");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daAttp_c::execute() {

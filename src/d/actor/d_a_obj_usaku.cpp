@@ -80,7 +80,7 @@ static int daObj_Usaku_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, obj_usaku_class);
 
     int phase = dComIfG_resLoad(&a_this->mPhase, "Obj_usaku");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_USAKU PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->field_0x570 = fopAcM_GetParam(i_this) & 0xFF;
         if (a_this->field_0x570 == 0xFF) {

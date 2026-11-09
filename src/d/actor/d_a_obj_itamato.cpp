@@ -100,7 +100,7 @@ cPhs_Step daObj_ItaMato_c::create() {
 
     mType = getType();
     cPhs_Step phase = dComIfG_resLoad(&mPhase, getResName());
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) no:%d, SWBit:%02x, SWBit2:%02x<%08x> -> roomNo.%d", fopAcM_getProcNameString(this), getType(), getNo(),
                   getBitSW(), getBitSW2(), fopAcM_GetParam(this), fopAcM_GetRoomNo(this));
         if (getBitSW() != 0xFF) {

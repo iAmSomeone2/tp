@@ -83,7 +83,7 @@ static daTreeSh_HIO_c l_HIO;
 
 int daTreeSh_c::create1st() {
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_arcName, 7, NULL, 0x4000, NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

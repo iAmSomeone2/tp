@@ -229,7 +229,7 @@ int daObjCube_c::create() {
     mNameArg = daObjCube_prm::getNameArg(this);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName[mShape]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         char resName[32];
         getDzbName(resName);
 

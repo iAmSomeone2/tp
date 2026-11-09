@@ -531,7 +531,7 @@ cPhs_Step daNpc_zrA_c::create() {
         if (step == cPhs_ERROR_e || step == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             res_count++;
         }
     }
@@ -546,7 +546,7 @@ cPhs_Step daNpc_zrA_c::create() {
         if (step == cPhs_ERROR_e || step == cPhs_UNK3_e) {
             return cPhs_ERROR_e;
         }
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             res_count++;
         }
 
@@ -584,7 +584,7 @@ cPhs_Step daNpc_zrA_c::create() {
         reset();
         Execute();
         
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return cPhs_INIT_e;

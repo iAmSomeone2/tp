@@ -77,8 +77,8 @@ int daTagSpinner_c::CreateHeap() {
 int daTagSpinner_c::create() {
     fopAcM_ct(this, daTagSpinner_c);
 
-    int var_r29 = cPhs_COMPLEATE_e;
-    if (var_r29 == cPhs_COMPLEATE_e) {
+    int var_r29 = cPhs_COMPLETE_e;
+    if (var_r29 == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0)) {
             return cPhs_ERROR_e;
         }

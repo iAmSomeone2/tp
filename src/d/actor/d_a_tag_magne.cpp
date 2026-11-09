@@ -36,7 +36,7 @@ int daTagMagne_c::create() {
 
     OS_REPORT("TAG MAGNE PARAM=%x\n", fopAcM_GetParam(this));
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagMagne_c::_delete() {

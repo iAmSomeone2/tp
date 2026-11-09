@@ -1377,7 +1377,7 @@ static int daE_HB_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_hb_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_hb");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_HB PARAM %x\n", fopAcM_GetParam(i_this));
         
         u8 swbit = ((fopAcM_GetParam(i_this) & 0xFF000000) >> 0x18);

@@ -12,7 +12,7 @@ static char* l_arcName = "PRElvtr";
 
 int daObjPRElvtr_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         setMtx();
         phase = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_Trans, 0x3680, &mMtx1);
         if (phase == cPhs_ERROR_e) {

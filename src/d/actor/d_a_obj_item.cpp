@@ -273,13 +273,13 @@ int daItem_c::_daItem_create() {
         return cPhs_ERROR_e;
     }
 
-    int phase_state = cPhs_COMPLEATE_e;
+    int phase_state = cPhs_COMPLETE_e;
 
     if (flag) {
         CreateInit();
     } else {
         phase_state = dComIfG_resLoad(&mPhase, dItem_data::getFieldArc(m_itemNo));
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, CheckFieldItemCreateHeap,
                                        dItem_data::getFieldHeapSize(m_itemNo)))
             {

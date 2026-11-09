@@ -164,9 +164,9 @@ struct dEvM_HIO_c : public JORReflexible {
     bool setDebugCameraData(void*);
 
     enum JOR_PROPERTY_EVENT_IDs_e {
-        LBL_EVENT_MANAGER_TESTING = (1 << 31) + 1,
+        LBL_EVENT_MANAGER_TESTING = (1u << 31) + 1,
         BTN_READ,
-        BTN_FORCED_TERMINATION = (1 << 31) + 4
+        BTN_FORCED_TERMINATION = (1u << 31) + 4
     };
 };
 

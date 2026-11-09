@@ -99,7 +99,7 @@ int daFireWood2_c::create() {
         setLight();
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daFireWood2_c::lightInit() {

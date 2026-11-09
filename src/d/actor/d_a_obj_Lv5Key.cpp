@@ -37,7 +37,7 @@ int daObjLv5Key_c::Init() {
 
     mAction = NULL;
     setAction(&daObjLv5Key_c::Wait, 1);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daObjLv5Key_c::setBgc() {
@@ -312,7 +312,7 @@ int daObjLv5Key_c::create_1st() {
     fopAcM_ct(this, daObjLv5Key_c);
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x4B000)) {
             return cPhs_ERROR_e;
         }

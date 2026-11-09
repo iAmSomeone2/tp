@@ -143,7 +143,7 @@ int daNpc_clerkB_c::create() {
     mTwilight = dKy_darkworld_check();
 
     int phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x4380)) {
             return cPhs_ERROR_e;
         }

@@ -85,7 +85,7 @@ int daObjCatDoor_c::create() {
     fopAcM_ct(this, daObjCatDoor_c);
 
     int phase_state = dComIfG_resLoad(&mPhaseReq, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x2520)) {
             return cPhs_ERROR_e;
         } else {

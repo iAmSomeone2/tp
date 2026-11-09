@@ -171,7 +171,7 @@ cPhs_Step daNpc_ZelRo_c::create() {
     mTwilight = false;
 
     cPhs_Step phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x71C0)) {
             return cPhs_ERROR_e;
         }
@@ -242,7 +242,7 @@ int daNpc_ZelRo_c::CreateHeap() {
     for (u16 i = 0; i < mdlData_p->getJointNum(); i++) {
         mdlData_p->getJointNodePointer(i)->setCallBack(ctrlJointCallBack);
     }
-    model->setUserArea((u32)this);
+    model->setUserArea(reinterpret_cast<uintptr_t>(this));
 
     for (int i = 0; i < 2; i++) {
         mpMatAnm[i] = new daNpcT_MatAnm_c();

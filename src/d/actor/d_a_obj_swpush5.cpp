@@ -136,7 +136,7 @@ int daObjSw5_c::create() {
     fopAcM_ct(this, daObjSw5_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(l_arcName, l_dzbIdx[1], NULL, 0x1060, NULL);
         if (phase_state == cPhs_ERROR_e) {
             return phase_state;

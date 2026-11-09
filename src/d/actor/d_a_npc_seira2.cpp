@@ -199,7 +199,7 @@ int daNpc_Seira2_c::create() {
     mChkBottle = checkBottle();
 
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x6430)) {
             return cPhs_ERROR_e;
         }

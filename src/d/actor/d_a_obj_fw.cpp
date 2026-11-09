@@ -243,7 +243,7 @@ static cPhs_Step daObj_Fw_Create(fopAc_ac_c* a_this) {
     obj_fw_class* i_this = (obj_fw_class*)a_this;
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "RYUW00");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (dComIfGs_isStageBossEnemy()) {
             return cPhs_ERROR_e;
         }

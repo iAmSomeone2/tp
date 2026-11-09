@@ -2604,7 +2604,7 @@ bool daKago_c::executeFirstDemo() {
         }
 
         break;
-    case 3:
+    case 3: {
         dComIfGp_getEvent()->setSkipProc(this, DemoSkipCallBack, 3);
 
         setMidnaTagPos();
@@ -2624,6 +2624,7 @@ bool daKago_c::executeFirstDemo() {
         }
 
         break;
+    }
     case 4:
         dComIfGp_getEvent()->setSkipProc(this, DemoSkipCallBack, 2);
 
@@ -3799,7 +3800,7 @@ int daKago_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, mArcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("Kago PARAM %x \n", fopAcM_GetParam(this));
 
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x23a0)) {

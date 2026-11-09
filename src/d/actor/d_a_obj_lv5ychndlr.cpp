@@ -15,7 +15,7 @@ static char* l_arcName = "Ychandelr";
 
 int daObjYchndlr_c::create1st() {
     int phase = dComIfG_resLoad(this, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         phase = MoveBGCreate(l_arcName, 8, dBgS_MoveBGProc_TypicalRotY, 0x4DB0, &field_0x5a8);
         if (phase == cPhs_ERROR_e) {
             return phase;

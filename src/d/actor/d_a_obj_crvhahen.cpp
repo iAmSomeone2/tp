@@ -215,7 +215,7 @@ int daObjCRVHAHEN_c::create() {
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
 
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1320)) {
             return cPhs_ERROR_e;
         }

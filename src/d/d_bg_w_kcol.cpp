@@ -695,22 +695,22 @@ void dBgWKCol::ShdwDraw(cBgS_ShdwDraw* param_0) {
 
                         int x_sp44 = minX_spA0;
                         do {
-                            u32 block_sp40 = (u32)m_pkc_head->m_block_data;
+                            uintptr_t block_sp40 = reinterpret_cast<uintptr_t>(m_pkc_head->m_block_data);
                             u32 shift_sp3C = m_pkc_head->m_block_width_shift;
                             int offset_sp38 =
                                 4 * (((u32)z_sp4C >> shift_sp3C) << m_pkc_head->m_area_xy_blocks_shift |
                                      ((u32)y_sp48 >> shift_sp3C) << m_pkc_head->m_area_x_blocks_shift |
                                       (u32)x_sp44 >> shift_sp3C);
 
-                            while ((offset_sp38 = *(u32*)((int)block_sp40 + offset_sp38)) >= 0) {
-                                block_sp40 = (int)block_sp40 + offset_sp38;
+                            while ((offset_sp38 = *reinterpret_cast<u32*>(block_sp40 + offset_sp38)) >= 0) {
+                                block_sp40 = block_sp40 + offset_sp38;
                                 shift_sp3C--;
                                 offset_sp38 = (((u32)z_sp4C >> shift_sp3C & 1) << 2 |
                                                ((u32)y_sp48 >> shift_sp3C & 1) << 1 |
                                                ((u32)x_sp44 >> shift_sp3C & 1) << 0) << 2;
                             }
 
-                            u16* prism_sp34 = (u16*)(block_sp40 + (offset_sp38 & 0x7fffffff));
+                            u16* prism_sp34 = reinterpret_cast<u16*>(block_sp40 + (offset_sp38 & 0x7fffffff));
 
                             shift_sp3C = 1 << shift_sp3C;
                             u32 mask_sp30 = shift_sp3C - 1;
@@ -2007,7 +2007,7 @@ bool dBgWKCol::SplGrpChk(dBgS_SplGrpChk* param_0) {
 
     bool sp09 = false;
     do {
-        u32 sp28 = (u32)m_pkc_head->m_block_data;
+        uintptr_t sp28 = reinterpret_cast<uintptr_t>(m_pkc_head->m_block_data);
         u32 sp24 = m_pkc_head->m_block_width_shift;
         int sp20 = 4 * (((u32)sp34 >> sp24) << m_pkc_head->m_area_xy_blocks_shift |
                         ((u32)sp2C >> sp24) << m_pkc_head->m_area_x_blocks_shift |
@@ -2021,7 +2021,7 @@ bool dBgWKCol::SplGrpChk(dBgS_SplGrpChk* param_0) {
                  ((u32)sp38 >> sp24 & 1) << 0);
         }
 
-        u16* sp1C = (u16*)(sp28 + (sp20 & 0x7fffffff));
+        u16* sp1C = reinterpret_cast<u16*>(sp28 + (sp20 & 0x7fffffff));
         while (*++sp1C != 0) {
             KC_PrismData* sp18 = getPrismData(*sp1C);
             Vec* sp14 = m_pkc_head->m_nrm_data + sp18->fnrm_i;

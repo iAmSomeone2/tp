@@ -15,16 +15,16 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 | # | Phase | Size | Exit criteria |
 |---|---|:---:|---|
 | 0 | **Groundwork** | S | CMake/VitaSDK project builds a "hello" that links a few libraries (`SSystem`, `JKernel`). `platform/` skeleton exists (empty shims for `OS`, `DVD`, `PAD`, `VI`, `CARD`, `AR`). Compiler flags from [toolchain.md](toolchain.md) applied. |
-| 1 | **Everything compiles and links** | M | `clang_sweep.py` reports 0 failing TUs for the GameCube configuration (fix the ~90: `DEG_TO_RAD`, `switch` scopes, narrowing, `<cstdarg>`, header guards for Wii-only code). Actors link statically; `dup_symbol_check.py` reports 0 duplicates (~20 fixes). Enable the layout `STATIC_ASSERT`s. Link with stub SDK (functions that abort with a message). |
+| 1 | **Everything compiles and links** | M | `clang_sweep.py` reports 0 failing TUs for the GameCube configuration (5 of 1,280 remain: four that need generated assets, which compile when a disc image is present, and `d_a_movie_player`'s PPC-asm casts). Actors link statically; `dup_symbol_check.py` reports 0 duplicates (18 left). Enable the layout `STATIC_ASSERT`s. Link with stub SDK (functions that abort with a message). |
 | 2 | **Boot to the framework loop** | M | `main` → `main01` → `mDoMch_Create` → `fapGm_Create` → `fpcM_Management` runs a frame with a stub GPU. Heaps allocated from `malloc`; `OS` threads/queues/mutexes work; logging works. The process manager schedules `LOGO_SCENE` (no drawing yet). |
 | 3 | **File I/O and archives** | M | `DVD*` shim over the extracted data directory; `JKRArchive` opens `.arc`; Yaz0 decompression verified. *Requires the archive header fix-ups from [endianness.md](endianness.md).* |
 | 4 | **Data fix-ups (endianness)** | L | Loaders for J3D models/animations, `ResTIMG`, `.dzs/.dzr/.dzb`, BMG, events, JPC, STB byte-swap correctly. Golden-dump tests pass for many files. Loading a full stage (`F_SP103`, Ordon Village) completes with no asserts. |
 | 5 | **GX layer + 2D** | XL | GX API subset implemented over GXM; ubershader TEV; immediate-mode batching; textures converted. J2D screens render: the Nintendo logo and title screen appear. |
-| 6 | **3D world** | XL | J3D models decode and draw (option C in [graphics.md](graphics.md)): stage geometry, Link with skeletal animation, lighting and fog, sky. Draw-order passes match the original. Walk around Ordon Village with input working. |
+| 6 | **3D world** | XL | J3D models decode and draw (option C in [graphics.md](graphics.md)): stage geometry, Link with skeletal animation, lighting and fog, sky. Draw-order passes match the original. Needs host versions of the SDK and JSystem matrix math first ([math.md](math.md)). Walk around Ordon Village with input working. |
 | 7 | **Input, save, misc I/O** | S–M | Vita controls mapped ([sdk-surface.md](sdk-surface.md#input-pad-si)); file-backed memory card; the message box, HUD and menu run; game can be saved/loaded. |
 | 8 | **Audio** | L | Software mixer behind `JASDSPChannel`; sequenced music, sound effects and streaming work; Z2 3D positioning correct. Silence is acceptable until here; *do not block phases 5–7 on it.* |
 | 9 | **Effects and special cases** | L | Particles, shadows, bloom, depth-of-field, indirect-texture water/warp, mirrors, cloth, rain; THP video replacement (or skip cutscene movies initially). |
-| 10 | **Performance, memory, polish** | L | Batching/precompiled shaders; NEON for hot math; texture/mesh cooking; profile the 30 Hz frame on device; touch UI; widescreen HUD decision; suspend/resume. |
+| 10 | **Performance, memory, polish** | L | Batching/precompiled shaders; NEON for hot math ([math.md](math.md)); texture/mesh cooking; profile the 30 Hz frame on device; touch UI; widescreen HUD decision; suspend/resume. |
 
 ### Milestones you can announce
 
@@ -36,12 +36,33 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 * **M6** – First dungeon playable end to end.
 * **M7** – Full game; performance target reached.
 
+## Stretch goal: frame rates above 30 Hz
+
+Not part of the port proper; consider it once M7 is reached. Size: L.
+
+**Approach: fixed-rate simulation, interpolated rendering.** The game logic stays at its fixed 30 Hz tick (`d_s_play.cpp` sets `mDoGph_gInf_c::setTickRate(OS_TIMER_CLOCK / 30)`; the logo scene uses 60 Hz). Rendering runs at the display rate and blends between the two most recent ticks by a fraction `alpha` in [0, 1): actor base matrices, joint animation (the frame value, or the computed joint matrices), the camera (eye, center, field of view) and 2D element positions. Gameplay, physics and timings are unchanged; motion is smoother. The PC ports of Ocarina of Time and Majora's Mask (Ship of Harkinian, 2 Ship 2 Harkinian) took a 20 Hz game to high frame rates this way.
+
+**Rejected: converting to delta time.** The game logic assumes a fixed step throughout. Per-tick velocity (`speedF`) appears on 3,974 lines of actor code, and the per-tick chase/ease helpers `cLib_chaseF`/`cLib_addCalc*` on about 7,400 lines; `addCalc` applies a fixed fraction per tick, so a correct delta-time version needs `pow()` and changes the tuning at every call site. Add frame-count timers, animation frame counters, collision tuned to the step size and the `d_a_alink` state machine, and every one of ~750 actors becomes a bug hunt.
+
+**Work involved:**
+
+* Split the frame loop: `fpcM_Management`'s execute step on simulation ticks only, the draw step on every display frame, with `alpha` available to the draw path.
+* Make draw handlers idempotent. They would run several times per tick, so any draw code that advances a counter, draws from the RNG or changes state has to move into execute. This needs an audit of the actors.
+* Snap instead of blending across discontinuities: camera cuts, warps, respawns, room changes, and actors created or deleted between ticks. The SoH approach tags each recorded matrix with a stable ID and only blends matching IDs.
+* Particles (JPA) and many J2D animations step once per tick; interpolate their output or step them per frame.
+* CPU cost: recomputing J3D joint matrices per display frame roughly doubles that work (see [math.md](math.md); GPU skinning helps most).
+* Input latency stays at the 30 Hz tick; only the presentation gets smoother.
+
+**On the Vita** the display is 60 Hz, so the target there is interpolated 60 Hz, and only if a stable 30 Hz leaves headroom. A desktop host build is where higher refresh rates pay off.
+
+**Do now:** nothing to implement, but design the GX → GXM layer so this stays cheap later; see [graphics.md](graphics.md#designing-for-frame-interpolation).
+
 ## Concrete first tasks
 
 Small, independent, and useful whichever way the rest goes:
 
-1. Add the shared `DEG_TO_RAD`/`RAD_TO_DEG` macros and fix the `switch`-scope errors (`d_a_mg_rod`, `d_a_kago`, `d_a_e_gb`, `Z2Creature`) so the sweep drops by ~40 TUs.
-2. Make `__OSExecParams`/`__OSAppLoaderOffset` `extern` and `static`-ify `l_HIO`, `hio_set`, `l_arcName`, etc. (the 20 duplicates).
+1. ~~Fix the `switch`-scope errors~~ (done, along with the shared `DEG_TO_RAD`/`RAD_TO_DEG` macros, the integer typedefs and the pointer casts). The sweep now covers only the files the GameCube build compiles; what is left for it is the generated asset headers and `d_a_movie_player`.
+2. `static`-ify `l_HIO`, `hio_set`, `l_arcName`, etc. (the 18 remaining duplicates; `__OSExecParams`/`__OSAppLoaderOffset` are already `extern`).
 3. Write `platform/endian.h` and convert the choke points (`JSUInputStream`, `JASSeqReader`, `JKR*Archive`) behind a `PLATFORM_LITTLE_ENDIAN` switch, keeping the original big-endian build unaffected.
 4. Implement the `DVD*` file shim and `JUTGamePad` over `sceCtrl` (both are tiny and unblock everything).
 5. Build a **reference asset dumper** (Python with big-endian `struct`) for RARC and J3D to serve as the oracle for phase 4.

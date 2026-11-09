@@ -132,11 +132,11 @@ int daSwhit0_c::create() {
         cMtx_copy(mDoMtx_stack_c::get(), field_0x5a8);
         fopAcM_SetMtx(this, field_0x5a8);
         CreateInit();
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     int phase_state = dComIfG_resLoad(this, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0xB30)) {
             return cPhs_ERROR_e;
         }

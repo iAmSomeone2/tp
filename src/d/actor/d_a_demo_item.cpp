@@ -479,7 +479,7 @@ int daDitem_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&mPhase, dItem_data::getArcName(m_itemNo));
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckItemCreateHeap, 0x80003390)) {
             return cPhs_ERROR_e;
         }

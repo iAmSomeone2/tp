@@ -173,20 +173,20 @@ private:
 class TFunctionValue_composite : public TFunctionValue, public TFunctionValueAttribute_refer {
 public:
     struct TData {
-        TData(void* data) : u32data((u32)data) {}
-        TData(const void* data) : rawData(data) {}
-        TData(u32 data) : u32data(data) {}
-        TData(f32 data) : f32data(data) {}
+        explicit TData(void* data) : uint_data(reinterpret_cast<uintptr_t>(data)) {}
+        explicit TData(const void* data) : rawData(data) {}
+        explicit TData(const u32 data) : uint_data(data) {}
+        explicit TData(const f32 data) : float_data(data) {}
 
-        inline void operator=(const TData& rhs) { f32data = rhs.f32data; }
-        u32 get_unsignedInteger() const { return u32data; }
-        u32 get_outside() const { return u32data; }
-        f64 get_value() const { return f32data; }
+        TData& operator=(const TData& rhs) { float_data = rhs.float_data; return *this; }
+        [[nodiscard]] u32 get_unsignedInteger() const { return uint_data; }
+        [[nodiscard]] u32 get_outside() const { return uint_data; }
+        [[nodiscard]] f64 get_value() const { return float_data; }
 
         union {
             const void* rawData;
-            u32 u32data;
-            f64 f32data;
+            uintptr_t uint_data;
+            f64 float_data;
         };
     };
     typedef f64 (*UnkFunc)(f64, const TFunctionValueAttribute_refer*,

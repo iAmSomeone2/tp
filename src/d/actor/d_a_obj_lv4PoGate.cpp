@@ -46,7 +46,7 @@ int daLv4PoGate_c::create() {
     fopAcM_ct(this, daLv4PoGate_c);
 
     int phase = dComIfG_resLoad(&mPhase, "L4R02Gate");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L4R02Gate", 7, dBgS_MoveBGProc_TypicalRotY, 0x1F00, NULL) == cPhs_ERROR_e)
         {
             return cPhs_ERROR_e;

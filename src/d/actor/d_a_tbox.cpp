@@ -168,15 +168,15 @@ cPhs_Step daTbox_c::commonShapeSet() {
     }
 
     mDoMtx_copy(mDoMtx_stack_c::get(), mBgMtx);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 cPhs_Step daTbox_c::effectShapeSet() {
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 cPhs_Step daTbox_c::envShapeSet() {
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 cPhs_Step daTbox_c::bgCheckSet() {
@@ -196,7 +196,7 @@ cPhs_Step daTbox_c::bgCheckSet() {
     mpOpenBgW->SetCrrFunc(dBgS_MoveBGProc_TypicalRotY);
     mpOpenBgW->Move();
     mpBgCollision = NULL;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 void daTbox_c::lightReady() {
@@ -327,26 +327,26 @@ u32 daTbox_c::calcHeapSize() {
 
 int daTbox_c::CreateHeap() {
     cPhs_Step step = commonShapeSet();
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return false;
     }
 
     if (checkEnv()) {
         step = envShapeSet();
-        if (step != cPhs_COMPLEATE_e) {
+        if (step != cPhs_COMPLETE_e) {
             return false;
         }
     }
 
     if (!checkOpen()) {
         step = effectShapeSet();
-        if (step != cPhs_COMPLEATE_e) {
+        if (step != cPhs_COMPLETE_e) {
             return false;
         }
     }
 
     step = bgCheckSet();
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return false;
     }
 
@@ -1798,7 +1798,7 @@ cPhs_Step daTbox_c::create1st() {
 
     daTbox_ModelInfo* model_info = getModelInfo();
     cPhs_Step step = dComIfG_resLoad(&mPhase, model_info->mArcName);
-    if (step != cPhs_COMPLEATE_e) {
+    if (step != cPhs_COMPLETE_e) {
         return step;
     }
 

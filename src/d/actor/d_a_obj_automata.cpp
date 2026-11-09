@@ -84,7 +84,7 @@ int daObj_AutoMata_c::create() {
     fopAcM_ct(this, daObj_AutoMata_c);
     field_0xb30 = 0;
     int rv = dComIfG_resLoad(&mPhase, l_resNameList[l_bmdData[field_0xb30][1]]);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) <%08x>\n", fopAcM_getProcNameString(this), field_0xb30, fopAcM_GetParam(this));
         if (fopAcM_entrySolidHeap(this, createHeapCallBack, 0x1370) == 0) {
             return cPhs_ERROR_e;

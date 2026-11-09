@@ -315,12 +315,12 @@ cPhs_Step daNpcTks_c::Create() {
     cPhs_Step phase = cPhs_ERROR_e;
     for (int i = 0; l_loadRes_list[mTksTsubo.mTsuboType][i] >= 0; i++) {
         phase = dComIfG_resLoad(&mPhases[i], l_arcNames[l_loadRes_list[mTksTsubo.mTsuboType][i]]);
-        if (phase != cPhs_COMPLEATE_e) {
+        if (phase != cPhs_COMPLETE_e) {
             return phase;
         }
     }
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x3870)) {
             return cPhs_ERROR_e;
         }
@@ -385,7 +385,7 @@ int daNpcTks_c::CreateHeap() {
     for (u16 i = 0; i < mdlData_p->getJointNum(); i++) {
         mdlData_p->getJointNodePointer(i)->setCallBack(ctrlJointCallBack);
     }
-    model->setUserArea((u32)this);
+    model->setUserArea(reinterpret_cast<uintptr_t>(this));
 
     mpMatAnm = new daNpcF_MatAnm_c();
     if (mpMatAnm == NULL) {
@@ -489,7 +489,7 @@ void daNpcTks_c::setMtx() {
     mDoMtx_stack_c::ZXYrotM(shape_angle);
     mDoMtx_stack_c::scaleM(scale);
     model->setBaseTRMtx(mDoMtx_stack_c::get());
-    model->setUserArea((u32)this);
+    model->setUserArea(reinterpret_cast<uintptr_t>(this));
 
     if (mTksTsubo.field_0x586 != 0) {
         if (field_0x138a) {

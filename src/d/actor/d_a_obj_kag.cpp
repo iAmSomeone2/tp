@@ -646,7 +646,7 @@ cPhs_Step daObjKAG_c::create() {
     fopAcM_ct(this, daObjKAG_c);
 
     cPhs_Step phase = dComIfG_resLoad(&mPhase, "I_Kag");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("KAG PARAM %x\n", fopAcM_GetParam(this));
 
         field_0x85e = fopAcM_GetParam(this) & 3;

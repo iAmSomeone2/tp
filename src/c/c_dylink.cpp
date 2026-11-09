@@ -930,7 +930,7 @@ int cDyl_LinkASync(s16 i_ProfName) {
 
         if (d->load_async()) {
             if (d->link()) {
-                return cPhs_COMPLEATE_e;
+                return cPhs_COMPLETE_e;
             } else {
                 // "cDyl_LinkASync: Link failed. Returning\n"
                 OSReport_Error("cDyl_LinkASync: リンクに失敗しました。諦めます\n");
@@ -941,7 +941,7 @@ int cDyl_LinkASync(s16 i_ProfName) {
         }
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int cDyl_InitCallback(void* param_0) {
@@ -1004,7 +1004,7 @@ int cDylPhs::phase_01(void* param_0) {
 
 int cDylPhs::phase_02(s16* p_profName) {
     int ret = cDyl_LinkASync(*p_profName);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         return cPhs_NEXT_e;
     }
 
@@ -1023,7 +1023,7 @@ int cDylPhs::Link(request_of_phase_process_class* i_phase, s16 i_ProfName) {
     };
 
     if (i_phase->id == 2) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     return dComLbG_PhaseHandler(i_phase, l_method, &i_ProfName);

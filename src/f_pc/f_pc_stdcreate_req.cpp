@@ -33,7 +33,7 @@ int fpcSCtRq_phase_Load(standard_create_request_class* i_request) {
     switch (ret) {
     case cPhs_INIT_e:
         return cPhs_INIT_e;
-    case cPhs_COMPLEATE_e:
+    case cPhs_COMPLETE_e:
         return cPhs_NEXT_e;
     case cPhs_ERROR_e:
         OS_REPORT("fpcSCtRq_phase_Load %d\n", i_request->process_name);
@@ -107,8 +107,8 @@ int fpcSCtRq_Handler(standard_create_request_class* i_request) {
     switch (phase_state) {
     case cPhs_NEXT_e:
         return fpcSCtRq_Handler(i_request);
-    case cPhs_COMPLEATE_e:
-        return cPhs_COMPLEATE_e;
+    case cPhs_COMPLETE_e:
+        return cPhs_COMPLETE_e;
     case cPhs_INIT_e:
     case cPhs_UNK3_e:
     case cPhs_ERROR_e:

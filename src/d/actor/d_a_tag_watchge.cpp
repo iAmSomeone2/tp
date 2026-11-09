@@ -79,7 +79,7 @@ int daTagWatchGe_c::create() {
     }
 
     field_0x56a = 0x1e;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagWatchGe_Create(daTagWatchGe_c* i_this) {

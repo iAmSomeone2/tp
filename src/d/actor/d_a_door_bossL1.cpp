@@ -324,15 +324,15 @@ int daBdoorL1_c::CreateInit() {
 int daBdoorL1_c::create() {
     fopAcM_ct(this, daBdoorL1_c);
     int rv = dComIfG_resLoad(&mPhase1, getArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     rv = dComIfG_resLoad(&mPhase3, getAnmArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     rv = dComIfG_resLoad(&mPhase2, getAlwaysArcName());
-    if (rv != cPhs_COMPLEATE_e) {
+    if (rv != cPhs_COMPLETE_e) {
         return rv;
     }
     shape_angle.z = 0;
@@ -349,7 +349,7 @@ int daBdoorL1_c::create() {
         return cPhs_ERROR_e;
     } 
     if (CreateInit() != 0) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
     return cPhs_ERROR_e;
 }

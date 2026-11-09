@@ -73,7 +73,7 @@ cPhs_Step daLv3Water2_c::create() {
     mResIdx = getParam(0, 4);
 
     cPhs_Step resPhase = static_cast<cPhs_Step>(dComIfG_resLoad(&mPhase, l_resNameIdx[mResIdx]));
-    if(resPhase == cPhs_COMPLEATE_e) {
+    if(resPhase == cPhs_COMPLETE_e) {
         if(MoveBGCreate(l_resNameIdx[mResIdx], l_dzbIdx[mResIdx], NULL, 0x2D00, NULL) == cPhs_ERROR_e)
             return cPhs_ERROR_e;
 

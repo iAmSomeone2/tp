@@ -1468,7 +1468,7 @@ static int daB_BH_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(a_this, b_bh_class);
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "B_BH");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("B_BH PARAM %x\n", fopAcM_GetParam(i_this));
         a_this->mID = (fopAcM_GetParam(i_this) >> 0x00) & 0xFF;
         a_this->field_0x5b5 = (fopAcM_GetParam(i_this) >> 0x08) & 0xFF;

@@ -10,7 +10,7 @@
 int daTag_ShopCamera_c::create() {
     fopAcM_ct(this, daTag_ShopCamera_c);
     initialize();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTag_ShopCamera_c::Delete() {

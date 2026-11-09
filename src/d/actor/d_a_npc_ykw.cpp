@@ -301,7 +301,7 @@ int daNpc_ykW_c::create() {
     mTwilight = false;
 
     int loadResult = loadRes(l_loadResPtrnList[field_0xf80], l_resNameList);
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x, BitSW2:%02x, BitTRB:%02x<%08x> ",
                   fopAcM_getProcNameString(this), (u32)field_0xf80, mFlowNodeNo, getPathID(),
                   getBitSW(), getBitSW2(), getBitTRB(), fopAcM_GetParam(this));

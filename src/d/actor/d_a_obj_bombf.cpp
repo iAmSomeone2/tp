@@ -24,7 +24,7 @@ int daObjBombf_c::create() {
     fopAcM_ct(this, daObjBombf_c);
 
     int phase = dComIfG_resLoad(&field_0x568, l_arcName);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, (heapCallbackFunc)daObjBombf_createHeap, 0x820)) {
             return cPhs_ERROR_e;
         }

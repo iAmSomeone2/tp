@@ -2273,7 +2273,7 @@ static int daE_GOB_Create(fopAc_ac_c* i_this) {
     OS_REPORT("E_GOB//////////////E_GOB SET 0 !!\n");
 
     int sp14 = dComIfG_resLoad(&a_this->mPhase, "E_gob");
-    if (sp14 == cPhs_COMPLEATE_e) {
+    if (sp14 == cPhs_COMPLETE_e) {
         OS_REPORT("E_GOB PARAM %x\n", fopAcM_GetParam(i_this));
 
         if (dComIfGs_isStageBossEnemy()) {

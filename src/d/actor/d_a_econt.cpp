@@ -67,7 +67,7 @@ static int daEcont_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, econt_class);
     dTimer_createTimer(8,0x989298,2,0,210.0f,410.0f,32.0f,419.0f);
     encounter->field_0x5b8[0] = 0x14;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
     
 }
 

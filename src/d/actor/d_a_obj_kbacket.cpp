@@ -72,7 +72,7 @@ int daObj_KBacket_c::create() {
     field_0x9d0 = getType();
 
     s32 res = dComIfG_resLoad(&field_0x56c, l_resNameList[l_bmdData[1]]);
-    if (res == cPhs_COMPLEATE_e) {
+    if (res == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) <%08x> -> roomNo.%d", fopAcM_getProcNameString(this),
             getType() & 0xff, fopAcM_GetParam(this), fopAcM_GetRoomNo(this));
         OS_REPORT("\n");

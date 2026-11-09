@@ -49,7 +49,7 @@ int daSnowEffTag_c::create() {
     mPlayedSound = false;
 
     setBaseMtx();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 bool daSnowEffTag_c::playerAreaCheck() {

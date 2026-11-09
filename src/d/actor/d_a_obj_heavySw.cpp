@@ -50,7 +50,7 @@ int daHeavySw_c::create() {
     fopAcM_ct(this, daHeavySw_c);
 
     int phase = dComIfG_resLoad(&mPhaseReq, "Hswitch");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         int movebg_create = MoveBGCreate("Hswitch", 7, dBgS_MoveBGProc_TypicalRotY, 0xC80, NULL);
         if (movebg_create == cPhs_ERROR_e) {
             return cPhs_ERROR_e;

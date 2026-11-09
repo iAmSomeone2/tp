@@ -228,7 +228,7 @@ static int daObj_Wflag_Create(fopAc_ac_c* actor) {
     fopAcM_ct(actor, obj_wflag_class);
 
     int rv = dComIfG_resLoad(&i_this->phase, "Obj_wflag");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_WFLAG PARAM %x\n", fopAcM_GetParam(actor));
         i_this->unk_0x82c = fopAcM_GetParam(actor);
 

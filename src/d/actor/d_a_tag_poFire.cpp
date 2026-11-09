@@ -27,7 +27,7 @@ int daTagPoFire_c::create() {
     fopAcM_ct(this, daTagPoFire_c);
     field_0x569 = 0;
     setBaseMtx();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagPoFire_c::Execute() {

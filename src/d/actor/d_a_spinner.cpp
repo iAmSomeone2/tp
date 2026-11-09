@@ -96,7 +96,7 @@ int daSpinner_c::create() {
     setRoomInfo();
     field_0xa82 = 0x82F;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daSpinner_Create(fopAc_ac_c* i_this) {

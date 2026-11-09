@@ -470,7 +470,7 @@ static int daMirror_create(daMirror_c* i_this) {
 
 int daMirror_c::create() {
     if (getSw() != 0xFF && !fopAcM_isSwitch(this, getSw())) {
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 
     if (m_myObj != NULL) {
@@ -483,7 +483,7 @@ int daMirror_c::create() {
         switch (phase_state) {
         default:
             return phase_state;
-        case cPhs_COMPLEATE_e:
+        case cPhs_COMPLETE_e:
             if (!fopAcM_entrySolidHeap(this, daMirror_c_createHeap, 0x1540)) {
                 return cPhs_ERROR_e;
             }
@@ -513,7 +513,7 @@ int daMirror_c::create() {
                 switch (phase_state) {
                 default:
                     return phase_state;
-                case cPhs_COMPLEATE_e:
+                case cPhs_COMPLETE_e:
                     mDoLib_setResTimgObj((ResTIMG*)dComIfG_getObjectRes(l_arcName2, 0x25),
                                          &mPacket.getTexObj(), 0, NULL);
                     break;
@@ -540,7 +540,7 @@ int daMirror_c::create() {
     mPacket.calcMinMax();
     static const Vec l_mirrorLook = {0.0f, 50.0f, 0.0f};
     mDoMtx_stack_c::multVec(&l_mirrorLook, &eyePos);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daMirror_c::Delete() {

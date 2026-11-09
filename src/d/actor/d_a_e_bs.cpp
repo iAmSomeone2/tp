@@ -824,7 +824,7 @@ static int daE_BS_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(i_this, e_bs_class);
     
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_BS");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         OS_REPORT("E_BS PARAM %x\n", fopAcM_GetParam(i_this));
         int swbit = (fopAcM_GetParam(i_this) & 0xFF0000) >> 0x10;
         if (swbit != 0xFF && dComIfGs_isSwitch(swbit, fopAcM_GetRoomNo(i_this))) {

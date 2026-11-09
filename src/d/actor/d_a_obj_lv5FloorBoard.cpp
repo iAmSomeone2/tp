@@ -47,7 +47,7 @@ int daFlorBoad_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, "L5haYuka");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (MoveBGCreate("L5haYuka", 7, dBgS_MoveBGProc_TypicalRotY, 0x1900, NULL) == cPhs_ERROR_e)
         {
             return cPhs_ERROR_e;

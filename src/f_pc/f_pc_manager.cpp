@@ -6,10 +6,8 @@
 #include "f_pc/f_pc_manager.h"
 #include "SSystem/SComponent/c_API_graphic.h"
 #include "SSystem/SComponent/c_lib.h"
-#include "Z2AudioLib/Z2SoundMgr.h"
 #include "d/d_com_inf_game.h"
 #include "d/d_error_msg.h"
-#include "d/d_lib.h"
 #include "d/d_particle.h"
 #include "f_ap/f_ap_game.h"
 #include "f_pc/f_pc_creator.h"
@@ -19,7 +17,6 @@
 #include "f_pc/f_pc_line.h"
 #include "f_pc/f_pc_pause.h"
 #include "f_pc/f_pc_priority.h"
-#include "m_Do/m_Do_controller_pad.h"
 
 void fpcM_Draw(void* i_proc) {
     fpcDw_Execute((base_process_class*)i_proc);
@@ -49,62 +46,38 @@ void fpcM_Management(fpcM_ManagementFunc i_preExecuteFn, fpcM_ManagementFunc i_p
     fapGm_HIO_c::executeCaptureScreen();
 
     if (!dShutdownErrorMsg_c::execute()) {
-        static bool l_dvdError = false;
+        cAPIGph_Painter();
 
-        if (!dDvdErrorMsg_c::execute()) {
-            if (l_dvdError) {
-                dLib_time_c::startTime();
-                Z2GetSoundMgr()->pauseAllGameSound(false);
-                l_dvdError = false;
-            }
-
-            cAPIGph_Painter();
-
-            if (!dPa_control_c::isStatus(1)) {
-                fpcDt_Handler();
-            } else {
-                dPa_control_c::offStatus(1);
-            }
-
-            if (!fpcPi_Handler()) {
-                JUT_ASSERT(353, FALSE);
-            }
-
-            if (!fpcCt_Handler()) {
-                JUT_ASSERT(357, FALSE);
-            }
-
-            if (i_preExecuteFn != NULL) {
-                i_preExecuteFn();
-            }
-
-            if (!fapGm_HIO_c::isCaptureScreen()) {
-                fpcEx_Handler((fpcLnIt_QueueFunc)fpcM_Execute);
-            }
-            if (!fapGm_HIO_c::isCaptureScreen() || fapGm_HIO_c::getCaptureScreenDivH() != 1) {
-                fpcDw_Handler((fpcDw_HandlerFuncFunc)fpcM_DrawIterater, (fpcDw_HandlerFunc)fpcM_Draw);
-            }
-
-            if (i_postExecuteFn != NULL) {
-                i_postExecuteFn();
-            }
-
-            dComIfGp_drawSimpleModel();
-        } else if (!l_dvdError) {
-            dLib_time_c::stopTime();
-            Z2GetSoundMgr()->pauseAllGameSound(true);
-#if PLATFORM_GCN
-#define FPCM_MANAGEMENT_GAMEPAD_COUNT 1
-#elif PLATFORM_SHIELD && !DEBUG
-#define FPCM_MANAGEMENT_GAMEPAD_COUNT 0
-#else
-#define FPCM_MANAGEMENT_GAMEPAD_COUNT 4
-#endif
-            for (u32 i = 0; i < FPCM_MANAGEMENT_GAMEPAD_COUNT; i++) {
-                mDoCPd_c::stopMotorWaveHard(i);
-            }
-            l_dvdError = true;
+        if (!dPa_control_c::isStatus(1)) {
+            fpcDt_Handler();
+        } else {
+            dPa_control_c::offStatus(1);
         }
+
+        if (!fpcPi_Handler()) {
+            JUT_ASSERT(353, FALSE);
+        }
+
+        if (!fpcCt_Handler()) {
+            JUT_ASSERT(357, FALSE);
+        }
+
+        if (i_preExecuteFn != NULL) {
+            i_preExecuteFn();
+        }
+
+        if (!fapGm_HIO_c::isCaptureScreen()) {
+            fpcEx_Handler((fpcLnIt_QueueFunc)fpcM_Execute);
+        }
+        if (!fapGm_HIO_c::isCaptureScreen() || fapGm_HIO_c::getCaptureScreenDivH() != 1) {
+            fpcDw_Handler((fpcDw_HandlerFuncFunc)fpcM_DrawIterater, (fpcDw_HandlerFunc)fpcM_Draw);
+        }
+
+        if (i_postExecuteFn != NULL) {
+            i_postExecuteFn();
+        }
+
+        dComIfGp_drawSimpleModel();
     }
 }
 

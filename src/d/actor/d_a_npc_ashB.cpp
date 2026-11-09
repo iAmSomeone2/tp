@@ -134,12 +134,12 @@ cPhs_Step daNpcAshB_c::Create() {
 
         for (int i = 0; i < 1; i++) {
             step = dComIfG_resLoad(&mPhase[i], l_arcNames[i]);
-            if (step != cPhs_COMPLEATE_e) {
+            if (step != cPhs_COMPLETE_e) {
                 return step;
             }
         }
 
-        if (step == cPhs_COMPLEATE_e) {
+        if (step == cPhs_COMPLETE_e) {
             if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x58b0)) {
                 return cPhs_ERROR_e;
             } else {

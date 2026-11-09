@@ -3482,7 +3482,7 @@ static int daB_OB_Create(fopAc_ac_c* i_this) {
     OS_REPORT("B_OB//////////////B_OB SET 0 !!\n");
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "B_oh");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (dComIfGs_isStageBossEnemy()) {
             // "After B_OB defeated, so not re-setting\n"
             OS_REPORT("B_OB やられ後なので再セットしません\n");

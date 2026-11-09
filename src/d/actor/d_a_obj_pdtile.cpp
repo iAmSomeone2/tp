@@ -81,7 +81,7 @@ int daObjPDtile_c::create1st() {
         field_0x7cc = 450.0f;
     }
     int rv = dComIfG_resLoad(this, mArcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         setMtx();
         MoveBGActor_SetFunc setFunc;
         if (mType != TYPE_4) {

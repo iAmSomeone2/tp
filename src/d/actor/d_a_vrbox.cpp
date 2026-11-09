@@ -130,7 +130,7 @@ static int daVrbox_Create(fopAc_ac_c* i_this) {
     vrbox_class* this_ = (vrbox_class*)i_this;
 
     this_->field_0x574 = 0;
-    int phase = cPhs_COMPLEATE_e;
+    int phase = cPhs_COMPLETE_e;
 
     if (fopAcM_entrySolidHeap(this_, daVrbox_solidHeapCB, 0xC60)) {
         dComIfGp_onStatus(1);

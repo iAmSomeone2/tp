@@ -1191,7 +1191,7 @@ static int daE_SH_Create(fopAc_ac_c* i_this) {
     fopAcM_ct((fopAc_ac_c*)sh, e_sh_class);
 
     int resLoadResult = dComIfG_resLoad(&sh->mPhase, "E_sh");
-    if (resLoadResult == cPhs_COMPLEATE_e) {
+    if (resLoadResult == cPhs_COMPLETE_e) {
         OS_REPORT("E_sh PARAM %x\n", fopAcM_GetParam(i_this));
 
         sh->field_0x5b4 = (u8)fopAcM_GetParam(i_this);

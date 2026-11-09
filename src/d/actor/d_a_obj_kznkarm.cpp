@@ -422,7 +422,7 @@ static int daObjKznkarm_Delete(daObjKznkarm_c* i_this) {
 inline int daObjKznkarm_c::create() {
     fopAcM_ct(this, daObjKznkarm_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createSolidHeap, 0x4000)) {
             return cPhs_ERROR_e;
         }

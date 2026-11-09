@@ -89,7 +89,7 @@ static bool setArchiveBank(int i_roomNo) {
         }
 
         if (strcmp(name, "") != 0) {
-            if (strnicmp(name, "pack", 4) == 0) {
+            if (strncasecmp(name, "pack", 4) == 0) {
                 #if DEBUG
                 if (fapGm_HIO_c::mPackArchiveMode)
                 #endif
@@ -486,7 +486,7 @@ static int phase_4(room_of_scene_class* i_this) {
     }
 
     OS_REPORT("dScnRoom_Create(): End !! room%d\n", fopScnM_GetParam(i_this));
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int dScnRoom_Create(scene_class* i_this) {

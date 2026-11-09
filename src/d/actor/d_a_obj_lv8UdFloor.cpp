@@ -82,7 +82,7 @@ int daUdFloor_c::create() {
     mModelType = getModelType();
 
     int phase_state = dComIfG_resLoad(&mPhase, l_resNameIdx[mModelType]);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (MoveBGCreate(l_resNameIdx[mModelType], l_dzbIdx[mModelType], dBgS_MoveBGProc_TypicalRotY, l_heap_size[mModelType], NULL) == cPhs_ERROR_e) {
             return cPhs_ERROR_e;
         }

@@ -759,7 +759,7 @@ static int daE_MK_BO_Create(fopAc_ac_c* i_this) {
     fopAcM_ct(&a_this->enemy, e_mk_bo_class);
 
     int phase_state = dComIfG_resLoad(&a_this->phase, "E_mk");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(i_this, useHeapInit, 0x3120)) {
             return cPhs_ERROR_e;
         }

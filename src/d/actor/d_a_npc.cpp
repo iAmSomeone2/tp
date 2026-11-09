@@ -1343,11 +1343,11 @@ int daNpcT_c::loadRes(s8 const* i_resNoList, char const** i_resNameList) {
             if (i != resLoad_cnt) {
                 break;
             }
-            return cPhs_COMPLEATE_e;
+            return cPhs_COMPLETE_e;
         }
 
         phase_state = dComIfG_resLoad(&mPhase[i], i_resNameList[i_resNoList[i]]);
-        if (phase_state == cPhs_COMPLEATE_e) {
+        if (phase_state == cPhs_COMPLETE_e) {
             resLoad_cnt++;
         }
 

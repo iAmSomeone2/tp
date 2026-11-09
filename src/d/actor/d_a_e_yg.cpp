@@ -1349,7 +1349,7 @@ static cPhs_Step daE_YG_Create(fopAc_ac_c* actor) {
     fopAcM_ct(&i_this->actor, e_yg_class);
 
     cPhs_Step phase = dComIfG_resLoad(&i_this->mPhase, "E_YG");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         OS_REPORT("E_YG PARAM %x\n", fopAcM_GetParam(actor));
 
         s32 swBit = (fopAcM_GetParam(actor) & 0xFF0000) >> 16;

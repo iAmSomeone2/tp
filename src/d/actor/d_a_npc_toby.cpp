@@ -297,7 +297,7 @@ int daNpc_Toby_c::create() {
     mFlowNodeNo = getFlowNodeNo();
     mTwilight = dKy_darkworld_check();
     int rv = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("\t(%s:%d) flowNo:%d, PathID:%02x, BitSW:%02x<%08x> ",
                   fopAcM_getProcNameString(this), mType, mFlowNodeNo, getPathID(),
                   getBitSW(), fopAcM_GetParam(this));

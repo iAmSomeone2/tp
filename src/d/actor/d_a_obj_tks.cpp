@@ -116,7 +116,7 @@ int daObjTks_c::Create() {
     fopAcM_ct(this, daObjTks_c);
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, createHeapCallBack, 0x2FF0)) {
             return cPhs_ERROR_e;
         }

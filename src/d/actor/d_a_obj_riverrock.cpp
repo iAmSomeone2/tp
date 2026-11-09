@@ -228,7 +228,7 @@ int daObjRIVERROCK_c::CreateHeap() {
 int daObjRIVERROCK_c::create() {
     fopAcM_ct(this, daObjRIVERROCK_c);
     int rv = dComIfG_resLoad(&mPhase, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         gravity = -9.0f;
         int dzb_id = dComIfG_getObjctResName2Index(l_arcName, "M_RiverRock.dzb");
         JUT_ASSERT(856, dzb_id != -1);
@@ -276,7 +276,7 @@ int daObjRIVERROCK_c::Create() {
     fopAcM_setCullSizeBox(this, field_0x5c4.x * -1000.0f, field_0x5c4.y * -500.0f,
                           field_0x5c4.z * -1000.0f, field_0x5c4.x * 1000.0f, field_0x5c4.y * 500.0f,
                           field_0x5c4.z * 1000.0f);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjRIVERROCK_c::Execute(Mtx** ppMtx) {

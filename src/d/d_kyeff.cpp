@@ -132,7 +132,7 @@ static int dKyeff_Create(kankyo_class* i_this) {
         #endif
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static leafdraw_method_class l_dKyeff_Method = {

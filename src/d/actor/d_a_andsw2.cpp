@@ -165,7 +165,7 @@ int daAndsw2_c::create() {
     current.angle.z = 0;
     current.angle.x = 0;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daAndsw2_actionOnAll(daAndsw2_c* i_this) {

@@ -11,7 +11,7 @@
 
 int daTagAJnot_c::create() {
     fopAcM_ct(this, daTagAJnot_c);
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daTagAJnot_Create(fopAc_ac_c* i_this) {

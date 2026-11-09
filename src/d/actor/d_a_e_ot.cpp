@@ -745,7 +745,7 @@ cPhs_Step daE_OT_c::create() {
     fopAcM_ct(this, daE_OT_c);
 
     cPhs_Step step = dComIfG_resLoad(&mPhase, "E_OT");
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, useHeapInit, 0x1f40)) {
             return cPhs_ERROR_e;
         }

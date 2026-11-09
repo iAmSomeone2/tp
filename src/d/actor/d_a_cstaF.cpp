@@ -127,9 +127,9 @@ int daCstaF_c::create() {
     }
 
     int phase_state = dComIfG_resLoad(&m_phase, m_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         phase_state = MoveBGCreate(m_arcName, dzb_id, dBgS_MoveBGProc_TypicalRotY, heap_size, NULL);
-        if (phase_state != cPhs_COMPLEATE_e) {
+        if (phase_state != cPhs_COMPLETE_e) {
             return phase_state;
         }
 

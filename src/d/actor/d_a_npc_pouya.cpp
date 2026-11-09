@@ -180,7 +180,7 @@ int daNpc_Pouya_c::create() {
     mTwilight = 0;
 
     int phase = loadRes(l_loadResPtrnList[mType], (const char**)l_resNameList);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (isDelete()) {
             return cPhs_ERROR_e;
         }

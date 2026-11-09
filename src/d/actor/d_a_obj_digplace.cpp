@@ -42,7 +42,7 @@ int daObjDigpl_c::create() {
     fopAcM_SetMax(this, 550.0f, 250.0f, 550.0f);
     attention_info.distances[fopAc_attn_ETC_e] = 27;
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 static int daObjDigpl_Create(fopAc_ac_c* i_this) {

@@ -91,7 +91,7 @@ static int daE_ST_LINE_Create(fopAc_ac_c* i_this) {
     e_st_line_class* a_this = (e_st_line_class*)i_this;
 
     int phase_state = dComIfG_resLoad(&a_this->mPhase, "E_st");
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(a_this, useHeapInit, 0xF40)) {
             OS_REPORT("//////////////E_ST_LINE SET NON !!\n");
             return cPhs_ERROR_e;

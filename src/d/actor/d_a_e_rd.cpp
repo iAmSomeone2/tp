@@ -7329,7 +7329,7 @@ static cPhs_Step daE_RD_Create(fopAc_ac_c* actor) {
     }
 
     cPhs_Step phase_state = dComIfG_resLoad(&i_this->phase, i_this->resName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         if (strcmp(dComIfGp_getStartStageName(), "F_SP124") == 0) {
             // Gerudo Desert
             desert_substage = 124;

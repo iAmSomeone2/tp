@@ -199,7 +199,7 @@ int daTagCsw_c::create() {
 
     field_0x570 = getType();
     int rv = dComIfG_resLoad(this, l_arcName);
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         mItemNo = getArg0();
         current.angle.x = 0;
         field_0x624 = 0.0f;

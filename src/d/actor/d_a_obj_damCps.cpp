@@ -104,7 +104,7 @@ int daObjDamCps_c::create() {
 
     l_HIO.entryHIO("ダメージ円柱");  // Damage Cylinder
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjDamCps_c::execute() {

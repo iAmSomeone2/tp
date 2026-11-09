@@ -170,17 +170,17 @@ int daSpiral_c::create() {
     #endif
 
     int phase_state = dComIfG_resLoad(&mAlwaysResPhase, getAlwaysArcName());
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
     phase_state = dComIfG_resLoad(&mEvResPhase, getEvArcName());
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
     phase_state = dComIfG_resLoad(&mBmdResPhase, getBmdArcName());
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
@@ -206,7 +206,7 @@ int daSpiral_c::create() {
     }
 
     CreateInit();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daSpiral_c::CreateHeap() {

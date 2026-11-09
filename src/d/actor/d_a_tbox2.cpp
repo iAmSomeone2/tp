@@ -139,7 +139,7 @@ int daTbox2_c::create1st() {
     mModelType = getModelType();
 
     int phase_state = dComIfG_resLoad(&mPhase, l_arcName);
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         u32 heap_size;
         if (mModelType == TYPE_SMALL_e) {
             heap_size = 0x1820;

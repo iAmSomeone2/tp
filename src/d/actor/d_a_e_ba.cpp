@@ -1015,7 +1015,7 @@ static cPhs_Step daE_BA_Create(fopAc_ac_c* i_this) {
 
     cPhs_Step step = dComIfG_resLoad(&_this->mPhase, _this->mArcName);
 
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         int sw = fopAcM_GetParam(_this) >> 24;
         if (sw != 0xff && dComIfGs_isSwitch(sw, fopAcM_GetRoomNo(i_this))) {
             return cPhs_ERROR_e;

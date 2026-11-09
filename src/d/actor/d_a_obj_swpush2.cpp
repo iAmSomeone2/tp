@@ -282,14 +282,14 @@ int daObjSwpush2::Act_c::create_res_load() {
     if (attr().arcname != NULL) {
         phase_state = dComIfG_resLoad(&mPhase, attr().arcname);
     } else {
-        phase_state = cPhs_COMPLEATE_e;
+        phase_state = cPhs_COMPLETE_e;
     }
 
-    if (phase_state != cPhs_COMPLEATE_e) {
+    if (phase_state != cPhs_COMPLETE_e) {
         return phase_state;
     }
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daObjSwpush2::Act_c::Mthd_Create() {
@@ -299,7 +299,7 @@ int daObjSwpush2::Act_c::Mthd_Create() {
     mType = prm_get_type();
     
     int phase_state = create_res_load();
-    if (phase_state == cPhs_COMPLEATE_e) {
+    if (phase_state == cPhs_COMPLETE_e) {
         scale.x *= attr().size;
         scale.z *= attr().size;
 

@@ -62,7 +62,7 @@ int daObjHFtr_c::create() {
 
     u32 nameIndex = getNameId();
     s32 loadResult = dComIfG_resLoad(this, l_arcName[nameIndex]);
-    if (loadResult == cPhs_COMPLEATE_e) {
+    if (loadResult == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, daObjHFtr_c_createHeap, l_heapSize[nameIndex])) {
             return cPhs_ERROR_e;
         }

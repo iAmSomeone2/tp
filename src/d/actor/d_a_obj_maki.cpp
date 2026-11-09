@@ -195,7 +195,7 @@ cPhs_Step daObj_Maki_Create(fopAc_ac_c* i_this) {
     };
 
     cPhs_Step phase = dComIfG_resLoad(&a_this->mPhase, "Obj_maki");
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         a_this->field_0x57c = (u8)fopAcM_GetParam(a_this);
         u32 cVar3 = fopAcM_GetParam(a_this) >> 0x18;
         if (cVar3 != 0xff && dComIfGs_isSwitch(cVar3, fopAcM_GetRoomNo(a_this))) {

@@ -64,7 +64,7 @@ int daTagChgRestart_c::create() {
     l_HIO.entryHIO("部屋戻し位置変更タグ");
 #endif
 
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagChgRestart_c::execute() {

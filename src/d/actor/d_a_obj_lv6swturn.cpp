@@ -106,7 +106,7 @@ static daObjLv6SwTurn_HIO_c l_HIO;
 
 int daObjLv6SwTurn_c::create1st() {
     int step = dComIfG_resLoad(&unk5A0, l_arcName);
-    if (step == cPhs_COMPLEATE_e) {
+    if (step == cPhs_COMPLETE_e) {
         step = MoveBGCreate(l_arcName, 7, dBgS_MoveBGProc_TypicalRotY, 0x1800, 0);
         if (step == cPhs_ERROR_e) {
             return step;

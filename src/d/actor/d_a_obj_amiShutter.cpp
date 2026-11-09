@@ -67,7 +67,7 @@ cPhs_Step daAmiShutter_c::create() {
     fopAcM_ct(this, daAmiShutter_c);
     cPhs_Step phaseStep = dComIfG_resLoad(&mPhaseReq, "S_Zami");
 
-    if (phaseStep == cPhs_COMPLEATE_e) {
+    if (phaseStep == cPhs_COMPLETE_e) {
         cPhs_Step res = MoveBGCreate("S_Zami", 7, 
             dBgS_MoveBGProc_Typical, 0x1a00, NULL);
 

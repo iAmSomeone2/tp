@@ -21,7 +21,7 @@ int daObjTimer::Act_c::_create() {
         } else {
             mode_wait_init();
         }
-        return cPhs_COMPLEATE_e;
+        return cPhs_COMPLETE_e;
     }
 }
 

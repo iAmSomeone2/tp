@@ -5,6 +5,7 @@
 #include "JSystem/JAHostIO/JAHioMgr.h"
 #include "JSystem/JAHostIO/JAHioNode.h"
 #include "JSystem/JHostIO/JORServer.h"
+#include "JSystem/JHostIO/JORReflexible.h"
 
 JAHioNode* JAHioNode::smCurrentNode;
 
@@ -100,9 +101,9 @@ JAHioNode* JAHioNode::getParent() {
 }
 
 void JAHioNode::listenPropertyEvent(const JORPropertyEvent* event) {
-    propertyEvent(JAH_P_EVENT0, (u32)event->id);
+    propertyEvent(JAH_P_EVENT0, reinterpret_cast<uintptr_t>(event->id));
     JORReflexible::listenPropertyEvent(event);
-    propertyEvent(JAH_P_EVENT1, (u32)event->id);
+    propertyEvent(JAH_P_EVENT1, reinterpret_cast<uintptr_t>(event->id));
 }
 
 void JAHioNode::listenNodeEvent(const JORNodeEvent* event) {

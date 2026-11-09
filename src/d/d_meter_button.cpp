@@ -36,7 +36,7 @@ int dMeterButton_c::_create() {
     OS_REPORT("dMeterButton_c::_create\n");
     screenInitButton();
     screenInitText();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int dMeterButton_c::_execute(u32 i_flags, bool i_drawA, bool i_drawB, bool i_drawR, bool i_drawZ,

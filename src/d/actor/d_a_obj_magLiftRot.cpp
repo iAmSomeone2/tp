@@ -95,7 +95,7 @@ int daMagLiftRot_c::create() {
     }
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName[mType]);
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         u32 tmp = 0x1500;
         if (mType == 2) {
             tmp = 0x2500;

@@ -22,7 +22,7 @@ int daTalk_c::create() {
 
     attention_info = dMsgObject_getMsgObjectClass()->getpTalkActor()->attention_info;
     mMessageID = -1;
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTalk_c::execute() {

@@ -51,7 +51,7 @@ int daObjBoard_c::CreateHeap() {
 
 int daObjBoard_c::create1st() {
     int ret = dComIfG_resLoad(&mPhase, l_arcName);
-    if (ret == cPhs_COMPLEATE_e) {
+    if (ret == cPhs_COMPLETE_e) {
         int dzb_no;
 
         switch (getArg0()) {

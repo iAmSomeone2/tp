@@ -351,7 +351,7 @@ void JUTCacheFont::getGlyphFromAram(JUTCacheFont::TGlyphCacheInfo* param_0,
     *param_3 = iVar2;
     *r30 -= iVar2 * iVar3;
     u8* result =
-        JKRAramToMainRam((u32)param_0->mPrev + pGylphCacheInfo->field_0x10 * iVar2, pCachePage->mImage,
+        JKRAramToMainRam(reinterpret_cast<uintptr_t>(param_0->mPrev) + pGylphCacheInfo->field_0x10 * iVar2, pCachePage->mImage,
                          pGylphCacheInfo->field_0x10, EXPAND_SWITCH_UNKNOWN0, 0, NULL, 0xffffffff, NULL);
     JUT_ASSERT(624, result);
     GXInitTexObj(&pCachePage->mTexObj, pCachePage->mImage, pGylphCacheInfo->mWidth, pGylphCacheInfo->mHeight,
@@ -417,16 +417,16 @@ JUTCacheFont::TCachePage* JUTCacheFont::loadCache_char_subroutine(int* param_0, 
 }
 
 void JUTCacheFont::invalidiateAllCache() {
-    int* cacheBuffer = (int*)mCacheBuffer;
+    auto* cacheBuffer = static_cast<intptr_t*>(mCacheBuffer);
     for (int i = 0; i < mCachePage; i++) {
-        *cacheBuffer = i == 0 ? 0 : (intptr_t)cacheBuffer - field_0x94;
-        cacheBuffer[1] = i == mCachePage - 1 ? 0 : (intptr_t)cacheBuffer + field_0x94;
-        cacheBuffer = (int*)((intptr_t)cacheBuffer + field_0x94);
+        *cacheBuffer = i == 0 ? 0 : reinterpret_cast<intptr_t>(cacheBuffer) - field_0x94;
+        cacheBuffer[1] = i == mCachePage - 1 ? 0 : reinterpret_cast<intptr_t>(cacheBuffer) + field_0x94;
+        cacheBuffer = reinterpret_cast<intptr_t*>(reinterpret_cast<intptr_t>(cacheBuffer) + field_0x94);
     }
-    field_0xa8 = (intptr_t)cacheBuffer - field_0x94;
-    field_0xa4 = (TGlyphCacheInfo*)mCacheBuffer;
-    field_0x9c = NULL;
-    field_0xa0 = NULL;
+    field_0xa8 = reinterpret_cast<intptr_t>(cacheBuffer) - field_0x94;
+    field_0xa4 = static_cast<TGlyphCacheInfo*>(mCacheBuffer);
+    field_0x9c = nullptr;
+    field_0xa0 = nullptr;
 }
 
 void JUTCacheFont::unlink(JUTCacheFont::TGlyphCacheInfo* cacheInfo) {

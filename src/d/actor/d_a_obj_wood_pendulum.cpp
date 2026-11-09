@@ -87,7 +87,7 @@ int daObjWPndlm_c::create() {
 
     phase = dComIfG_resLoad(&mPhaseReq, l_arcName);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         if (!fopAcM_entrySolidHeap(this, CheckCreateHeap, 0x1be0)) {
             return cPhs_ERROR_e;
         } else if (!Create()) {

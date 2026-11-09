@@ -421,4 +421,4 @@ Stage IDs also appear as **save-memory slots** (`dStage_SaveTbl_ORDON/PRISON/FAR
 | **`DECLARE_…` / `STATIC_ASSERT`** | Size checks on structs. |
 | **Shield / ShieldD** | Nvidia Shield China builds; ShieldD is the debug build that carries names and asserts. |
 | **`#if DEBUG` code** | Present in the debug build only; useful for finding names, invisible in retail. |
-| **"(sic)"** | Real misspellings in original identifiers preserved on purpose: `cPhs_COMPLEATE_e`, `d_resorce`, `d_tresure`, `dKy…_wether`, `Distanse`. |
+| **"(sic)"** | Real misspellings in original identifiers preserved on purpose: `d_resorce`, `d_tresure`, `dKy…_wether`, `Distanse`. |

@@ -432,7 +432,7 @@ static int daObj_Msima_Create(fopAc_ac_c* a_this) {
     fopAcM_ct(a_this, obj_msima_class);
 
     int rv = dComIfG_resLoad(&i_this->mPhase, "MAGNESIMA");
-    if (rv == cPhs_COMPLEATE_e) {
+    if (rv == cPhs_COMPLETE_e) {
         OS_REPORT("OBJ_MSIMA PARAM %x\n", fopAcM_GetParam(a_this));
         i_this->field_0x570 = fopAcM_GetParam(a_this) & 0xff;
         if (i_this->field_0x570 == 0xff) {

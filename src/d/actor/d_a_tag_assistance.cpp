@@ -15,7 +15,7 @@ void daTagAssist_c::create_init() {
 int daTagAssist_c::create() {
     fopAcM_ct(this, daTagAssist_c);
     create_init();
-    return cPhs_COMPLEATE_e;
+    return cPhs_COMPLETE_e;
 }
 
 int daTagAssist_c::execute() {

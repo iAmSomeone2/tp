@@ -62,10 +62,10 @@ int daTagHjump_c::create() {
     int phase;
     if (mType != TYPE_TRIGGER_e) {
         phase = dComIfG_resLoad(&mPhase, l_arcName);
-        if (phase == cPhs_COMPLEATE_e) {
+        if (phase == cPhs_COMPLETE_e) {
             phase = MoveBGCreate(l_arcName, 7, NULL, 0xCA0, NULL);
 
-            if (phase == cPhs_COMPLEATE_e) {
+            if (phase == cPhs_COMPLETE_e) {
                 fopAcM_SetMtx(this, mpModel->getBaseTRMtx());
                 tevStr.room_no = (int)fopAcM_GetRoomNo(this);
 
@@ -96,7 +96,7 @@ int daTagHjump_c::create() {
             }
         }
     } else {
-        phase = cPhs_COMPLEATE_e;
+        phase = cPhs_COMPLETE_e;
         scale.x *= 100.0f;
         scale.z *= 100.0f;
         scale.y *= 100.0f;

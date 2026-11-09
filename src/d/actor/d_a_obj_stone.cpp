@@ -236,7 +236,7 @@ int daObjStone_c::create() {
 
     int phase = dComIfG_resLoad(&mPhase, l_arcName[mStoneType]);
 
-    if (phase == cPhs_COMPLEATE_e) {
+    if (phase == cPhs_COMPLETE_e) {
         // Allocate solid heap on GAME and load rock's model into it
         if (!fopAcM_entrySolidHeap(this, (heapCallbackFunc)CheckCreateHeap, 0x860)) {
             return cPhs_ERROR_e;
