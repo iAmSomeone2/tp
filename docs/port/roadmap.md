@@ -57,6 +57,25 @@ Not part of the port proper; consider it once M7 is reached. Size: L.
 
 **Do now:** nothing to implement, but design the GX → GXM layer so this stays cheap later; see [graphics.md](graphics.md#designing-for-frame-interpolation).
 
+## CPU performance: NEON and multiple cores
+
+The CPU is likely the tighter budget, before the GPU: four Cortex-A9 cores at 333–444 MHz (games normally get three) against a single 486 MHz Gekko with paired singles, running an engine written for one core. The port also adds CPU work the GameCube never had: translating GX calls into GXM. Per-vertex transform is not part of this; it was on the GPU on the GameCube (Flipper's transform unit) and becomes vertex shaders on the Vita. The CPU-side "transform math" is per joint and per model: `J3DModel::calc` (animation, the joint hierarchy, weighted envelope matrices) and the few models that skin on the CPU (`J3DMdlFlag_SkinPosCpu`).
+
+**NEON: cheap.** Almost all vector and matrix math goes through the `PSMTX`/`PSVEC`/`C_MTX` API, which `nf_math` replaces anyway ([math.md](math.md)): plain C++ first, then vector extensions that compile to NEON, intrinsics only where measured. No engine call sites change. The A9's NEON datapath is 64 bits wide (a 4-float operation takes two cycles) and has no fused multiply-add, so expect a solid gain on matrix loops, not a dramatic one overall.
+
+**Multiple cores, from least to most invasive:**
+
+1. **A render thread for the GX → GXM layer** (recommended first). The main core runs game logic while a second core translates and submits the previous frame's commands. This is new `nf` code and changes no engine code. The engine already expects the GPU to read its data later: GX fed the GPU asynchronously through a FIFO, and J3D double-buffers its draw matrices for that reason (`J3DMtxBuffer::createDoubleDrawMtx`, `mpDrawMtxArr[1]`). The work is finding the sync points where the CPU waits on the GPU, such as draw-done waits and framebuffer copies the CPU reads back.
+2. **Running `J3DModel::calc` in parallel across models.** Heavy:
+   * Calc runs through a global context, `j3dSys` (33 `set`/`get` uses in `J3DGraphAnimator`), and `J3DJoint` statics (`mMtxBuffer`, `mJoint`, `mCurrentMtxCalc`). Making them `thread_local` is cheap.
+   * Shared mutable state needs an audit: joint callbacks reach into actor code, and animation objects shared between models get their frame set just before each calc.
+   * Calc is fused with drawing: `mDoExt_modelUpdateDL` runs calc and then enters the model's draw, and actor draw code calls it from 594 sites. Parallel calc means splitting the two, either by deferring the entry inside `m_Do_ext` or by changing the call sites.
+3. **Running actor logic in parallel.** Not recommended: process order is part of the game's behaviour, and actors share a lot of global state.
+
+Audio mixing and file I/O are other natural candidates for their own threads (see [Risks](#risks)).
+
+**Order:** profile first. Once `tp` links on a host, a desktop profile shows the relative hot spots even if the absolute numbers don't transfer. Then NEON and the render thread, which don't touch engine code, and parallel calc only if the profile says it dominates. Plan for three threads: main, render, and one worker.
+
 ## Concrete first tasks
 
 Small, independent, and useful whichever way the rest goes:
@@ -76,7 +95,7 @@ Small, independent, and useful whichever way the rest goes:
 | **GX fidelity** | TEV combinations, indirect texturing, fog, lighting and texgen have many corner cases; small deviations show as wrong colours. | Ubershader first; keep a per-material debug view; compare against references (screenshots/emulator captures of the same scene). |
 | **J3D display-list decoding** | The shape display lists are stored in the model files and consumed by hardware. A decoder bug corrupts geometry silently. | Decode once at load with structural checks (vertex counts, index ranges); test on many models; visualise. |
 | **Audio behaviour** | The DSP microcode defines exact mixing, filtering and envelope behaviour that JAudio2 assumes. | Implement the `TChannel` contract precisely; test with isolated sounds; add effects buses later. |
-| **CPU performance** | Cortex-A9 cores are not the Gekko; the game is single-threaded by design, so the four cores do not help by default. | Profile early on device; keep the 30 Hz tick; look at CPU-side skinning cost, `MTX*` math, collision (`dBgS`, `dCcS`), and particle counts. Moving audio mixing, file I/O and GPU command building off the main thread are the natural parallelisation points. |
+| **CPU performance** | Cortex-A9 cores are not the Gekko; the game is single-threaded by design, so the four cores do not help by default. | Profile early on device; keep the 30 Hz tick; look at CPU-side skinning cost, `MTX*` math, collision (`dBgS`, `dCcS`), and particle counts. Moving audio mixing, file I/O and GPU command building off the main thread are the natural parallelisation points; see [CPU performance](#cpu-performance-neon-and-multiple-cores). |
 | **Alignment / undefined-behaviour code** | Code written and matched for one compiler may rely on unaligned loads, strict-aliasing violations or null-`this` tricks. | Compile with `-fno-strict-aliasing -fno-delete-null-pointer-checks`; use sanitizers on the host build; convert parsers to `memcpy` loads. |
 | **Upstream drift** | The fork is expected to diverge; conflicts grow with time. | Keep the platform layer additive; rebase or cherry-pick upstream fixes on a cadence; keep the original build on a branch for matching-based validation. |
 | **Memory on device** | Homebrew-accessible memory may be less than the hardware total (system reserves, allocator limits). | Measure the actual budget early; the ARAM/REL/heap machinery can be simplified but heap *sizes* in `mDoMch_Create` should be re-tuned to the measured budget. |
@@ -87,7 +106,7 @@ Small, independent, and useful whichever way the rest goes:
 
 1. **Base version**: GameCube USA (recommended; fully matching, best-understood) vs. a Wii or Shield base (widescreen and newer code, but less decompiled).
 2. **Aspect ratio**: pillar-boxed 4:3 first, then widescreen (port the Wii `WIDESCREEN_SUPPORT` paths), or widescreen from the start?
-3. **Shader strategy** (graphics.md): ubershader first with offline precompilation later, or runtime generation from the beginning?
+3. **Shader strategy** (graphics.md): ubershader first with offline precompilation later, or runtime generation from the beginning? The static-analysis plan for the precompiled set is in [shader-analysis.md](shader-analysis.md).
 4. **Endianness**: convert on load first (recommended), then cook assets; or cook up front?
 5. **Save compatibility**: native little-endian saves only, or importing original GameCube saves?
 6. **Audio ambition**: faithful DSP behaviour (effects, filters, Dolby pan) or a simpler mixer to start?
