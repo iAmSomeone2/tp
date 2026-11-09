@@ -349,9 +349,9 @@ def report(df: pd.DataFrame, programs: dict, errors: Counter, runtime_vs: dict, 
     L.append("")
     L.append(md_table(pd.DataFrame([dict(materials=c, expression=f"`{e}`") for e, c in alphas.most_common(12)])))
     L.append("")
-    L.append("### Families: programs that differ only in which uniform they read")
+    L.append("### Families: programs that differ only in their inputs")
     L.append("")
-    L.append(f"Generalising uniform names (`kc0` vs `kc1`, `c0` vs `c1`) collapses the {len(outs)} programs into "
+    L.append(f"Ignoring which uniform (`kc0` vs `kc1`, `c0` vs `c1`) and which texture map / uv set a program reads collapses the {len(outs)} programs into "
              f"{len(shapes)} families; programs in one family can share code with a different uniform binding table.")
     L.append("")
     L.append("### Shared sub-expressions")

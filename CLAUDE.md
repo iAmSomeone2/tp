@@ -64,6 +64,7 @@ python3 tools/gx_shaders/scan.py --disc <dir> --report docs/port/shader-survey.m
 python3 tools/gx_shaders/gxcalls.py --data-programs build/gx_shaders/draws.csv --report docs/port/shader-code-paths.md  # code paths
 python3 tools/gx_shaders/shader.py                                                     # canonicaliser self-check
 python3 tools/gx_shaders/check_equiv.py --disc <dir>                                   # numeric check vs a TEV reference
+python3 tools/gx_shaders/generalise.py                                                 # merging tables (shader-analysis.md §10)
 ```
 
 When their numbers change, also update prose that quotes them (e.g. in `docs/port/README.md` and `docs/port/toolchain.md`).

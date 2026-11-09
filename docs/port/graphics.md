@@ -70,7 +70,7 @@ Suggested order: build the API layer first (option A without the interpreter), g
 The set of material configurations is **finite and enumerable**: it is the union of the TEV/texgen/indirect/fog/lighting settings found in every model's material block plus those set directly by the ~40 game files. Choices:
 
 1. **Generate at run time** from the material state and compile with the Cg runtime compiler. Simple, but the Vita's runtime compiler is a separately-installed system module on retail firmware, which complicates distribution and startup time.
-2. **Enumerate offline and precompile** (analysis plan: [shader-analysis.md](shader-analysis.md)). Scan all models/UI/effects once (with the user's data), hash each distinct configuration, generate the shader source, compile with the SDK's offline compiler (`psp2cgc`), and ship the compiled programs keyed by configuration hash (they contain no asset data). Anything not covered falls back to a generic shader.
+2. **Enumerate offline and precompile** (analysis plan: [shader-analysis.md](shader-analysis.md)). Scan all models/UI/effects once (with the user's data), hash each distinct configuration, generate the shader source, compile them ahead of time on a homebrew-enabled Vita with its built-in compiler module (`SceShaccCg`, driven by an offline compiler homebrew app), and ship the compiled programs keyed by configuration hash (they contain no asset data). Anything not covered falls back to a generic shader.
 3. **Ubershader**: one program interpreting a TEV description from uniforms. Easiest to get working; likely slower on this GPU, but valuable as the always-correct fallback and for bring-up.
 
 Recommendation: start with 3 (correctness), add 2 once the configuration set is known.

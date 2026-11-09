@@ -104,9 +104,9 @@ Most used `out.a` expressions:
 | 332 | `ka0 * v0.a` |
 | 326 | `ka0 * t1.a` |
 
-### Families: programs that differ only in which uniform they read
+### Families: programs that differ only in their inputs
 
-Generalising uniform names (`kc0` vs `kc1`, `c0` vs `c1`) collapses the 725 programs into 675 families; programs in one family can share code with a different uniform binding table.
+Ignoring which uniform (`kc0` vs `kc1`, `c0` vs `c1`) and which texture map / uv set a program reads collapses the 725 programs into 675 families; programs in one family can share code with a different uniform binding table.
 
 ### Shared sub-expressions
 
