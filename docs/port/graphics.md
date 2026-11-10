@@ -78,7 +78,7 @@ Recommendation: start with 3 (correctness), add 2 once the configuration set is 
 ## Textures
 
 * GX stores textures in **tiled layouts** (4×4, 8×4, 8×8 blocks depending on format) with big-endian 16-bit texels. Texture formats in data: `I4`, `I8`, `IA4`, `IA8`, `RGB565`, `RGB5A3`, `RGBA8`, `C4`, `C8`, `C14X2` (palette-indexed with a separate palette), `CMPR`. The header is `ResTIMG` (0x20 bytes).
-* Convert on upload to formats the Vita supports: 8-bit luminance/alpha and 16-bit variants map naturally; `RGB5A3` and `RGBA8` to 16/32-bit RGBA; palette textures either expanded to RGBA8 or kept indexed with a palette lookup in the shader; **`CMPR` needs conversion to standard BC1/DXT1** (colour word byte order and 2-bit index ordering differ) or to RGBA8.
+* Convert on upload to formats the Vita supports: 8-bit luminance/alpha and 16-bit variants map naturally; `RGB5A3` and `RGBA8` to 16/32-bit RGBA; palette textures either expanded to RGBA8 or kept indexed with a palette lookup in the shader; **`CMPR` needs conversion to standard BC1/DXT1** (colour word byte order and 2-bit index ordering differ) or to RGBA8. The planned bake converts every format losslessly, with `CMPR` → BC1; the per-format table is in [vita-tex-fmts.md](vita-tex-fmts.md).
 * Mipmaps, LOD bias (`GXInitTexObjLOD`, 32 uses), wrap modes and filter modes map to sampler state.
 * Texture animations (`btk`, `btp` swaps) are data-driven and need no special handling once the material path works.
 * This is also a good place for *cooking*: pre-convert every texture at install time ([endianness.md](endianness.md)).

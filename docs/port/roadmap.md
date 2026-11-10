@@ -17,8 +17,8 @@ A proposed order of attack, built on the findings in the other pages. It is sequ
 | 0 | **Groundwork** | S | CMake/VitaSDK project builds a "hello" that links a few libraries (`SSystem`, `JKernel`). `platform/` skeleton exists (empty shims for `OS`, `DVD`, `PAD`, `VI`, `CARD`, `AR`). Compiler flags from [toolchain.md](toolchain.md) applied. |
 | 1 | **Everything compiles and links** | M | `clang_sweep.py` reports 0 failing TUs for the GameCube configuration (5 of 1,280 remain: four that need generated assets, which compile when a disc image is present, and `d_a_movie_player`'s PPC-asm casts). Actors link statically; `dup_symbol_check.py` reports 0 duplicates (18 left). Enable the layout `STATIC_ASSERT`s. Link with stub SDK (functions that abort with a message). |
 | 2 | **Boot to the framework loop** | M | `main` → `main01` → `mDoMch_Create` → `fapGm_Create` → `fpcM_Management` runs a frame with a stub GPU. Heaps allocated from `malloc`; `OS` threads/queues/mutexes work; logging works. The process manager schedules `LOGO_SCENE` (no drawing yet). |
-| 3 | **File I/O and archives** | M | `DVD*` shim over the extracted data directory; `JKRArchive` opens `.arc`; Yaz0 decompression verified. *Requires the archive header fix-ups from [endianness.md](endianness.md).* |
-| 4 | **Data fix-ups (endianness)** | L | Loaders for J3D models/animations, `ResTIMG`, `.dzs/.dzr/.dzb`, BMG, events, JPC, STB byte-swap correctly. Golden-dump tests pass for many files. Loading a full stage (`F_SP103`, Ordon Village) completes with no asserts. |
+| 3 | **File I/O and archives** | M | `DVD*` shim over the baked data tree; `JKRArchive` opens baked `.nfa` archives (step 0 of [bake.md](bake.md)); Yaz0 is handled by the bake. |
+| 4 | **Data conversion (bake, [bake.md](bake.md))** | L | Loaders for J3D models/animations, `ResTIMG`, `.dzs/.dzr/.dzb`, BMG, events, JPC, STB read baked data. The bake's disc-gated round-trip tests pass. Loading a full stage (`F_SP103`, Ordon Village) completes with no asserts. |
 | 5 | **GX layer + 2D** | XL | GX API subset implemented over GXM; ubershader TEV; immediate-mode batching; textures converted. J2D screens render: the Nintendo logo and title screen appear. |
 | 6 | **3D world** | XL | J3D models decode and draw (option C in [graphics.md](graphics.md)): stage geometry, Link with skeletal animation, lighting and fog, sky. Draw-order passes match the original. Needs host versions of the SDK and JSystem matrix math first ([math.md](math.md)). Walk around Ordon Village with input working. |
 | 7 | **Input, save, misc I/O** | S–M | Vita controls mapped ([sdk-surface.md](sdk-surface.md#input-pad-si)); file-backed memory card; the message box, HUD and menu run; game can be saved/loaded. |
@@ -107,7 +107,7 @@ Small, independent, and useful whichever way the rest goes:
 1. **Base version**: GameCube USA (recommended; fully matching, best-understood) vs. a Wii or Shield base (widescreen and newer code, but less decompiled).
 2. **Aspect ratio**: pillar-boxed 4:3 first, then widescreen (port the Wii `WIDESCREEN_SUPPORT` paths), or widescreen from the start?
 3. **Shader strategy** (graphics.md): ubershader first with offline precompilation later, or runtime generation from the beginning? The static-analysis plan for the precompiled set is in [shader-analysis.md](shader-analysis.md).
-4. **Endianness**: convert on load first (recommended), then cook assets; or cook up front?
+4. **Endianness**: *decided:* bake up front ([bake.md](bake.md)).
 5. **Save compatibility**: native little-endian saves only, or importing original GameCube saves?
 6. **Audio ambition**: faithful DSP behaviour (effects, filters, Dolby pan) or a simpler mixer to start?
 7. **Controls**: where do Z, the analog triggers and the C-stick-dependent actions go (rear touch, chords, or a remappable layout)?

@@ -39,7 +39,7 @@ Line counts are the parser files' total size (the reading effort). Formats and t
 | **B. Cook at install time** | A tool converts the whole disc's data once into a little-endian "cooked" tree (and can also re-encode textures, decode display lists, decompress archives). | Zero runtime cost; can pre-build GPU-ready buffers; can drop Yaz0. | The tool must understand *every* format and every embedded array up front; harder to debug; bigger install. |
 | **C. Swap on read** | Wrap every field read in an accessor (`be32(p->x)`). | Format stays big-endian. | Touches thousands of sites and is easy to miss; slower; no benefit. **Not recommended.** |
 
-**Recommendation: start with A, one format at a time, and promote stable formats to B later.** A gives you a running game earliest; B is an optimisation and an asset-quality step (textures/models). Both share the same *field maps*, so work done for A is reusable in the cooker.
+**Decided (2026-11-10): B, the bake.** The engine now runs as a native 64-bit program on the dev machines, where pointer-typed fields in the file formats don't fit, and every target is little-endian. So the data is converted once, offline, into a pointer-free little-endian format; see [bake.md](bake.md). The rest of this paragraph is the earlier reasoning. ~~Recommendation: start with A, one format at a time, and promote stable formats to B later.~~ A gives you a running game earliest; B is an optimisation and an asset-quality step (textures/models). Both share the same *field maps*, so work done for A is reusable in the cooker.
 
 ### Building blocks
 

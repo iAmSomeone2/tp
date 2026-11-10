@@ -34,6 +34,8 @@ The console figures are approximate and only here for context. The important asy
 | [shader-analysis.md](shader-analysis.md) | Finding every GX shader configuration statically (disc data + a small set of code transforms) so GXM programs can be precompiled: method, pseudocode IR, results, next steps. Tools in `tools/gx_shaders/`. |
 | [shader-survey.md](shader-survey.md) | *Generated* from the user's disc by `tools/gx_shaders/scan.py`: distinct shader programs per canonicalisation level, coverage, shared patterns. |
 | [shader-code-paths.md](shader-code-paths.md) | *Generated* from the source by `tools/gx_shaders/gxcalls.py`: GX state set by code, per draw site, and the programs it implies. |
+| [bake.md](bake.md) | Design of the offline asset bake: decisions, what is on the disc, the `.nfa` container, the format-header rules (C++ headers as the single source, `bindgen` for the Rust tool), order of work, testing. |
+| [vita-tex-fmts.md](vita-tex-fmts.md) | GXM texture formats (from the vitasdk docs) and the lossless mapping from every GX texture format, used by the planned bake tool. |
 | [roadmap.md](roadmap.md) | Phased plan, milestones, risks, and open decisions. |
 | [survey-data.md](survey-data.md) | *Generated.* Full tables behind the numbers in these pages. |
 | [file-layout-64bit.md](file-layout-64bit.md) | Survey of file structs whose layout breaks on 64-bit hosts: offsets declared as pointers, in-place relocation, file memory used as runtime storage. Basis for the file-loading design. |
@@ -49,7 +51,7 @@ The console figures are approximate and only here for context. The important asy
 |---|---|
 | Which game version is the code base? | **GameCube USA (`GZ2E01`)**: the only fully matching version, so the code is best understood; port Wii-only features (widescreen, pointer) selectively. Wii/Shield code has more modern features but is less complete. |
 | Keep matching the original binaries? | **No.** This fork no longer needs byte-identical output. Treat the Metrowerks-specific hacks (weak function order, `dummy()` functions, PCH include order) as deletable. Keep the upstream `configure.py` flow only if you want to keep pulling upstream changes. |
-| Endianness strategy | **Convert data at load time into native structs** (per-format fix-up passes), optionally caching the result. Avoid byte-swapping through accessors everywhere. |
+| Endianness strategy | **Decided: bake offline.** A Rust tool converts the user's disc once into little-endian, pointer-free files with standard texture formats; the engine reads only baked data. See [bake.md](bake.md). |
 | GPU strategy | **Write a GX-compatible layer (state tracking + command-stream interpreter) first**, so J3D/J2D/JPA and the game's ~40 direct-GX files run unmodified, then optimise the hot paths natively. |
 | Screen | Native Vita resolution is 960×544 (about 16:9). Decide between 4:3 pillarbox first (least work) and adopting the Wii/Shield `WIDESCREEN_SUPPORT` code paths. |
 | Save/asset compatibility | Read the game's data from a user-supplied dump, as upstream does (no assets are in this repo). Decide whether save files must interoperate with original saves (not required). |
