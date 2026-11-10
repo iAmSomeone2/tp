@@ -28,7 +28,7 @@ Measured on the user's `GZ2E01` image with `dtk vfs ls -r`. Sizes are as stored,
 | `.ast` audio streams | 127 | 381 MiB | Later (audio phase) |
 | `.arc` RARC archives | 1,843 | 311 MiB (440 MiB decompressed, top level only) | Yes, the core of the bake |
 | `.aw` wave banks | 232 | 148 MiB | Later (audio phase) |
-| `.thp` movie | 1 | 131 MiB | No: the movie player is replaced |
+| `.thp` movie | 1 | 131 MiB | Later: re-encoded to H.264 + AAC in MP4 (see *Movie*); the MVP stubs the player |
 | `.jpc` particles | 65 | 11 MiB | Yes |
 | `.map` linker maps (`map/Final/Release`) | 758 | 7 MiB | No: debug symbol maps of the RELs, not game data |
 | `.rel` modules | 623 | 4 MiB | No: actors are statically linked |
@@ -92,6 +92,25 @@ Nothing needs more than stereo; `JASAramStream`'s `CHANNEL_MAX = 6` is never use
    The next largest looping tracks as PCM are 30.9, 30.1 and 26.2 MiB. Keeping the track compressed and decoding while playing costs a fraction of the memory of a PCM cache and still loops exactly.
 
 **Considered and set aside: the Vita's hardware decoders** (ATRAC9, MP3, AAC, CELP). From the developer's tests, MP3 and AAC handle VBR up to 256 kbit/s stereo. Some VBR AAC files peaking above 256 kbit/s played and others didn't, so the limit may be in the music player app rather than the hardware. The SDK docs give no channel limits for AAC and ATRAC9, but stereo is all the streams need. These decoders have the same exact-loop issue as Opus. They exist only on the Vita, though, so the dev PC and Mac would need a second, software decode path. ATRAC9 also seems to need Sony's encoder, which the open toolchain doesn't include. AAC at 256 kbit/s would also be about twice the size of Opus at a similar quality.
+
+### Movie
+
+The disc has one movie, `Movie/demo_movie98_00.thp`. It plays at the end of the title screen's demo loop.
+
+| | Value |
+|---|---|
+| Video | 608 × 448, 29.97 fps, 3,778 frames (2 min 6 s) |
+| Audio | stereo, 32 kHz |
+| Size | 131 MiB, about 8.7 Mbit/s |
+
+THP stores every frame as a separate JPEG with no motion prediction, which is why it is so large for its resolution.
+
+* **MVP: stubbed.** `src/nightfall/movie/movie_player.cpp` (`nf_movie`) replaces `d_a_movie_player.cpp`, which is excluded from `tp_actors`. The stub ends every movie at once, as if the player had skipped it, so the demo loop carries on.
+* **Later: H.264 video + AAC audio in an MP4 container**, re-encoded by the bake. The developer found the quality loss imperceptible for this file, and a few Mbit/s of H.264 should cut it to a fraction of its size. Both dimensions are multiples of 16, so the frame size needs no padding for H.264. The bake would run an external encoder (e.g. `ffmpeg`) rather than link one.
+* **Playback on the Vita:** either hardware path works.
+  * `SceAvPlayer*` takes the MP4 file and delivers decoded video frames and audio. As far as I know it draws no playback controls and leaves showing the frames to the app; a quick test on the device should confirm that. It is the simpler choice for full-screen playback.
+  * `SceAvcdec*` is a lower-level H.264 decoder whose output frames can be used directly as GPU textures (GXM's `YUV420P2`/`YUV420P3` formats). Audio would then need its own decoder.
+* **Playback on the hosts:** H.264 decoding is available almost everywhere: libavcodec in software, or hardware through VideoToolbox on macOS and VA-API or the Vulkan Video extensions on Linux. AAC in software costs next to nothing. Which one to use is decided when the host video path is built.
 
 ## Pipeline
 
