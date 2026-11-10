@@ -1,5 +1,7 @@
 # Memory model: survey
 
+> The design built on this survey is in [memory-design.md](memory-design.md).
+
 > **Status: survey only.** This page records how the engine manages memory today and which parts of it depend on 32-bit sizes or on the console's hardware. It is the basis for the memory-model design. Nothing has been changed. Figures are for the retail GameCube USA build (`GZ2E01`, `DEBUG` off) unless marked otherwise.
 
 The game runs in a single contiguous block of memory (the *arena*), which boot code divides into a fixed tree of JKR heaps with hand-tuned sizes. Everything after that allocates from those heaps. Either it names a heap explicitly, or it goes through the global `operator new` into whichever heap is *current*. Lifetimes are expressed by which heap something lives in, and whole heaps are freed or destroyed at well-defined points (actor deletion, room unload, stage change, menu close).

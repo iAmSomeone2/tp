@@ -193,7 +193,7 @@ Conventions: `cargo fmt` and `clippy` clean; no `unsafe` outside `nf-formats-sys
 
 ## Engine side
 
-* **Container reader** behind `JKRArchive`. The four mount classes (Mem/Dvd/Aram/Comp) keep their roles and memory behaviour, but read `.nfa` instead of RARC. The ownership rules from the RARC design (`ResourceSlot`, `HeapBox`/`HeapArray` with explicit heaps) apply here. Nothing allocates through the implicit current-heap `operator new`.
+* **Container reader** behind `JKRArchive`. The four mount classes (Mem/Dvd/Aram/Comp) keep their roles and memory behaviour, but read `.nfa` instead of RARC. The ownership rules from the RARC design apply here: `ResourceSlot`, built on `nf::Box`/`nf::BoxArray` from [memory-design.md](memory-design.md), which replace the earlier `HeapBox`/`HeapArray` names. Nothing allocates through the implicit current-heap `operator new`.
 * **DVD layer:** `DVDConvertPathToEntrynum` and friends resolve paths against the baked tree through a lookup table. Entry numbers become indices into that table, which matches the earlier decision that disc offsets become lookup keys. The SDL3 platform layer provides the file I/O.
 * **Per format:** each loader switches to the baked struct when its format is converted. Formats not converted yet fail loudly when fetched in a debug build (raw big-endian tag).
 
