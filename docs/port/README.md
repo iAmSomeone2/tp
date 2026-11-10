@@ -34,6 +34,7 @@ The console figures are approximate and only here for context. The important asy
 | [shader-analysis.md](shader-analysis.md) | Finding every GX shader configuration statically (disc data + a small set of code transforms) so GXM programs can be precompiled: method, pseudocode IR, results, next steps. Tools in `tools/gx_shaders/`. |
 | [shader-survey.md](shader-survey.md) | *Generated* from the user's disc by `tools/gx_shaders/scan.py`: distinct shader programs per canonicalisation level, coverage, shared patterns. |
 | [shader-code-paths.md](shader-code-paths.md) | *Generated* from the source by `tools/gx_shaders/gxcalls.py`: GX state set by code, per draw site, and the programs it implies. |
+| [memory-model.md](memory-model.md) | Survey of the memory model: boot heap split, heap types, lifetime tiers, sizes measured on the console, the ambient current-heap allocator, alignment, ARAM, and the requirements for the new design. |
 | [bake.md](bake.md) | Design of the offline asset bake: decisions, what is on the disc, the `.nfa` container, the format-header rules (C++ headers as the single source, `bindgen` for the Rust tool), order of work, testing. |
 | [vita-tex-fmts.md](vita-tex-fmts.md) | GXM texture formats (from the vitasdk docs) and the lossless mapping from every GX texture format, used by the planned bake tool. |
 | [roadmap.md](roadmap.md) | Phased plan, milestones, risks, and open decisions. |
