@@ -56,6 +56,43 @@ Of the 1,843 archives, 1,778 are Yaz0-compressed as a whole. Inside them are **2
 | `.bfn` fonts | 3 | 0.2 MiB | `JUTResFont` |
 | `.csw`, `.bct`, `.bin`, `.txt`, `.csv` | 39 | ~1 MiB | to be identified |
 
+### Audio streams
+
+What the game's streams need (headers of all 127 `.ast` files, read from the disc):
+
+| | Value |
+|---|---|
+| Codec | DSP-ADPCM (4-bit) in all 127; none use the PCM16 variant |
+| Channels | stereo in 126, mono in 1 (`e_ganon_d02.ast`) |
+| Sample rate | 44.1 kHz in all |
+| Length | 134.8 minutes in total, about 49 KiB/s |
+| Looping | 58 streams loop. In all 58 the loop runs from `loop_start` to the very end; in 57 of them `loop_start` is mid-stream (sample-exact) |
+| Concurrency | **One stream at a time.** The audio manager creates a single ARAM stream buffer (`JAUStreamStaticAramMgr_<1>`, `Z2AudioMgr.cpp:93`). |
+
+Nothing needs more than stereo; `JASAramStream`'s `CHANNEL_MAX = 6` is never used. The wave banks (`.aw`) behind the sequenced music and sound effects are a different case. They hold short instrument and effect samples, which the mixer plays as many simultaneous, pitch-shifted and looped voices. They stay with the software mixer in their own format, and none of the following applies to them.
+
+**Plan:**
+
+1. **MVP: keep DSP-ADPCM.** The bake swaps only the header and block-header fields (sizes, loop points, per-channel ADPCM history); the 4-bit sample data has no byte order. Decoding costs a few operations per sample. It is lossless with respect to the disc. Loops stay sample-exact the way the original does it, by streaming with `JASAramStream`'s ADPCM history handling, so no RAM cache is needed.
+2. **Later: Opus.** This happens once a benchmark on the Vita confirms the decode cost; it's expected to be a few percent of one core for the single stereo stream.
+   * **Size:** 96–128 kbit/s stereo is close to transparent at about 12–16 KiB/s, so the 381 MiB of streams shrink to roughly 100 MiB.
+   * **One decoder everywhere:** libopus (BSD licence, NEON-optimised for ARMv7) runs on the dev PC, the Mac and the Vita alike.
+   * **Sample rate:** libopus outputs only 8/12/16/24/48 kHz, so the bake resamples to 48 kHz and scales the loop points. It resamples the loop body as a circular signal, so the end runs straight into the loop start. The software mixer resamples anyway.
+   * **Exact loops:** after a seek, Opus needs about 80 ms of decoding before its output is correct (RFC 7845's recommended pre-roll). The bake stores, per track, the packet to restart from and how many samples to discard to reach `loop_start` exactly.
+   * **Storage:** raw Opus packets in the `.nfa` entry, with a packet table and the loop data. No Ogg container, so the engine has nothing to parse.
+   * **Lossy on top of lossy**, unlike the lossless texture rule, but inaudible at these bitrates.
+3. **Optional loop cache.** The developer can guarantee a 256 MiB RAM budget on the Vita, and only one looping track ever plays at a time. So the current track can be kept in RAM, which makes the seek to the loop's restart point a memory access. Its cost per format, for the largest looping track (`demo35.ast`, 5.4 minutes) and the median one:
+
+   | Track kept resident as | Worst case | Median |
+   |---|---:|---:|
+   | 16-bit stereo PCM, fully decoded | 54.8 MiB | 13.6 MiB |
+   | DSP-ADPCM (as on disc) | 15.4 MiB | ~4 MiB |
+   | Opus at 128 kbit/s | ~5 MiB | ~1.3 MiB |
+
+   The next largest looping tracks as PCM are 30.9, 30.1 and 26.2 MiB. Keeping the track compressed and decoding while playing costs a fraction of the memory of a PCM cache and still loops exactly.
+
+**Considered and set aside: the Vita's hardware decoders** (ATRAC9, MP3, AAC, CELP). From the developer's tests, MP3 and AAC handle VBR up to 256 kbit/s stereo. Some VBR AAC files peaking above 256 kbit/s played and others didn't, so the limit may be in the music player app rather than the hardware. The SDK docs give no channel limits for AAC and ATRAC9, but stereo is all the streams need. These decoders have the same exact-loop issue as Opus. They exist only on the Vita, though, so the dev PC and Mac would need a second, software decode path. ATRAC9 also seems to need Sony's encoder, which the open toolchain doesn't include. AAC at 256 kbit/s would also be about twice the size of Opus at a similar quality.
+
 ## Pipeline
 
 ```
@@ -153,7 +190,7 @@ The bake and the engine move one format at a time. Each step ends with the engin
 | **3. Stage and collision** | `.dzs`/`.dzr` chunks, `.dzb`, `.kcl`, `.plc`, map paths, BG parts, event `.dat`. | Stage chunk handlers, `cBgS`/`dBgW`, `dBgWKCol`, `dMpath_c`, `d_event_data` on offsets instead of relocated pointers (fixes pattern B and `StaffWork`). | A full stage (`F_SP103`, Ordon Village) loads without asserts. |
 | **4. J3D** | `.bmd`/`.bdl` blocks, all animation types, `.bls`. Display lists (`SHP1`) and vertex arrays converted to little-endian. Whether to decode them into native buffers instead depends on the GX layer design. | `J3DModelLoader` and friends on `u32` offsets (fixes pattern A). | Every model and animation on the disc loads; joint/material counts match a disc-side parse. |
 | **5. The rest** | `.jpc`, `.stb`, the unidentified formats (`.csw`, `.bct`, …). | `JPA*`, `JStudio`. | The bake report shows no raw files outside audio. |
-| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast`. Whether sample data stays DSP-ADPCM or becomes PCM is decided together with the software mixer. | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
+| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast` (headers little-endian; stream samples stay DSP-ADPCM in the MVP, Opus later, see *Audio streams* above). Whether the mixer's wave samples are decoded to PCM in the bake is decided together with the software mixer. | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
 
 ## Testing
 
@@ -167,6 +204,6 @@ The bake and the engine move one format at a time. Each step ends with the engin
 
 1. **Compression** for Vita storage (LZ4/zstd per member or per archive), and whether a Vita bake also swizzles textures (`SCE_GXM_TEXTURE_SWIZZLED`). These would be per-target options on top of the one format; the layout rule stays.
 2. **J3D display lists:** keep GX command streams (little-endian) for a GX-compatible layer, or decode them into vertex and index buffers in the bake. This is decided with the GX layer.
-3. **Audio sample format** (DSP-ADPCM vs. PCM), decided with the software mixer.
+3. **Audio:** streams stay DSP-ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Still open: whether the stream is kept resident (loop cache), and whether wave-bank samples become PCM. Both are decided with the software mixer.
 4. **Memory model:** the container's load policy (preload to main RAM/ARAM/DVD) and the `ResourceSlot` heaps depend on the planned memory-model survey and design.
 5. **Unidentified formats** (`.csw`, `.bct`, the `.dat`/`.bin` tables): identify their loaders before step 5.
