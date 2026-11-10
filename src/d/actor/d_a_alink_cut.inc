@@ -836,13 +836,13 @@ void daAlink_c::initCutAtnActorSearch() {
         mProcVar4.field_0x3010 = 0;
     }
 
-    field_0x32cc = (uintptr_t)mTargetedActor;
+    field_0x32cc = fopAcM_GetID(mTargetedActor);
 }
 
 void daAlink_c::checkCutAtnActorChange() {
-    if (field_0x32cc != (uintptr_t)mTargetedActor) {
+    if (field_0x32cc != fopAcM_GetID(mTargetedActor)) {
         mProcVar4.field_0x3010 = 0;
-        field_0x32cc = (uintptr_t)mTargetedActor;
+        field_0x32cc = fopAcM_GetID(mTargetedActor);
     }
 }
 

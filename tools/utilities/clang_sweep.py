@@ -63,12 +63,15 @@ def classify(msg):
 
 def run_one(args, path):
     cmd = [
-        args.cxx, f"-std={args.std}", "-fsyntax-only", "-fdeclspec", "-w", "-fno-caret-diagnostics",
-        "-ferror-limit=0", f"-DVERSION={args.version}",
+        args.cxx, f"-std={args.std}", "-fsyntax-only", "-w", f"-DVERSION={args.version}",
         "-I", "include", "-I", "src", "-I", "libs/JSystem/include",
         "-I", "libs/dolphin/include", "-I", "libs/dolphin/include/dolphin",
         "-I", f"assets/{args.asset_version}",
     ]
+    if "clang" in os.path.basename(args.cxx):
+        cmd += ["-fdeclspec", "-fno-caret-diagnostics", "-ferror-limit=0"]
+    else:  # GCC spellings
+        cmd += ["-fno-diagnostics-show-caret", "-fmax-errors=0"]
     cmd += [f"-D{d}" for d in args.define]
     cmd.append(path)
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)

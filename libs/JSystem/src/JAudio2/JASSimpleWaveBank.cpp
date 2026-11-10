@@ -44,7 +44,7 @@ int JASSimpleWaveBank::TWaveHandle::getWavePtr() const {
     if (base == NULL) {
         return 0;
     }
-    return (intptr_t)base + mWaveInfo.mOffsetStart;
+    return (int)((uintptr_t)base + mWaveInfo.mOffsetStart);  // an ARAM address (u32), see JASKernel::setupAramHeap
 }
 
 JASSimpleWaveBank::TWaveHandle::TWaveHandle() {

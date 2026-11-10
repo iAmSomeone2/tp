@@ -8,7 +8,8 @@
 // Why these tests exist
 // ---------------------
 // That integer used to be a u32, which cannot hold a command address on a 64-bit host. The
-// argument, the callback type and the command's `mAddress` field are now uintptr_t.
+// argument and the callback type are now uintptr_t. (The command's `mAddress` field is an ARAM
+// address and stays u32.)
 //
 // What these tests cannot do
 // --------------------------
@@ -40,8 +41,10 @@ void Receive(uintptr_t argument) { gReceived.push_back(argument); }
 // The callback's parameter is pointer-sized.
 static_assert(std::is_same_v<decltype(JKRADCommand::mCallback), void (*)(uintptr_t)>,
               "an async-load callback must receive a pointer-sized argument, not a u32");
-static_assert(sizeof(decltype(JKRADCommand::mAddress)) >= sizeof(void*),
-              "mAddress holds an address and must be pointer-sized");
+// mAddress is an ARAM address, not a host pointer: ARAM is a u32-addressed emulated buffer (see
+// docs/port/compiler-fixes.md item 19), and it is filled from JKRAramBlock::getAddress().
+static_assert(std::is_same_v<decltype(JKRADCommand::mAddress), u32>,
+              "mAddress is a u32 ARAM address");
 
 // A command's address survives being passed through the callback argument and back.
 TEST(JKRDvdAramRipper, CallbackArgumentRoundTripsACommandAddress) {
