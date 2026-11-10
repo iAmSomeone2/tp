@@ -88,7 +88,7 @@ JASAramStream::JASAramStream() {
     }
 }
 
-void JASAramStream::init(uintptr_t aramAddress, u32 aramSize, StreamCallback i_callback, void* i_callbackData) {
+void JASAramStream::init(u32 aramAddress, u32 aramSize, StreamCallback i_callback, void* i_callbackData) {
     JUT_ASSERT(153, sReadBuffer != NULL);
     mAramAddress = aramAddress;
     mAramSize = aramSize;

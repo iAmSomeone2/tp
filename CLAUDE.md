@@ -8,7 +8,9 @@ A fork of the [zeldaret/tp](https://github.com/zeldaret/tp) matching decompilati
 
 ## Working agreement
 
-The user does the development work themselves. **Edit source files only when explicitly asked.** Only assume the user wants you to make edits if you can determine their intention beyond a reasonable doubt; otherwise, ask! Keeping `docs/` (and the generator scripts under `tools/utilities/`) up to date is always fine. Commit and push only when asked.
+Treat sessions as collaborative work handled between yourself and your partner, the developer. Assume that they are an experienced software engineer and approach your working relationship as such.
+
+**Always discuss non-trivial code work with your partner before making any changes!** The scale of this project makes it paramount that any serious work have a solid plan to back it up. You must always develop a plan for non-trivial work with your partner before executing it. Keeping `docs/` (and the generator scripts under `tools/utilities/`) up to date on your own is always fine. Commit and push only when asked.
 
 ## New code: Nightfall (`nf`)
 
@@ -43,7 +45,7 @@ cmake --preset default -DTP_BUILD_TESTS=ON && ctest --test-dir build/cmake/defau
 python3 tools/utilities/gen_cmake_sources.py [--check]       # regenerate / verify the sources.cmake lists
 ```
 
-Status: 1,275 of 1,280 TUs compile with clang 22 without a disc image. The five that do not are four that need generated `assets/*.h` (the `tp_generate_assets` target makes them when a disc image is present) plus `d_a_movie_player` (PPC-asm-only pointer casts, left alone on purpose and removed from `tp_actors` in `src/d/actor/CMakeLists.txt`). The `types.h` typedefs are fixed-width (32-bit `u32`/`s32`, needed for 64-bit Linux) and the pointer-cast fallout of that change is fixed too; see `docs/port/compiler-fixes.md`. The executable target `tp` (`src/m_Do/`, entry point `m_Do_main.cpp`) is defined but cannot link yet (no SDK implementation; ~365 undefined symbols, mostly `PSMTX`/`PSVEC`, `GX*` and `OS*`); the unit tests link the real libraries. With a disc image, GCC 16.2 and clang 22 both compile 1,279 of 1,280 (only `d_a_movie_player` fails), and all 75 unit tests pass with both.
+Status: 1,275 of 1,280 TUs compile with clang 22 without a disc image. The five that do not are four that need generated `assets/*.h` (the `tp_generate_assets` target makes them when a disc image is present) plus `d_a_movie_player` (PPC-asm-only pointer casts, left alone on purpose and removed from `tp_actors` in `src/d/actor/CMakeLists.txt`). The `types.h` typedefs are fixed-width (32-bit `u32`/`s32`, needed for 64-bit Linux) and the pointer-cast fallout of that change is fixed too; see `docs/port/compiler-fixes.md`. The executable target `tp` (`src/m_Do/`, entry point `m_Do_main.cpp`) is defined but cannot link yet (no SDK implementation; ~365 undefined symbols, mostly `PSMTX`/`PSVEC`, `GX*` and `OS*`); the unit tests link the real libraries. With a disc image, GCC 16.2 and clang 22 both compile 1,279 of 1,280 (only `d_a_movie_player` fails), and all 76 unit tests pass with both.
 
 Tests (GoogleTest, `-DTP_BUILD_TESTS=ON`) mirror the source tree without the `src`/`include` levels, e.g. `tests/JSystem/JMessage/` for `libs/JSystem/src/JMessage/`; add new ones with `tp_add_test()` in that directory's `CMakeLists.txt`. They link the real engine libraries, leniently, since the SDK implementation is not built (stand-ins for what they execute are in `tests/support/`). `src/nightfall/platform/` (`nf_platform`) holds the host definitions of SDK globals that the Dolphin headers only declare outside Metrowerks. See `docs/port/cmake.md`.
 
@@ -52,6 +54,7 @@ Port-analysis scripts (host clang, no disc image needed); each takes a minute or
 ```sh
 python3 tools/utilities/clang_sweep.py --report docs/port/compile-sweep.md        # how many of the CMake build's TUs parse with stock clang (--all-files: every .cpp)
 python3 tools/utilities/dup_symbol_check.py --report docs/port/duplicate-symbols.md  # symbols that would collide in a static link
+python3 tools/utilities/ptr_trunc_check.py --report docs/port/pointer-truncation.md  # pointer-sized ints narrowed to 32 bits (needs a configured CMake build)
 python3 tools/utilities/port_survey.py                                            # writes docs/port/survey-data.md
 python3 tools/utilities/gen_actor_index.py                                        # writes docs/actor-index.md
 ```

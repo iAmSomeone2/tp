@@ -23,7 +23,7 @@ public:
     /* 0x20 */ int field_0x20;
     /* 0x24 */ int field_0x24;
     /* 0x28 */ JKRDvdFile* mDvdFile;
-    /* 0x2C */ uintptr_t mAddress;
+    /* 0x2C */ u32 mAddress;  // ARAM address
     /* 0x30 */ JKRAramBlock* mBlock;
     /* 0x34 */ JKRExpandSwitch mExpandSwitch;
     /* 0x38 */ void (*mCallback)(uintptr_t);

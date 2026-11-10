@@ -783,15 +783,15 @@ void JKRExpHeap::recycleFreeBlock(JKRExpHeap::CMemBlock* block) {
 }
 
 void JKRExpHeap::joinTwoBlocks(CMemBlock* block) {
-    u32 endAddr = (uintptr_t)(block + 1) + block->size;
+    uintptr_t endAddr = (uintptr_t)(block + 1) + block->size;
     CMemBlock* next = block->mNext;
-    u32 nextAddr = (uintptr_t)next - (next->mFlags & 0x7f);
+    uintptr_t nextAddr = (uintptr_t)next - (next->mFlags & 0x7f);
     if (endAddr > nextAddr) {
         JUTWarningConsole_f(":::Heap may be broken. (block = %x)", block);
         OS_REPORT(":::block = %x\n", block);
         OS_REPORT(":::joinTwoBlocks [%x %x %x][%x %x %x]\n", block, block->mFlags, block->size, block->mNext, block->mNext->mFlags, block->mNext->size);
-        OS_REPORT(":::: endAddr = %x\n", endAddr);
-        OS_REPORT(":::: nextAddr = %x\n", nextAddr);
+        OS_REPORT(":::: endAddr = %p\n", (void*)endAddr);
+        OS_REPORT(":::: nextAddr = %p\n", (void*)nextAddr);
         JKRHeap* heap = JKRGetCurrentHeap();
         heap->dump();
         JUTException::panic(__FILE__, 1820, "Bad Block\n");

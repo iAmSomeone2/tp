@@ -19,7 +19,7 @@ class JKRDecompCommand;
  */
 class JKRAMCommand {
 public:
-    typedef void (*AsyncCallback)(u32);
+    typedef void (*AsyncCallback)(uintptr_t);
 
     JKRAMCommand();
     ~JKRAMCommand();
@@ -31,8 +31,9 @@ public:
 
     /* 0x40 */ s32 mTransferDirection;
     /* 0x44 */ u32 mDataLength;
-    /* 0x48 */ u32 mSrc;
-    /* 0x4C */ u32 mDst;
+    // One is an ARAM address (u32), the other a main-RAM pointer, depending on mTransferDirection.
+    /* 0x48 */ uintptr_t mSrc;
+    /* 0x4C */ uintptr_t mDst;
     /* 0x50 */ JKRAramBlock* mAramBlock;
     /* 0x54 */ u32 field_0x54;
     /* 0x58 */ AsyncCallback mCallback;
@@ -67,15 +68,15 @@ public:
     static JSUList<JKRAMCommand> sAramPieceCommandList;
 
 public:
-    static JKRAMCommand* prepareCommand(int, u32, u32, u32, JKRAramBlock*,
+    static JKRAMCommand* prepareCommand(int, uintptr_t, uintptr_t, u32, JKRAramBlock*,
                                         JKRAMCommand::AsyncCallback);
     static void sendCommand(JKRAMCommand*);
 
-    static JKRAMCommand* orderAsync(int, u32, u32, u32, JKRAramBlock*, JKRAMCommand::AsyncCallback);
+    static JKRAMCommand* orderAsync(int, uintptr_t, uintptr_t, u32, JKRAramBlock*, JKRAMCommand::AsyncCallback);
     static BOOL sync(JKRAMCommand*, int);
-    static BOOL orderSync(int, u32, u32, u32, JKRAramBlock*);
+    static BOOL orderSync(int, uintptr_t, uintptr_t, u32, JKRAramBlock*);
     static void startDMA(JKRAMCommand*);
-    static void doneDMA(u32);
+    static void doneDMA(uintptr_t);
 
 private:
     static void lock() { OSLockMutex(&mMutex); }

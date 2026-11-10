@@ -119,7 +119,7 @@ s32 JKRDvdFile::sync(void) {
     OSReceiveMessage(&mMessageQueue2, &message, 1);
     mOSThread = NULL;
     OSUnlockMutex(&mMutex1);
-    return (intptr_t)message;
+    return (s32)(intptr_t)message;  // the message carries a result code, not a pointer
 }
 
 void JKRDvdFile::doneProcess(s32 id, DVDFileInfo* fileInfo) {

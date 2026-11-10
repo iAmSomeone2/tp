@@ -71,7 +71,7 @@ int J3DDrawBuffer::entryMatSort(J3DMatPacket* pMatPacket) {
     if (texNo == 0xFFFF) {
         hash = 0;
     } else {
-        hash = ((uintptr_t)pTexture->getResTIMG(texNo) + pTexture->getResTIMG(texNo)->imageOffset) >> 5;
+        hash = (u32)(((uintptr_t)pTexture->getResTIMG(texNo) + pTexture->getResTIMG(texNo)->imageOffset) >> 5);  // bucket hash; truncation is fine
     }
     u32 slot = hash & (mEntryTableSize - 1);
 

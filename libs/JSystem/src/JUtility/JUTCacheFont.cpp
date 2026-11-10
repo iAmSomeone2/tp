@@ -350,8 +350,10 @@ void JUTCacheFont::getGlyphFromAram(JUTCacheFont::TGlyphCacheInfo* param_0,
     pGylphCacheInfo->field_0xa = pGylphCacheInfo->field_0xa < local_30 ? pGylphCacheInfo->field_0xa : local_30;
     *param_3 = iVar2;
     *r30 -= iVar2 * iVar3;
+    // The block's first word (GLY1::magic) was overwritten with its ARAM address when it was
+    // uploaded (see the ARAM setup above); read it as that, not through the TGlyphCacheInfo overlay.
     u8* result =
-        JKRAramToMainRam(reinterpret_cast<uintptr_t>(param_0->mPrev) + pGylphCacheInfo->field_0x10 * iVar2, pCachePage->mImage,
+        JKRAramToMainRam(reinterpret_cast<ResFONT::GLY1*>(param_0)->magic + pGylphCacheInfo->field_0x10 * iVar2, pCachePage->mImage,
                          pGylphCacheInfo->field_0x10, EXPAND_SWITCH_UNKNOWN0, 0, NULL, 0xffffffff, NULL);
     JUT_ASSERT(624, result);
     GXInitTexObj(&pCachePage->mTexObj, pCachePage->mImage, pGylphCacheInfo->mWidth, pGylphCacheInfo->mHeight,

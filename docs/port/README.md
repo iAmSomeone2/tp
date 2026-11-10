@@ -36,6 +36,7 @@ The console figures are approximate and only here for context. The important asy
 | [shader-code-paths.md](shader-code-paths.md) | *Generated* from the source by `tools/gx_shaders/gxcalls.py`: GX state set by code, per draw site, and the programs it implies. |
 | [roadmap.md](roadmap.md) | Phased plan, milestones, risks, and open decisions. |
 | [survey-data.md](survey-data.md) | *Generated.* Full tables behind the numbers in these pages. |
+| [pointer-truncation.md](pointer-truncation.md) | *Generated* by `ptr_trunc_check.py`. Every place a pointer-sized integer is narrowed to 32 bits (a 64-bit-host problem only). |
 | [compile-sweep.md](compile-sweep.md) | *Generated.* Per-file results of the modern-compiler sweep. |
 | [cmake.md](cmake.md) | The host-agnostic CMake/Ninja build of the GameCube engine: layout, options, flag mapping from `configure.py`, status, known gaps. |
 | [compiler-fixes.md](compiler-fixes.md) | Hand-written punch list for getting the tree to compile on stock Clang and GCC (file, line, suggested fix). |

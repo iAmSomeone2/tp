@@ -268,13 +268,13 @@ namespace JASKernel {
     void setupRootHeap(JKRSolidHeap*, u32);
     JKRHeap* getSystemHeap();
     JASMemChunkPool<1024, JASThreadingModel::ObjectLevelLockable>* getCommandHeap();
-    void setupAramHeap(uintptr_t, uintptr_t);
+    void setupAramHeap(u32, u32);
     JASHeap* getAramHeap();
     u32 getAramFreeSize();
     u32 getAramSize();
 
     extern JASHeap audioAramHeap;
-    extern uintptr_t sAramBase;
+    extern u32 sAramBase;
     extern JKRHeap* sSystemHeap;
     extern JASMemChunkPool<1024, JASThreadingModel::ObjectLevelLockable>* sCommandHeap;
 };

@@ -250,8 +250,8 @@ void JKRSolidHeap::state_register(JKRHeap::TState* p, u32 id) const {
     void* r28 = getState_(p);
     setState_u32ID_(p, id);
     setState_uUsedSize_(p, getUsedSize((JKRSolidHeap*)this));
-    u32 r29 = (uintptr_t)mSolidHead;
-    r29 += (uintptr_t)mSolidTail * 3;
+    u32 r29 = (u32)(uintptr_t)mSolidHead;  // check code only; truncation is fine
+    r29 += (u32)(uintptr_t)mSolidTail * 3;
     setState_u32CheckCode_(p, r29);
 }
 

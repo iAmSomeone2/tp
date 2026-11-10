@@ -18,8 +18,10 @@
 // the instantiation below would catch.
 //
 // Addresses: nothing here is ever dereferenced, so the tests hand the manager made-up root
-// addresses, one below 4 GiB (what the GameCube would have) and one above (what a 64-bit host
-// produces for ordinary memory).
+// addresses, one below 4 GiB and one above. In the game the stream heap is the ARAM heap, whose
+// addresses are u32 (ARAM is a u32-addressed emulated buffer; JAIStream narrows them on purpose,
+// see docs/port/compiler-fixes.md item 19). The manager itself is generic over JASHeap, so it is
+// still checked with a wide address.
 //
 // How it is built: the manager is a header-only template, and JASHeap (what it allocates from) is
 // the real JAudio2 code, linked (see tests/JSystem/CMakeLists.txt).

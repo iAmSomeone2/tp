@@ -2789,7 +2789,7 @@ int daNpcChat_c::Execute() {
 
     J3DModelData* a_mdlData_p = mAnm_p->getModel()->getModelData();
     J3DJointCallBack callBack = a_mdlData_p->getJointNodePointer(0)->getCallBack();
-    u32 userArea = mAnm_p->getModel()->getUserArea();
+    uintptr_t userArea = mAnm_p->getModel()->getUserArea();
     for (u16 i = 0; i < a_mdlData_p->getJointNum(); i++) {
         a_mdlData_p->getJointNodePointer(i)->setCallBack(ctrlJointCallBack);
     }

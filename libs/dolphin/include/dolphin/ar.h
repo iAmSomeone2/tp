@@ -7,15 +7,16 @@
 extern "C" {
 #endif
 
-typedef void (*ARQCallback)(u32 pointerToARQRequest);
+typedef void (*ARQCallback)(uintptr_t pointerToARQRequest);
 
 struct ARQRequest {
     /* 0x00 */ struct ARQRequest *next;
     /* 0x04 */ u32 owner;
     /* 0x08 */ u32 type;
     /* 0x0C */ u32 priority;
-    /* 0x10 */ u32 source;
-    /* 0x14 */ u32 dest;
+    // One of source/dest is an ARAM address (u32), the other a main-RAM pointer, depending on type.
+    /* 0x10 */ uintptr_t source;
+    /* 0x14 */ uintptr_t dest;
     /* 0x18 */ u32 length;
     /* 0x1C */ ARQCallback callback;
 };
@@ -41,7 +42,7 @@ typedef struct ARQRequest ARQRequest;
 // AR
 ARQCallback ARRegisterDMACallback(ARQCallback callback);
 u32 ARGetDMAStatus(void);
-void ARStartDMA(u32 type, u32 mainmem_addr, u32 aram_addr, u32 length);
+void ARStartDMA(u32 type, uintptr_t mainmem_addr, u32 aram_addr, u32 length);
 u32 ARAlloc(u32 length);
 u32 ARFree(u32* length);
 BOOL ARCheckInit(void);
@@ -56,7 +57,7 @@ void ARClear(u32 flag);
 // ARQ
 void ARQInit(void);
 void ARQReset(void);
-void ARQPostRequest(ARQRequest* request, u32 owner, u32 type, u32 priority, u32 source, u32 dest, u32 length, ARQCallback callback);
+void ARQPostRequest(ARQRequest* request, u32 owner, u32 type, u32 priority, uintptr_t source, uintptr_t dest, u32 length, ARQCallback callback);
 void ARQRemoveRequest(ARQRequest* request);
 void ARQRemoveOwnerRequest(u32 owner);
 void ARQFlushQueue(void);

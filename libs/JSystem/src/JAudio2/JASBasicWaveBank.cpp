@@ -131,5 +131,5 @@ int JASBasicWaveBank::TWaveHandle::getWavePtr() const {
     if (base == 0) {
         return 0;
     }
-    return (intptr_t)base + field_0x4.mOffsetStart;
+    return (int)((uintptr_t)base + field_0x4.mOffsetStart);  // an ARAM address (u32), see JASKernel::setupAramHeap
 }
