@@ -6,7 +6,7 @@ The good news, established by scanning the code ([survey-data.md](survey-data.md
 
 * Game logic almost never touches raw file bytes. Of ~2,420 resource-fetch calls (`dComIfG_getObjectRes`, `dComIfG_getStageRes`, `JKRGetResource`, …), ~86% return **J3D models and animations**, which are parsed by a handful of loaders in `J3DGraphLoader`. Another ~7% are collision meshes (`cBgD_t`, 110 calls in 90 files, all consumed through `dBgW`) and textures (`ResTIMG`, 65). Only ~50 hand raw structs to game code (`dKy_*` tables, map parameters, bank/name tables, a few `u8` blobs).
 * **All in-memory game state is endian-neutral C++** (fields are read and written as native values), including the save struct.
-* Structs that embed *offsets* or pointer-sized integers (e.g. `ResTIMG::imageOffset` is a `uintptr_t`) keep their layout on 32-bit ARM. That would not be true on a 64-bit target.
+* Structs that embed *offsets* or pointer-sized integers (e.g. `ResTIMG::imageOffset` is a `uintptr_t`) keep their layout on 32-bit ARM, but not in the native 64-bit dev builds (Linux, macOS). [file-layout-64bit.md](file-layout-64bit.md) lists every affected format; that layout fix and byte swapping need the same per-format field knowledge.
 
 The work is therefore: **make each format parser produce correct native-endian data**, and re-encode anything the *GPU or audio hardware* would have consumed in a big-endian layout.
 
@@ -62,7 +62,7 @@ The 0x20-byte header is BE (`width`, `height`, `numColors`, offsets). The pixel 
 
 ### Models (`.bmd/.bdl`)
 
-Blocks (`INF1`, `VTX1`, `EVP1`, `DRW1`, `JNT1`, `SHP1`, `MAT3` (or the older `MAT2`), `TEX1`, `MDL3`) each carry BE counts and offsets; offset fields are converted to pointers in place at load (the block structs are declared with `/* 0x.. */` offsets, and pointer fields are pointer-sized on both platforms). Two payloads need special handling:
+Blocks (`INF1`, `VTX1`, `EVP1`, `DRW1`, `JNT1`, `SHP1`, `MAT3` (or the older `MAT2`), `TEX1`, `MDL3`) each carry BE counts and offsets; offset fields are declared as pointers and converted at load (the block structs are declared with `/* 0x.. */` offsets). The pointer-typed fields match the file only on 32-bit targets; see [file-layout-64bit.md](file-layout-64bit.md). Two payloads need special handling:
 
 * **Vertex arrays** (`VTX1`): typed arrays (`f32`, `s16` fixed-point, `u8` colours). Swap according to the array's component type (`GXCompType`) as recorded in the vertex-attribute table.
 * **Shape display lists** (`SHP1`): raw **GX command streams** (primitive opcode, BE vertex count, then per-vertex data whose element widths depend on the VCD/VAT). These are consumed by the GPU. Either (a) keep them in BE and interpret them with a GX command decoder that reads BE ([graphics.md](graphics.md)), or (b) decode once at load into native vertex/index buffers (preferred for performance).
