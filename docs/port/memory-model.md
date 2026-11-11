@@ -101,7 +101,15 @@ Pointers into these heaps are handed around freely (e.g. `getResource` returns a
 
 ## ARAM
 
-* **Audio (10 MiB):** the JAudio2 ARAM heap (`JASKernel::setupAramHeap`), wave banks, the single stream buffer.
+* **Audio (10 MiB):** the JAudio2 ARAM heap (`JASKernel::setupAramHeap`, `JASHeapCtrl.cpp:316`). Measured on GZ2E01:
+
+  | Contents | Size | Loaded |
+  |---|---|---|
+  | Resident wave banks: `Z2SeWave_0` (4.70 MiB), `Z2BgmWave_0` (1.89 MiB), `Z2SeWave_88` or `_89` (~420 KiB) | ~7 MiB | once at boot (`Z2SceneMgr::loadStaticWaves`) |
+  | Per-area wave banks: up to 2 sound-effect, 2 music and 1 cutscene bank, chosen per stage by `Z2SceneMgr` | the remaining ~3 MiB | on area change; Z2 stops all sound effects, erases the old banks, loads the new ones |
+  | Stream ring buffer: 20 blocks of 0x2760 bytes (`Z2AudioMgr.cpp:93`, `JAUInitializer.cpp:28`) | 197 KiB (~4 s of stereo ADPCM) | filled continuously by the audio DVD thread |
+
+  The disc has 232 wave archives (148 MiB, median 565 KiB). Voices are given ARAM addresses, not pointers: `getWavePtr()` (bank base plus wave offset) goes into `JASChannel::mWaveAramAddress` and through `JASDsp::TChannel::setWaveInfo` to the DSP, which reads and decodes the ADPCM straight from ARAM; `JASAramStream` gives each stream channel an address in its ring buffer. On the Wii, which has no ARAM, Nintendo's `aralt` library (`libs/revolution/src/aralt/aralt.c`) emulates the same API in MEM2 with copies.
 * **Graphics (the rest, about 6 MiB):** archives mounted with `MOUNT_ARAM` by the logo scene (`d_s_logo.cpp:1443-1501`). Measured on GZ2E01:
 
   | Archive(s) | Files | Stored in ARAM | All files decompressed |

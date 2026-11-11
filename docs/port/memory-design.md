@@ -110,7 +110,7 @@ This is where Rust's lifetimes are approximated at run time, since C++ cannot ch
 
 * **Per platform:** the root reservation, the size of each fixed heap, the ARAM size and the arena chunk sizes come from a per-platform configuration table instead of the constants in `mDoMch_Create` (R3).
 * **Counting:** `nf::Budget` counts the bytes used per tier, so the game's memory use can be read per tier on every platform.
-* **Console-budget mode** (hosts, optional): enforces the Vita's limits, so a regression shows up on the dev PC instead of on the device. With 512 MiB on the Vita and the developer's guaranteed 256 MiB budget, the Vita's own limits are generous; the main purpose is catching leaks and unbounded growth.
+* **Console-budget mode** (hosts, optional): enforces the Vita's limits, so a regression shows up on the dev PC instead of on the device. With 358 MiB of user memory and 112 MiB of CDRAM for the app ([vita-storage.md](vita-storage.md#memory)), the Vita's own limits are generous; the main purpose is catching leaks and unbounded growth.
 
 ### Resident set and cache tier
 
@@ -122,7 +122,14 @@ TP uses ARAM as a cache: archives are loaded once and copied into main RAM when 
 * **Resident set.** What the logo scene mounts to ARAM today (about 25 archives, 6.8 MiB decompressed on GZ2E01, see [memory-model.md](memory-model.md#aram)) becomes pinned cache entries that are never evicted. Graphics stop using the ARAM pool: these archives live in main memory and callers keep using `readResource`/`getResource` (option B from the ARAM discussion). The few places that know an archive is an ARAM archive change: `dLib_getExpandSizeFromAramArchive` (`d_lib.cpp:277`, 4 callers), `d_s_play.cpp:921`, and the mount helpers in `d_s_logo.cpp`/`m_Do_dvd_thread.cpp`.
 * **Compressed entries** (LZ4HC, ratio 1.70 on the benchmark corpus) are cached as read and decompressed once into the destination heap, at about 62 MiB/s on one core. That replaces today's copy out of ARAM, so it adds no copy, and the cache holds 1.7× as much per MiB.
 * **Reading in place later (option C).** Once formats are baked, consumers can point into the loaded archive instead of copying, starting with Link's animations (`daPy_anmHeap_c`). This works for entries loaded uncompressed into a heap.
-* **Audio** keeps the `u32`-addressed ARAM pool, emulated as a main-memory block with `memcpy` transfers, until the audio work replaces it.
+* **Audio keeps its ARAM pool, emulated** (decided 2026-11-11). For audio, ARAM is where samples live while they play, not a cache, and JAudio2 addresses it by `u32` offset throughout ([memory-model.md](memory-model.md#aram)). The same approach Nintendo used on the Wii (`aralt`):
+  * The pool is one main-memory block. ARAM addresses stay `u32` offsets into it, transfers become `memcpy`, and completion callbacks fire in the original order. The software mixer reads a voice's samples at pool base plus `mWaveAramAddress`. Nothing above `JASDSPChannel` changes.
+  * Its size comes from the budget table, defaulting to the console's 10 MiB so Z2's load and erase policy behaves as tuned. Offsets are `u32`, so it can grow without code changes.
+  * Wave banks load through the pack files: `JKRDvdAramRipper::loadToAram` becomes one whole-entry read straight into the bank's pool region (a 2 MiB bank costs about 200 ms at the measured throughput). The cache tier may keep erased banks so re-entering an area doesn't reread them; that holds a bank twice (pool and cache), so the budget decides.
+  * The stream keeps its 197 KiB ring buffer in the pool, filled by about 5 small reads per second; its ~4 s of buffer covers the longest measured single read (`AlAnm`, 370 ms).
+  * Samples stay DSP-ADPCM and the mixer decodes them while playing. The decoder is a few operations per sample, cheaper than the Opus decoding planned for streams; PCM in the pool would make it and every bank read 3.5× larger.
+  * Every mixer read stays inside the pool, so a voice still playing an erased bank reads stale samples, never out of bounds. Debug builds check each voice's address range against the pool.
+  * Tidy-up for step 2: the ARAM heap carries `u32` offsets in `JASHeap`'s `void*` (`JASHeapCtrl.cpp:322`) and in `getWavePtr()`'s `int`. Harmless below 2 GiB; an explicit `u32` address type for the ARAM heap makes it honest.
 
 ### Failure policy
 
@@ -158,7 +165,7 @@ What this buys, and what it doesn't:
 | **3. Separation** | One reservation for all game heaps. Global `operator new`/`delete` go to the host allocator; `delete` is routed by address. | The checker reports 0 for the whole engine. A test shows that standard-library allocations made while a game heap is in use stay outside the reservation. |
 | **4. New heap classes** | `nf::Arena` (chunked) and `nf::GeneralHeap`; `JKRSolidHeap`/`JKRExpHeap` rebuilt on them. The "take all, then shrink" sites move to growing arenas, and the actor heap's estimate becomes a first-chunk hint without the retry. Can run in parallel with step 2. | Unit tests for both classes; existing `JKRExpHeap` tests (including the 4 GiB boundary test) pass on the new implementation. |
 | **5. Owners and budgets** | Lifetime owners per tier, debug fill and generation checks, the per-platform budget table, console-budget mode on the hosts. | A tier's memory is freed by destroying its owner only; a debug build catches use of a freed arena in a test. |
-| **6. ARAM and the cache tier** | Graphics archives move from the ARAM pool to pinned cache entries in main memory (R8), then the cache tier (budget, eviction) in front of archive mounting. Audio keeps the emulated pool. | The logo scene's archives load into main memory and every menu and Link animation still loads; revisiting a stage reads nothing from storage. |
+| **6. ARAM and the cache tier** | Graphics archives move from the ARAM pool to pinned cache entries in main memory (R8), then the cache tier (budget, eviction) in front of archive mounting. Audio keeps the emulated pool, sized from the budget table, with wave banks read from the packs straight into it. | The logo scene's archives load into main memory and every menu and Link animation still loads; revisiting a stage reads nothing from storage. |
 
 ## Interplay with the bake
 

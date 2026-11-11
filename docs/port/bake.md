@@ -81,7 +81,7 @@ Nothing needs more than stereo; `JASAramStream`'s `CHANNEL_MAX = 6` is never use
    * **Exact loops:** after a seek, Opus needs about 80 ms of decoding before its output is correct (RFC 7845's recommended pre-roll). The bake stores, per track, the packet to restart from and how many samples to discard to reach `loop_start` exactly.
    * **Storage:** raw Opus packets in the `.nfa` entry, with a packet table and the loop data. No Ogg container, so the engine has nothing to parse.
    * **Lossy on top of lossy**, unlike the lossless texture rule, but inaudible at these bitrates.
-3. **Optional loop cache.** The developer can guarantee a 256 MiB RAM budget on the Vita, and only one looping track ever plays at a time. So the current track can be kept in RAM, which makes the seek to the loop's restart point a memory access. Its cost per format, for the largest looping track (`demo35.ast`, 5.4 minutes) and the median one:
+3. **Optional loop cache.** The Vita app has 358 MiB of user memory ([vita-storage.md](vita-storage.md#memory)), and only one looping track ever plays at a time. So the current track can be kept in RAM, which makes the seek to the loop's restart point a memory access. Its cost per format, for the largest looping track (`demo35.ast`, 5.4 minutes) and the median one:
 
    | Track kept resident as | Worst case | Median |
    |---|---:|---:|
@@ -222,7 +222,7 @@ The bake and the engine move one format at a time. Each step ends with the engin
 | **3. Stage and collision** | `.dzs`/`.dzr` chunks, `.dzb`, `.kcl`, `.plc`, map paths, BG parts, event `.dat`. | Stage chunk handlers, `cBgS`/`dBgW`, `dBgWKCol`, `dMpath_c`, `d_event_data` on offsets instead of relocated pointers (fixes pattern B and `StaffWork`). | A full stage (`F_SP103`, Ordon Village) loads without asserts. |
 | **4. J3D** | `.bmd`/`.bdl` blocks, all animation types, `.bls`. Display lists (`SHP1`) and vertex arrays converted to little-endian. Whether to decode them into native buffers instead depends on the GX layer design. | `J3DModelLoader` and friends on `u32` offsets (fixes pattern A). | Every model and animation on the disc loads; joint/material counts match a disc-side parse. |
 | **5. The rest** | `.jpc`, `.stb`, the unidentified formats (`.csw`, `.bct`, …). | `JPA*`, `JStudio`. | The bake report shows no raw files outside audio. |
-| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast` (headers little-endian; stream samples stay DSP-ADPCM in the MVP, Opus later, see *Audio streams* above). Whether the mixer's wave samples are decoded to PCM in the bake is decided together with the software mixer. | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
+| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast` (headers little-endian; stream samples stay DSP-ADPCM in the MVP, Opus later, see *Audio streams* above). Wave-bank samples stay DSP-ADPCM; the mixer decodes them while playing ([memory-design.md](memory-design.md#resident-set-and-cache-tier)). | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
 
 ## Testing
 
@@ -236,6 +236,6 @@ The bake and the engine move one format at a time. Each step ends with the engin
 
 1. **Pack layer details** (see *Pack files and the index*): how many packs, and the threshold below which an entry stays uncompressed. Also whether a Vita bake swizzles textures (`SCE_GXM_TEXTURE_SWIZZLED`). These are per-target options on top of the one format; the layout rule stays.
 2. **J3D display lists:** keep GX command streams (little-endian) for a GX-compatible layer, or decode them into vertex and index buffers in the bake. This is decided with the GX layer.
-3. **Audio:** streams stay DSP-ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Still open: whether the stream is kept resident (loop cache), and whether wave-bank samples become PCM. Both are decided with the software mixer.
+3. **Audio:** streams stay DSP-ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Wave-bank samples stay DSP-ADPCM, decoded by the mixer while playing (decided 2026-11-11). Still open: whether the stream is kept resident (loop cache), decided with the software mixer.
 4. **Memory model:** the container's load policy (preload to main RAM/ARAM/DVD) and the `ResourceSlot` heaps depend on the planned memory-model survey and design.
 5. **Unidentified formats** (`.csw`, `.bct`, the `.dat`/`.bin` tables): identify their loaders before step 5.
