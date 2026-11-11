@@ -8,7 +8,8 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTAssert.h"
 #include "JSystem/JUtility/JUTException.h"
-#include <stdint.h>
+#include <limits>
+#include <cstdint>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -188,6 +189,34 @@ void* JKRHeap::alloc(u32 size, int alignment) {
     return mem;
 }
 
+/**
+ * Memory resource API version of `alloc`
+ *
+ * @param bytes count of bytes to allocate
+ * @param alignment
+ * @return pointer to the start of the allocated memory on success.
+ */
+void* JKRHeap::do_allocate(const std::size_t bytes, std::size_t alignment) {
+    // Set alignment to the default if it was set to 0
+    alignment = alignment == 0 ? alignof(std::max_align_t) : alignment;
+    if (alignment >= 128 || (alignment & (alignment - 1)) != 0) {
+        // alignment is too large for this engine or not a power of 2
+        std::abort();
+    }
+
+    if (bytes > std::numeric_limits<uint32_t>::max()) {
+        // Requested size too large for this engine
+        std::abort();
+    }
+
+    void* mem = this->alloc(static_cast<uint32_t>(bytes), static_cast<int>(alignment));
+    if (mem == std::nullptr_t()) {
+        // This method is not allowed to return 'null'
+        std::abort();
+    }
+    return mem;
+}
+
 void JKRHeap::free(void* ptr, JKRHeap* heap) {
     if (!heap) {
         heap = findFromRoot(ptr);
@@ -208,6 +237,19 @@ void JKRHeap::free(void* ptr) {
     }
 #endif
     do_free(ptr);
+}
+
+/**
+ * Memory resource API version of `free`
+ *
+ * @param ptr pointer to bytes previously allocated from this heap
+ */
+void JKRHeap::do_deallocate(void* ptr, size_t, size_t) noexcept {
+    this->free(ptr);
+}
+
+bool JKRHeap::do_is_equal(const memory_resource& other) const noexcept {
+    return this == &other;
 }
 
 void JKRHeap::callAllDisposer() {

@@ -1,11 +1,11 @@
-#ifndef JKRHEAP_H
-#define JKRHEAP_H
+#pragma once
 
-#include "JSystem/JKernel/JKRDisposer.h"
-#include <os.h>
-#include "global.h"
-#include <new>
 #include <cstdint>
+#include <memory_resource>
+#include <new>
+#include <os.h>
+#include "JSystem/JKernel/JKRDisposer.h"
+#include "global.h"
 
 class JKRHeap;
 typedef void (*JKRErrorHandler)(void*, u32, int);
@@ -21,7 +21,7 @@ extern bool data_8074A8D0_debug;
  * @ingroup jsystem-jkernel
  * 
  */
-class JKRHeap : public JKRDisposer {
+class JKRHeap : public JKRDisposer, public std::pmr::memory_resource {
 public:
     typedef void (*JKRAllocCallback)(u32, int, JKRHeap*, void*);
     typedef void (*JKRFreeCallback)(void*, JKRHeap*);
@@ -193,6 +193,11 @@ public:
     static JKRHeap* sCurrentHeap;
 
     static JKRErrorHandler mErrorHandler;
+
+private:
+    void* do_allocate(std::size_t _bytes, std::size_t _alignment) override;
+    void do_deallocate(void* _ptr, std::size_t _bytes, std::size_t _alignment) noexcept override;
+    [[nodiscard]] bool do_is_equal(const memory_resource& _other) const noexcept override;
 };
 
 void* operator new(size_t size);
@@ -285,5 +290,3 @@ inline void JKRSetDebugFillNotuse(u8 status) { JKRValue_DEBUGFILL_NOTUSE = statu
 inline void JKRSetDebugFillNew(u8 status) { JKRValue_DEBUGFILL_NEW = status; }
 inline void JKRSetDebugFillDelete(u8 status) { JKRValue_DEBUGFILL_DELETE = status; }
 #endif
-
-#endif /* JKRHEAP_H */

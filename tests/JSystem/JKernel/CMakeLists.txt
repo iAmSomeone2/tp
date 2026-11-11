@@ -1,5 +1,5 @@
 # Tests for JKernel: archive mount sharing, the decompression thread, the async-load callback and
-# JKRExpHeap block merging.
+# JKRExpHeap block merging, and JKRHeap as a std::pmr::memory_resource.
 #
 # These link the real JKernel code (see tests/JSystem/CMakeLists.txt).
 tp_add_test(JKernel_JKRArchivePub_test
@@ -23,5 +23,11 @@ tp_add_test(JKernel_JKRDvdAramRipper_test
 tp_add_test(JKernel_JKRExpHeap_test
     SOURCES JKRExpHeap_test.cpp
     LIBRARIES tp_test_jsystem_libs
+    LENIENT_LINK
+)
+
+tp_add_test(JKernel_JKRHeap_resource_test
+    SOURCES JKRHeap_resource_test.cpp
+    LIBRARIES tp_test_jsystem_libs nf::memory
     LENIENT_LINK
 )
