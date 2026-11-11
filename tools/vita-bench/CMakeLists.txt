@@ -87,6 +87,19 @@ foreach(variant IN ITEMS default extended)
     NAME "Nightfall memcheck (${variant})")
 endforeach()
 
+# abiprobe (src/abiprobe.cpp): thread_local on std and Sce threads, and which loads
+# fault at which alignment, for the heaps' minimum alignment.
+set(VITA_PACK_VPK_FLAGS "${base_pack_flags}")
+set(VITA_MKSFOEX_FLAGS "${base_sfo_flags}")
+add_executable(abiprobe src/abiprobe.cpp)
+target_compile_features(abiprobe PRIVATE cxx_std_20)
+target_compile_options(abiprobe PRIVATE -O2)
+target_link_libraries(abiprobe pthread)
+vita_create_self(abiprobe.self abiprobe)
+vita_create_vpk(abiprobe.vpk NFBN00007 abiprobe.self
+  VERSION 01.00
+  NAME "Nightfall ABI probe")
+
 # Stream decode cost while playing through SDL3 audio (src/streambench.cpp): Opus
 # with libopus in float and in fixed point, and the disc's AFC ADPCM for
 # comparison. The samples (make_stream_samples.py) hold disc audio, so they are

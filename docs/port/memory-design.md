@@ -33,7 +33,7 @@ The engine is built with `-fno-exceptions` (`cmake/TPConfig.cmake:79`). `memory_
 
 ### The `nf_memory` module
 
-New code lives in `include/nightfall/memory/`, `src/nightfall/memory/`, tests in `tests/nf_memory/`, target `nf_memory` (alias `nf::memory`), namespace `nf`. It has no dependency on the engine. JKernel links it.
+New code lives in `include/nightfall/memory/`, `src/nightfall/memory/`, tests in `tests/nightfall/memory/`, target `nf_memory` (alias `nf::memory`), namespace `nf`. It has no dependency on the engine. JKernel links it.
 
 | Piece | Rust counterpart | Purpose |
 |---|---|---|
@@ -63,12 +63,15 @@ private:
 
 ### The current heap
 
-* **Step 1: per thread.** `JKRHeap::sCurrentHeap` becomes `thread_local`. The heap-swapping part of `JKRThreadSwitch::callback` is removed, because neither the hosts nor the Vita have the console's thread-switch hook. This fixes the race (R2).
+* **Step 1: main thread only** (decided 2026-11-11; `thread_local` fails on the Vita, see below). `JKRHeap::sCurrentHeap` stays one global, and only the main thread uses it. The worker threads (JAudio2's audio and DVD threads, `mDoDvdThd`, the JKR ARAM and decompression threads) switch to explicit heaps first, as the start of step 2. In debug builds the implicit `operator new` asserts that it runs on the main thread, which catches the race (R2). The heap-swapping part of `JKRThreadSwitch::callback` is removed, because neither the hosts nor the Vita have the console's thread-switch hook.
+* **Why not `thread_local`:** on the Vita GCC implements it with emutls on pthread keys, and `abiprobe` (2026-11-11) found it broken. On `sceKernelCreateThread` threads, the threads saw each other's values (381,894 wrong reads out of about 800,000), and the `std::thread` case crashed. A per-thread slot through `sceKernelGetTLSAddr` would work but needs platform code that step 2 deletes again.
 * **Then gone.** Once a module no longer uses it (see *Order of work*), its "make current … restore" pairs are deleted. When no engine module uses it, `getCurrentHeap`/`becomeCurrentHeap` are removed.
 
 ### Alignment
 
-The minimum alignment of every heap is `alignof(std::max_align_t)`, which is 16 on 64-bit hosts, and stays 4 on the Vita, as on the console (R7). Requests for more (SIMD, GPU buffers) are honoured as asked.
+The minimum alignment of every heap is `alignof(std::max_align_t)`: 16 on 64-bit hosts and 8 on the Vita, up from the console's 4 (R7). Requests for more (SIMD, GPU buffers) are honoured as asked.
+
+The Vita needs 8, measured with `tools/vita-bench` `abiprobe` on 2026-11-11. `ldr`/`ldrh` at any offset and `ldm`/`ldrd`/`vldr`/unhinted `vld1` at 4 mod 8 work, but `vld1` with an alignment hint (`:64`, `:128`) faults when misaligned, and GCC emits `vld1.64 … [r0 :64]` when it vectorises a plain `uint64_t` loop. A `uint64_t` array from a 4-aligned heap crashed it. newlib's `malloc` and `new` give 8, as does `__STDCPP_DEFAULT_NEW_ALIGNMENT__`.
 
 ### Separating the program from the game heaps
 
@@ -158,7 +161,7 @@ What this buys, and what it doesn't:
 
 | Step | Work | Done when |
 |---|---|---|
-| **0. Foundation** | `nf_memory` with `Box`/`BoxArray`/`make_box`, the `start_lifetime_as` wrapper and `Budget`. `JKRHeap` derives from `memory_resource`. `thread_local` current heap, switch-callback heap swap removed. Minimum alignment 16 on 64-bit hosts. | Unit tests: `std::pmr::vector` on a `JKRExpHeap`; `Box` returns memory to the right heap; two threads with different current heaps don't interfere; every default allocation on a 64-bit host is 16-byte aligned; `start_lifetime_as` wrapper on both library paths. All existing tests pass. |
+| **0. Foundation** | `nf_memory` with `Box`/`make_box` and the `start_lifetime_as` wrapper (`BoxArray` and `Budget` wait for their first users: the `.nfa` reader and step 5). `JKRHeap` derives from `memory_resource`. Worker threads use explicit heaps, the implicit `operator new` asserts it runs on the main thread (debug), switch-callback heap swap removed. Minimum alignment `alignof(std::max_align_t)` (16 on 64-bit hosts, 8 on the Vita). | Unit tests: `std::pmr::vector` on a `JKRExpHeap`; `Box` returns memory to the right heap; an implicit `new` off the main thread asserts; every default allocation on a 64-bit host is 16-byte aligned; `start_lifetime_as` wrapper on both library paths. All existing tests pass. |
 | **1. Checker** | `tools/utilities/implicit_alloc_check.py` (`clang-query`): every `new` without a heap argument, every `delete`, and every current-heap switch in engine code, per module. It writes the generated page `docs/port/implicit-allocations.md`. | The page exists, and its count is the progress measure for step 2. |
 | **2. Explicit selection** | Module by module (JSystem → `f_*`/`m_Do`/`SSystem`/`Z2AudioLib` → `d_*` → actors): inside each "make current … restore" pair, `new T` becomes `new (heap) T` with the heap that pair made current, so behaviour doesn't change. This is partly a clang-based rewrite, and the rest is done by hand. The module's switch pairs are then removed. | The checker reports 0 for the module, its tests pass, and step 2a passes for it. |
 | **2a. Rewrite verification** | Its own check for each module's rewrite, before the switch pairs go. The current heap still exists during step 2, so in debug builds every rewritten `new (heap) T` asserts that `heap` is the current heap. A wrong rewrite then fails at the first allocation it makes, in tests or a play session. The hand-edited parts get a diff review. | No assertion fires across the module's tests and a play session through the module's code paths. |
