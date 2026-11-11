@@ -60,6 +60,8 @@ Measured with `memcheck` (`tools/vita-bench/src/memcheck.cpp`), installed throug
 * **The extended mode adds 109 MiB of user memory** and changes nothing else. The engine's Vita build sets it (`-d ATTRIBUTE2=12` in `VITA_MKSFOEX_FLAGS`).
 * **It is read from the installed `param.sfo`.** The storage benchmark above had its `param.sfo` replaced over FTP and got the default budget (153 MiB free beside its 96 MiB heap, 249 MiB in total), so a changed SFO needs a reinstall.
 * CDRAM (video memory) is separate from the user budget: textures, vertex buffers and render targets can live there without counting against the 358 MiB.
+* **The physically contiguous pool is separate too.** Allocating 16 MiB of it shrinks only its own number, and after user memory was filled completely (359 MiB in the extended mode, 250 MiB in the default one, 1–2 MiB more than the reported free size), a 16 MiB contiguous block still succeeded. It is a fixed 26 MiB pool for hardware that reads memory by physical address, mainly the system codecs (`SceAvcodec`/`SceAvPlayer` for the movie, the audio decoders), not general memory.
+* **In total, the extended mode gives about 497 MiB:** 359 MiB user, 112 MiB CDRAM and 26 MiB physically contiguous.
 
 ## Not measured
 
