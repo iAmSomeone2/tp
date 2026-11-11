@@ -1,6 +1,6 @@
 # Memory model: design
 
-> **Status: design, nothing built yet.** Decisions recorded here were made with the developer on 2026-11-10. The survey this builds on is [memory-model.md](memory-model.md); its requirements are referred to as R1–R8. Open questions are listed at the end.
+> **Status: step 0 in progress.** Built so far: `nf_memory` (header-only: `Box`/`make_box` in `box.hpp`, the `start_lifetime_as` wrapper in `lifetime.hpp`) with tests in `tests/nightfall/memory/`. Decisions recorded here were made with the developer on 2026-11-10. The survey this builds on is [memory-model.md](memory-model.md); its requirements are referred to as R1–R8. Open questions are listed at the end.
 
 The goal is memory management that is strict by default, in the spirit of Rust: every allocation names the heap it comes from, every heap has an owner that decides its lifetime, and the host program's own allocations never mix with the game's. Budgets become per-platform configuration instead of constants tuned for a 24 MiB console. The game keeps running at every step along the way.
 

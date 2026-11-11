@@ -105,6 +105,7 @@ endfunction()
 #       LIBRARIES tp::SSystem
 #   )
 add_subdirectory(JSystem)
+add_subdirectory(nightfall/memory)
 
 add_executable(nf_compat_test nightfall/nf_compat_test.cpp)
 set_target_properties(nf_compat_test PROPERTIES CXX_EXTENSIONS OFF)
