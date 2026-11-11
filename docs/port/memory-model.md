@@ -102,8 +102,21 @@ Pointers into these heaps are handed around freely (e.g. `getResource` returns a
 ## ARAM
 
 * **Audio (10 MiB):** the JAudio2 ARAM heap (`JASKernel::setupAramHeap`), wave banks, the single stream buffer.
-* **Graphics (the rest, about 6 MiB):** archives mounted with `MOUNT_ARAM` by the logo scene (`d_s_logo.cpp:1443`): `Field0.arc`, the field and dungeon map resources, collection screen, item icons, ring menu, player name, item info, button and card icon layouts, and `AlAnm.arc` (Link's animations). Their contents are copied into the J2D heap or into Link's small animation buffers (`daPy_anmHeap_c`, `d_a_player.cpp:262`) when needed.
-* ARAM addresses are `u32` offsets into an emulated buffer ([compiler-fixes.md](compiler-fixes.md), item 19). With 512 MiB on the Vita and far more on the hosts, ARAM-mounted archives could also be kept in main memory and the copy step could go away. That's a choice for the design.
+* **Graphics (the rest, about 6 MiB):** archives mounted with `MOUNT_ARAM` by the logo scene (`d_s_logo.cpp:1443-1501`). Measured on GZ2E01:
+
+  | Archive(s) | Files | Stored in ARAM | All files decompressed |
+  |---|---|---|---|
+  | `AlAnm.arc` (Link's animations) | 1,039 | 2.65 MiB | 3.80 MiB |
+  | `Field0.arc` (field map data) | 113 | 289 KiB | 342 KiB |
+  | Menu layouts (`fmapres`, `dmapres`, `clctres`, `itemicon`, `ringres`, `playerName`, `itmInfRes`, `button`, `cardicon`) | 409 | 1.05 MiB | 1.99 MiB |
+  | Message layouts (`msgcom`, `msgres00`–`06`) | 104 | 167 KiB | 687 KiB |
+  | **Total** | 1,766 | **4.15 MiB** | **6.80 MiB** |
+
+  Each archive is decompressed as a whole into ARAM, but most member files stay Yaz0-compressed there and are decompressed when copied out.
+* **How graphics data leaves ARAM:** callers use the generic `JKRArchive` interface and copy a file into a buffer they own (`readResource`/`JKRReadIdxResource`): the J2D heap for menus, Link's per-slot animation buffers (`daPy_anmHeap_c::loadData`, `d_a_player.cpp:293`), `d_stage.cpp:477` and `d_com_inf_game.cpp:2454` for `Field0.arc`. Only a few places know the archive is in ARAM: `dLib_getExpandSizeFromAramArchive` (`d_lib.cpp:277`; called from `d_pane_class.cpp`, `d_stage.cpp`, `d_menu_fmap.cpp`), `d_s_play.cpp:921` (casts any archive to `JKRAramArchive`), and the `#if DEBUG` memory report in `f_ap_game.cpp`.
+* **Font caches:** `JUTCacheFont` keeps glyph sheets in ARAM, but only the Japanese build's main font uses it (`m_Do_ext.cpp:3605`, `REGION_JPN`). Other fonts are held whole in main RAM.
+* **Compressed mounts:** `MOUNT_COMP` archives can keep part of their data in ARAM; the only one is `RELS.arc`, which static linking removes.
+* ARAM addresses are `u32` offsets into an emulated buffer ([compiler-fixes.md](compiler-fixes.md), item 19). The design moves graphics out of the pool into main memory ([memory-design.md](memory-design.md#resident-set-and-cache-tier)).
 
 ## Requirements this puts on the new model
 

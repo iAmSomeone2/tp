@@ -62,7 +62,7 @@ Suggested order: build the API layer first (option A without the interpreter), g
 
 * Models use indexed attributes: the display list holds 8/16-bit indices into position/normal/colour/texcoord arrays that are separate in memory. GXM draws one index per vertex, so **de-index while decoding** (gather into interleaved vertex buffers, one per shape or per model).
 * Convert fixed-point formats (`GX_S16` with fractional bits) to floats or normalised shorts at decode time.
-* Skinning uses **per-vertex matrix indices (`GX_VA_PNMTXIDX`) into a palette** of position matrices (GX has ten slots) per draw group: pass the index as a vertex attribute and the matrices as a uniform array (or pre-skin on the CPU for a first version; `J3DMtxBuffer`/`J3DSkinDeform` already do CPU work for some cases).
+* Skinning uses **per-vertex matrix indices (`GX_VA_PNMTXIDX`) into a palette** of position matrices (GX has ten slots) per draw group: pass the index as a vertex attribute and the matrices as a uniform array (or pre-skin on the CPU for a first version; `J3DMtxBuffer`/`J3DSkinDeform` already do CPU work for some cases). Which animation work moves to the vertex program is covered in [Animation work: CPU or vertex stage](#animation-work-cpu-or-vertex-stage).
 * Primitives: GX has `TRIANGLES`, `QUADS`, `TRIANGLESTRIP`, `TRIANGLEFAN`, `LINES`, `LINESTRIP`, `POINTS`. Convert quads and fans to triangle lists.
 
 ### Shaders
@@ -112,6 +112,44 @@ On the Vita (a tile-based deferred renderer) each of these becomes "render to an
 | Maps | `d_map`, `d_map_path*`, `d_menu_fmap_map`, `d_menu_dmap_map` | 2D primitives with palette/texture use. |
 | Video | `d_a_movie_player` | Replace the THP path with a video decoder that produces textures. The CMake build already leaves it out and uses a stub in `src/nightfall/movie/` that skips every movie. |
 | Wii only | `d_home_button` | Skip on a GameCube base. |
+
+## Animation work: CPU or vertex stage
+
+> **Status: candidates, to be decided by profiling.** Discussed with the developer on 2026-11-11.
+
+On a modern PC most per-frame animation work would run in compute shaders, with the data living on the GPU. The Vita GPU has only vertex and fragment programs, so the CPU keeps most of that work. Because the Vita's CPU and GPU share memory, "moving data to the GPU" doesn't mean copying it anywhere. It means letting the vertex program compute something the CPU computes today. A calculation can move only if its result is needed per vertex *and* game code never reads it back.
+
+**How J3D animates a skinned model today**, using Link as the example (`daPy_anmHeap_c`, `d_a_player.cpp:293`):
+
+1. **Load (only when an animation changes):** the `.bck` file is copied into the slot's buffer, and `J3DAnmLoaderDataBase::load` builds a small `J3DAnmTransformKey` that points into it. The file data is read, never written.
+2. **Per frame, CPU:**
+   * keyframe interpolation per joint;
+   * blending of up to three animations per body half (`mDoExt_MtxCalcAnmBlendTbl`), plus blending from the previous pose (`mDoExt_MtxCalcOldFrame`);
+   * the joint hierarchy turned into joint matrices;
+   * blended matrices for vertices weighted to several joints (`J3DMtxBuffer::calcWeightEnvelopeMtx`);
+   * draw and normal matrices (`calcDrawMtx`, `calcNrmMtx`) and billboard matrices (`calcBBoardMtx`).
+3. **GPU:** up to 10 matrices are loaded per draw group, and each vertex selects one by index (`GX_VA_PNMTXIDX`). A vertex with several weights points at a pre-blended matrix, so every vertex uses exactly one matrix.
+
+Texture-pattern (`btp`) and texture-coordinate (`btk`) animations change materials, not vertices. CPU vertex deformation exists but is rare: blend shapes (`J3DDeformer`, `.blk`/`.bls`; Link uses them only in one cutscene, `d_a_alink_demo.inc:1651`) and `J3DSkinDeform` (only `d_a_demo00` and `d_a_door_boss`).
+
+**Stays on the CPU:**
+* **Keyframe interpolation, animation blending and the joint hierarchy.** Each joint depends on its parent, which doesn't suit a vertex program.
+* **Joint matrices, because game logic reads them.** Item attachment, collision, effect spawn points and camera targets use `getAnmMtx`: 288 files call it, 88 of those calls in `d_a_alink.cpp` alone. Only work done after the joint matrices, purely for drawing, can move.
+
+**Candidates for the vertex stage:**
+
+| # | Work | Change | Trade-off | Priority |
+|---|---|---|---|---|
+| 1 | One matrix palette per model | Upload all of a model's joint matrices once per frame as a uniform buffer, in place of GX's 10 slots per draw group. | Removes the draw splits and matrix reloads that the 10-slot limit forces. Bounded by the size of GXM's uniform buffers (to check against the largest joint counts). | Comes with the GXM renderer; not optional. |
+| 2 | Blending of weighted vertices | Vertices carry up to 4 joint indices and weights, and the vertex program blends. The bake rewrites the vertex data from each model's weight tables. | Replaces one CPU blend per distinct weight mix with GPU work per vertex: more total work, on the unit with spare capacity. Costs a larger vertex format. | Profile first. |
+| 3 | Normal matrices | Use the upper 3×3 of the position matrix in models without uneven scaling, flagged by the bake or the loader. | Removes a per-matrix inverse-transpose on the CPU. Small. | Cheap; when convenient. |
+| 4 | Billboard matrices | Build camera-facing orientation in the vertex program from the view-space position. | Removes `calcBBoardMtx` per billboard joint. | With #1. |
+| 5 | Particle quads (JPA) | The simulation stays on the CPU; expanding each particle into a camera-facing quad moves to the vertex program. | Could be sizeable in effect-heavy scenes. Depends on GXM's instancing support (to check). | Profile first. |
+| 6 | Blend shapes and CPU skinning | Shape targets as extra vertex streams or textures, blended in the vertex program. | Rarely used (above). | Low. |
+
+**Order:** #1 is part of building the renderer. The rest wait for numbers. The host dev build can time J3D's per-frame stages (`calc`, envelope, draw-matrix and particle passes) per scene, which shows whether #2 or #5 matters before the bake's vertex formats change. The starting assumption is that the existing CPU work already fits: the Vita's Cortex-A9 cores with NEON are roughly on par with the GameCube's CPU. The open question is how much headroom we want.
+
+**Interplay with frame interpolation (below):** a per-model palette uploaded at one place (#1) is also the single transform boundary that interpolation needs. Joint matrices from two ticks can be blended there before upload.
 
 ## Designing for frame interpolation
 

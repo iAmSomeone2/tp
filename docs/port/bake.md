@@ -150,7 +150,7 @@ It replaces RARC. It has to support everything the `JKRArchive` API exposes, bec
 
 Differences from RARC:
 
-* **No compression** in the MVP. Members are stored decompressed and 32-byte aligned, so a mounted archive is directly usable (440 MiB+ of archives on the dev PC is fine). Compression (e.g. LZ4/zstd, for Vita storage) is a later, container-level option.
+* **No compression inside the archive.** Members are stored decompressed and 32-byte aligned, so a mounted archive is directly usable. Compression, if any, belongs to the pack layer below, per entry, and is undone when the entry is loaded.
 * **No nested archives:** the 252 archives inside archives are baked recursively and stay nested as `.nfa` members, so code that mounts them from memory still works.
 * **Per-file format tag:** each file entry records what the bake turned the file into (format tag + version), or "raw big-endian". The tag is in the entry, *not* in front of the file data, because game code casts fetched resources directly to structs (e.g. 106 casts to `cBgD_t*`). In debug builds the engine checks the tag on fetch.
 * **No runtime fields:** RARC's `SDIFileEntry::data` (the cache slot that breaks on 64-bit) does not exist. Per-file runtime state lives in the archive object: the `ResourceSlot` design (a resource is empty, borrowed from the archive's buffer, or owned in a heap allocation with a heap-aware deleter; `removeResource` resets, `detachResource` releases), with the expanded-size array folded in.
@@ -166,6 +166,19 @@ struct NfaDir      { u32 type /*4CC*/; u32 name_offset; u16 name_hash; u16 file_
 struct NfaFile     { u16 id; u16 name_hash; u32 name_offset; u32 attr /*RARC flags*/;
                      u32 data_offset; u32 data_size; u32 format /*tag + version*/; };
 ```
+
+## Pack files and the index
+
+> **Status: decided 2026-11-11 from Vita measurements** ([vita-storage.md](vita-storage.md), `tools/vita-bench/`).
+
+Vita storage reads at only 8–10 MiB/s, has no OS read cache, and costs about 11–13 ms extra per file opened compared with reading the same bytes from an already open file (opens themselves are under 1 ms). TP opens a separate file for every stage, room and object archive. The bake therefore writes the baked tree into **a few large pack files plus an index**:
+
+* **Opened once.** The engine opens the packs at boot and keeps the handles. Every load is one whole-entry read on an open handle (`sceIoPread` on the Vita, `pread` on the hosts). On the benchmark corpus that is 19–25% faster than loose files. Reads stay whole-entry: each request costs 3–4 ms, so many small reads would be slow.
+* **The index replaces disc offsets and paths.** It maps today's DVD entry numbers and paths to (pack, offset, stored size, size, compression). That is the "disc offsets become lookup keys" decision ([compiler-fixes.md](compiler-fixes.md), item 19), made concrete.
+* **Entries are `.nfa` archives and loose files,** 32-byte aligned in the pack.
+* **LZ4HC compression per entry.** Measured on the Vita: ratio 1.70, decompression 62 MiB/s on one core, about 24% faster loads than uncompressed. zstd compresses better (1.96) but decompresses at only 24 MiB/s, which nearly cancels the smaller reads. The bake compresses at level 12 (the same speed to decompress as level 9; the measured ratios were equal). Entries that don't shrink (audio, and any entry whose compressed size isn't meaningfully smaller) are stored uncompressed. The engine keeps the compressed bytes as read and decompresses once into the destination heap; see the cache tier in [memory-design.md](memory-design.md#resident-set-and-cache-tier).
+* **On the hosts** the same packs work. A loose-file mode for development (the baked tree as plain files) can stay as an option.
+* **Saves are unaffected.** They're rare, and the game already makes the player wait for a save to finish.
 
 ## Format headers: the single source of truth
 
@@ -221,7 +234,7 @@ The bake and the engine move one format at a time. Each step ends with the engin
 
 ## Open questions
 
-1. **Compression** for Vita storage (LZ4/zstd per member or per archive), and whether a Vita bake also swizzles textures (`SCE_GXM_TEXTURE_SWIZZLED`). These would be per-target options on top of the one format; the layout rule stays.
+1. **Pack layer details** (see *Pack files and the index*): how many packs, and the threshold below which an entry stays uncompressed. Also whether a Vita bake swizzles textures (`SCE_GXM_TEXTURE_SWIZZLED`). These are per-target options on top of the one format; the layout rule stays.
 2. **J3D display lists:** keep GX command streams (little-endian) for a GX-compatible layer, or decode them into vertex and index buffers in the bake. This is decided with the GX layer.
 3. **Audio:** streams stay DSP-ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Still open: whether the stream is kept resident (loop cache), and whether wave-bank samples become PCM. Both are decided with the software mixer.
 4. **Memory model:** the container's load policy (preload to main RAM/ARAM/DVD) and the `ResourceSlot` heaps depend on the planned memory-model survey and design.

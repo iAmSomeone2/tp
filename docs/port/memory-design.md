@@ -112,6 +112,18 @@ This is where Rust's lifetimes are approximated at run time, since C++ cannot ch
 * **Counting:** `nf::Budget` counts the bytes used per tier, so the game's memory use can be read per tier on every platform.
 * **Console-budget mode** (hosts, optional): enforces the Vita's limits, so a regression shows up on the dev PC instead of on the device. With 512 MiB on the Vita and the developer's guaranteed 256 MiB budget, the Vita's own limits are generous; the main purpose is catching leaks and unbounded growth.
 
+### Resident set and cache tier
+
+> **Status: decided 2026-11-11 from Vita measurements** ([vita-storage.md](vita-storage.md)); the budget is still open.
+
+TP uses ARAM as a cache: archives are loaded once and copied into main RAM when used. The port keeps that *policy* but not the mechanism, and extends it to everything loaded from storage, because Vita storage is slow: 8–10 MiB/s, and the OS keeps no read cache, so anything read again comes from storage again ([vita-storage.md](vita-storage.md)). Reading `AlAnm` (3.8 MiB) a second time would cost about 400 ms.
+
+* **Cache tier.** A budgeted cache of pack entries, keyed by index entry, with least-recently-used eviction. It sits in front of archive mounting in the DVD thread (`mDoDvdThd_*`): a mount checks the cache before reading storage. It is built on `nf_memory` (`Budget` plus a general heap). Returning to a recent area then needs no storage access.
+* **Resident set.** What the logo scene mounts to ARAM today (about 25 archives, 6.8 MiB decompressed on GZ2E01, see [memory-model.md](memory-model.md#aram)) becomes pinned cache entries that are never evicted. Graphics stop using the ARAM pool: these archives live in main memory and callers keep using `readResource`/`getResource` (option B from the ARAM discussion). The few places that know an archive is an ARAM archive change: `dLib_getExpandSizeFromAramArchive` (`d_lib.cpp:277`, 4 callers), `d_s_play.cpp:921`, and the mount helpers in `d_s_logo.cpp`/`m_Do_dvd_thread.cpp`.
+* **Compressed entries** (LZ4HC, ratio 1.70 on the benchmark corpus) are cached as read and decompressed once into the destination heap, at about 62 MiB/s on one core. That replaces today's copy out of ARAM, so it adds no copy, and the cache holds 1.7× as much per MiB.
+* **Reading in place later (option C).** Once formats are baked, consumers can point into the loaded archive instead of copying, starting with Link's animations (`daPy_anmHeap_c`). This works for entries loaded uncompressed into a heap.
+* **Audio** keeps the `u32`-addressed ARAM pool, emulated as a main-memory block with `memcpy` transfers, until the audio work replaces it.
+
 ### Failure policy
 
 | Allocation through | On failure |
@@ -146,12 +158,13 @@ What this buys, and what it doesn't:
 | **3. Separation** | One reservation for all game heaps. Global `operator new`/`delete` go to the host allocator; `delete` is routed by address. | The checker reports 0 for the whole engine. A test shows that standard-library allocations made while a game heap is in use stay outside the reservation. |
 | **4. New heap classes** | `nf::Arena` (chunked) and `nf::GeneralHeap`; `JKRSolidHeap`/`JKRExpHeap` rebuilt on them. The "take all, then shrink" sites move to growing arenas, and the actor heap's estimate becomes a first-chunk hint without the retry. Can run in parallel with step 2. | Unit tests for both classes; existing `JKRExpHeap` tests (including the 4 GiB boundary test) pass on the new implementation. |
 | **5. Owners and budgets** | Lifetime owners per tier, debug fill and generation checks, the per-platform budget table, console-budget mode on the hosts. | A tier's memory is freed by destroying its owner only; a debug build catches use of a freed arena in a test. |
-| **6. ARAM** | Decide whether graphics archives keep living in the `u32`-addressed ARAM pool or move to main memory (R8). Audio keeps its pool. | Decision recorded; implementation follows the audio and bake work. |
+| **6. ARAM and the cache tier** | Graphics archives move from the ARAM pool to pinned cache entries in main memory (R8), then the cache tier (budget, eviction) in front of archive mounting. Audio keeps the emulated pool. | The logo scene's archives load into main memory and every menu and Link animation still loads; revisiting a stage reads nothing from storage. |
 
 ## Interplay with the bake
 
 * **`ResourceSlot`** (from the RARC design, now part of the `.nfa` reader) uses `nf::Box` with the archive's resource. That is the same ownership model, built on this module.
-* **Preload flags:** the `.nfa` container keeps RARC's per-file preload flags (main RAM, ARAM, DVD). How the archive reader interprets them follows step 6.
+* **Preload flags:** the `.nfa` container keeps RARC's per-file preload flags (main RAM, ARAM, DVD). With graphics out of the ARAM pool, "preload to ARAM" is read as "preload to main memory".
+* **Pack files:** the cache tier caches pack entries from the bake's index ([bake.md](bake.md#pack-files-and-the-index)).
 * **Reading baked data** goes through `nf::formats::at<T>`, built on `nf::start_lifetime_as` (above).
 
 ## Open questions
@@ -163,7 +176,4 @@ Settled on 2026-11-10: C++23 for the engine, Apple's libc++ (has `<memory_resour
    * *Fixed size* from the budget table: one allocation at boot, the same code shape as the Vita (which has no overcommit and gets a fixed block either way), and running past the budget shows up immediately. On Linux and macOS an untouched anonymous mapping takes no physical memory, so a generous fixed size already costs only what is used.
    * *Reserve and commit:* reserve a large address range (`mmap` with `PROT_NONE`) and commit pages as heaps grow. Heaps can never run out on the hosts, at the cost of platform-specific commit code and of hiding budget overruns unless console-budget mode is on.
    * Either way the range is fixed at boot, so routing `delete` by address works the same.
-3. **ARAM** (step 6).
-   * *Keep the pool:* ARAM becomes a `u32`-addressed block in main memory and the ARAM copy calls become `memcpy`. This is the smallest change and matches the earlier decision that ARAM addresses stay `u32`.
-   * *Drop it for graphics:* archives preloaded to ARAM load straight to main memory. That removes a copy and the doubled memory of a file existing in both places, but touches every ARAM-backed archive path. The Vita has no ARAM, so the pool would be emulation in either case.
-   * Audio keeps its pool until the audio work replaces it.
+3. **ARAM and the cache tier** (step 6): graphics move to main memory as pinned cache entries (agreed on 2026-11-11). Entries are LZ4HC-compressed (measured, [vita-storage.md](vita-storage.md)). Still open: the cache budget, sized once the extended memory mode's budget is confirmed (153 MiB of user memory was still free beside a 96 MiB heap in the benchmark).
