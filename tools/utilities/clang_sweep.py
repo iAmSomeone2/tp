@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###
-# Runs a syntax-only pass of a modern compiler (default: clang++ -std=c++20)
+# Runs a syntax-only pass of a modern compiler (default: clang++ -std=c++23)
 # over every game/JSystem translation unit, WITHOUT the Metrowerks headers, and
 # summarises what still fails. This measures how far the tree is from building
 # with a stock toolchain (the first milestone of a port), and can be re-run to
@@ -100,7 +100,7 @@ def collect_files(args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cxx", default="clang++")
-    ap.add_argument("--std", default="c++20")
+    ap.add_argument("--std", default="c++23")
     ap.add_argument("--version", type=int, default=0, help="VERSION define (0 = GCN USA)")
     ap.add_argument("--asset-version", default="GZ2E01")
     ap.add_argument("--define", action="append", default=[], help="extra -D (repeatable), e.g. DEBUG=1")

@@ -16,7 +16,7 @@ Treat sessions as collaborative work handled between yourself and your partner, 
 
 New modules of this fork are called Nightfall and kept apart from the decompiled `tp`/`d_*` code. The C++ namespace is `nf`. Layout: public headers in `include/nightfall/<module>/` (e.g. `nightfall/compat/globals.hpp`), sources in `src/nightfall/`, tests in `tests/nf_<module>/`. CMake targets are `nf_<module>` with alias `nf::<module>`.
 
-New code should be modern C++ and need not match the legacy style. The whole project is built as C++20 (`tp::config` requires `cxx_std_20`, because `global.h` includes `nightfall/compat/globals.hpp`, which uses `std::numbers`), and a target may require something newer. Legacy code will be updated as needed too, and those updates will often raise the standard further. CMake compiles a target at the highest standard requested by anything it links, so linking an `nf` library that needs a newer standard into a legacy library raises that library's standard.
+New code should be modern C++ and need not match the legacy style. The whole project is built as C++23 (`tp::config` requires `cxx_std_23`; the memory design needs it, see `docs/port/memory-design.md`), and a target may require something newer. Legacy code will be updated as needed too, and those updates may raise the standard further. CMake compiles a target at the highest standard requested by anything it links, so linking an `nf` library that needs a newer standard into a legacy library raises that library's standard.
 
 ## Commands
 

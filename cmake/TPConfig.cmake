@@ -55,7 +55,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(tp_config INTERFACE)
 add_library(tp::config ALIAS tp_config)
 
-target_compile_features(tp_config INTERFACE cxx_std_20)
+target_compile_features(tp_config INTERFACE cxx_std_23)
 
 target_compile_definitions(tp_config INTERFACE VERSION=${TP_VERSION_NUM})
 

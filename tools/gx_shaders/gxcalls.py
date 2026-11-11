@@ -51,7 +51,7 @@ def _main_checkout() -> Path:
         return (ROOT / common).resolve().parent if common else ROOT
     except OSError:
         return ROOT
-FLAGS = ["-x", "c++", "-std=c++20", "-fdeclspec", "-w", "-DVERSION=0", "-fno-short-enums", "-fsigned-char",
+FLAGS = ["-x", "c++", "-std=c++23", "-fdeclspec", "-w", "-DVERSION=0", "-fno-short-enums", "-fsigned-char",
          "-I", "include", "-I", "src", "-I", "libs/JSystem/include", "-I", "libs/dolphin/include",
          "-I", "libs/dolphin/include/dolphin", "-I", "assets/GZ2E01",
          "-I", str(_main_checkout() / "assets" / "GZ2E01"),

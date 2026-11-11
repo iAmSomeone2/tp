@@ -13,7 +13,7 @@ The goal is memory management that is strict by default, in the spirit of Rust: 
 | Heap selection | **Explicit everywhere.** Each `new`/`delete` in engine code names its heap. The implicit "current heap" goes away module by module, in the order JSystem → `f_*`/`m_Do` → `d_*` → actors, and a checker counts what is left. |
 | Solid heaps | **Chunked arenas** replace "take all free space, build, then shrink". An arena grows in chunks taken from its parent, so the parent is never blocked. |
 | Object lifetimes in file data | **`start_lifetime_as`** (C++23, P2590) for reading baked file data as structs, through a small `nf::` wrapper. The wrapper uses the standard function where the library has it and a C++20 fallback otherwise (the Vita's GCC 15.2 library and libc++ lack it), so no toolchain is required to have it. |
-| Language standard | **C++23 for the engine.** `nf_memory` requires it, and since JKernel links `nf_memory`, the whole engine compiles as C++23 (see CLAUDE.md). The analysis scripts' `-std=c++20` default follows. |
+| Language standard | **C++23 for the engine.** `tp::config` requires `cxx_std_23` (since 2026-11-11), so the whole engine compiles as C++23. The analysis scripts default to `-std=c++23` too. Both GCC 16.2 and clang 22 build every TU as before, and all tests pass. |
 | macOS toolchain | **Apple clang stays supported.** It lacks `std::start_lifetime_as` and gets the fallback. |
 
 ## Toolchain facts this relies on

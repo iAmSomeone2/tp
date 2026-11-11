@@ -46,7 +46,7 @@ def run_one(cxx, entry):
         args = args[:i] + args[i + 2:]
     keep = [a for a in args[1:] if not a.startswith("-W") and a not in ("-w", "-c", "-fdiagnostics-color=always")]
     if not any(a.startswith("-std=") for a in keep):
-        keep.append("-std=c++20")  # CMake omits it when the configured compiler (GCC 16) defaults to it
+        keep.append("-std=c++23")  # fallback in case the compile database has no -std (CMake omits it when it is the default)
     cmd = [cxx] + keep + ["-fsyntax-only", "-Wno-everything", "-Wshorten-64-to-32", "-fno-caret-diagnostics"]
     r = subprocess.run(cmd, cwd=entry["directory"], capture_output=True, text=True)
     return entry["file"], r.returncode, r.stderr

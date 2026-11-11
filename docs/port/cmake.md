@@ -92,7 +92,7 @@ All game and JSystem libraries share the same effective flags in `configure.py`,
 | `-fp_contract off` | `-ffp-contract=off` |
 | `-RTTI off`, `-Cpp_exceptions off` | `-fno-rtti`, `-fno-exceptions` |
 | (type punning such as `*(u32*)&x`) | `-fno-strict-aliasing` |
-| language level | C++20 minimum via `tp::config` (legacy code includes `nightfall/compat/globals.hpp` through `global.h`, which needs `std::numbers`), no compiler extensions. A target that links something requiring a newer standard is compiled at that standard. |
+| language level | C++23 minimum via `tp::config` (the memory design needs it; see [memory-design.md](memory-design.md)), no compiler extensions. A target that links something requiring a newer standard is compiled at that standard. |
 | `-O*`, `-inline`, `-sym`, `-str`, `-schedule`, `-use_lmw_stmw`, `-sdata`, `-func_align`, … | dropped: codegen tuning for the PowerPC compiler |
 | `-W` flags | `TP_BUILD_TESTS` | `OFF` | build `tests/` (GoogleTest, see `tests/CMakeLists.txt`) and enable `ctest`. Uses an installed GoogleTest if found, otherwise downloads a pinned release at configure time. Run with `ctest --test-dir build/cmake/<preset>`. |
 | `TP_ENABLE_WARNINGS` |
