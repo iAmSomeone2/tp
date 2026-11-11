@@ -86,3 +86,79 @@ foreach(variant IN ITEMS default extended)
     VERSION 01.00
     NAME "Nightfall memcheck (${variant})")
 endforeach()
+
+# Stream decode cost while playing through SDL3 audio (src/streambench.cpp): Opus
+# with libopus in float and in fixed point, and the disc's AFC ADPCM for
+# comparison. The samples (make_stream_samples.py) hold disc audio, so they are
+# passed in rather than kept in the repo.
+#   -DNFBENCH_SAMPLES=$PWD/build/vita-bench/stream
+set(SDL_SHARED OFF)
+set(SDL_STATIC ON)
+set(SDL_TEST_LIBRARY OFF)
+set(SDL_VIDEO OFF)
+set(SDL_RENDER OFF)
+set(SDL_GPU OFF)
+set(SDL_CAMERA OFF)
+set(SDL_JOYSTICK OFF)
+set(SDL_HAPTIC OFF)
+set(SDL_SENSOR OFF)
+FetchContent_Declare(SDL3 GIT_REPOSITORY https://github.com/libsdl-org/SDL.git GIT_TAG release-3.4.16
+                     GIT_SHALLOW TRUE)
+FetchContent_Declare(opus GIT_REPOSITORY https://github.com/xiph/opus.git GIT_TAG v1.6.1
+                     GIT_SHALLOW TRUE SOURCE_SUBDIR nf-sources-only)
+FetchContent_MakeAvailable(SDL3 opus)
+
+# libopus's own CMake build, twice from one checkout. NEON is presumed: there is no
+# run-time CPU detection on the Vita.
+include(ExternalProject)
+foreach(variant IN ITEMS float fixed)
+  if(variant STREQUAL "float")
+    set(fixed OFF)
+  else()
+    set(fixed ON)
+  endif()
+  set(prefix ${CMAKE_BINARY_DIR}/opus-${variant})
+  ExternalProject_Add(opus_${variant}_build
+    SOURCE_DIR ${opus_SOURCE_DIR}
+    INSTALL_DIR ${prefix}
+    CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE} -DCMAKE_BUILD_TYPE=Release
+               -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DOPUS_FIXED_POINT=${fixed}
+               -DOPUS_PRESUME_NEON=ON -DOPUS_BUILD_TESTING=OFF -DOPUS_BUILD_PROGRAMS=OFF
+    BUILD_BYPRODUCTS ${prefix}/lib/libopus.a)
+  file(MAKE_DIRECTORY ${prefix}/include/opus)
+  add_library(opus_${variant} STATIC IMPORTED)
+  set_target_properties(opus_${variant} PROPERTIES IMPORTED_LOCATION ${prefix}/lib/libopus.a
+                        INTERFACE_INCLUDE_DIRECTORIES ${prefix}/include/opus)
+  add_dependencies(opus_${variant} opus_${variant}_build)
+endforeach()
+
+# name: title ID, sample file, codec definitions, extra libraries/sources.
+set(opusbench_float_args NFBN00004 opus.bin "NFOPUS_FIXED=0" opus_float)
+set(opusbench_fixed_args NFBN00005 opus.bin "NFOPUS_FIXED=1" opus_fixed src/opus_fixed_xcorr.c)
+set(afcbench_args        NFBN00006 afc.bin  "NFBENCH_AFC=1")
+foreach(name IN ITEMS opusbench_float opusbench_fixed afcbench)
+  list(POP_FRONT ${name}_args titleid sample defs)
+  set(extra_sources ${${name}_args})
+  list(FILTER extra_sources INCLUDE REGEX "\\.c$")
+  list(FILTER ${name}_args EXCLUDE REGEX "\\.c$")
+  add_executable(${name} src/streambench.cpp ${extra_sources}
+    ${VITASDK}/share/gcc-arm-vita-eabi/samples/common/debugScreen.c)
+  target_include_directories(${name} PRIVATE ${VITASDK}/share/gcc-arm-vita-eabi/samples/common)
+  target_compile_definitions(${name} PRIVATE ${defs})
+  target_compile_features(${name} PRIVATE cxx_std_20)
+  target_compile_options(${name} PRIVATE -O2)
+  target_link_libraries(${name} SDL3::SDL3-static ${${name}_args}
+    SceDisplay_stub ScePower_stub SceAudio_stub SceAudioIn_stub pthread)
+
+  set(VITA_PACK_VPK_FLAGS "${base_pack_flags}")
+  set(VITA_MKSFOEX_FLAGS "${base_sfo_flags}")
+  set(sample_files)
+  if(NFBENCH_SAMPLES)
+    set(sample_files FILE ${NFBENCH_SAMPLES}/${sample} sample.bin)
+  endif()
+  vita_create_self(${name}.self ${name})
+  vita_create_vpk(${name}.vpk ${titleid} ${name}.self
+    VERSION 01.00
+    NAME "Nightfall stream bench (${name})"
+    ${sample_files})
+endforeach()

@@ -62,7 +62,7 @@ What the game's streams need (headers of all 127 `.ast` files, read from the dis
 
 | | Value |
 |---|---|
-| Codec | DSP-ADPCM (4-bit) in all 127; none use the PCM16 variant |
+| Codec | AFC ADPCM (4-bit, the `STRM` header's codec 0, which ffmpeg decodes as `adpcm_afc`) in all 127; none use the PCM16 variant |
 | Channels | stereo in 126, mono in 1 (`e_ganon_d02.ast`) |
 | Sample rate | 44.1 kHz in all |
 | Length | 134.8 minutes in total, about 49 KiB/s |
@@ -73,9 +73,18 @@ Nothing needs more than stereo; `JASAramStream`'s `CHANNEL_MAX = 6` is never use
 
 **Plan:**
 
-1. **MVP: keep DSP-ADPCM.** The bake swaps only the header and block-header fields (sizes, loop points, per-channel ADPCM history); the 4-bit sample data has no byte order. Decoding costs a few operations per sample. It is lossless with respect to the disc. Loops stay sample-exact the way the original does it, by streaming with `JASAramStream`'s ADPCM history handling, so no RAM cache is needed.
-2. **Later: Opus.** This happens once a benchmark on the Vita confirms the decode cost; it's expected to be a few percent of one core for the single stereo stream.
-   * **Size:** 96–128 kbit/s stereo is close to transparent at about 12–16 KiB/s, so the 381 MiB of streams shrink to roughly 100 MiB.
+1. **MVP: keep AFC ADPCM.** The bake swaps only the header and block-header fields (sizes, loop points, per-channel ADPCM history); the 4-bit sample data has no byte order. Decoding costs a few operations per sample. It is lossless with respect to the disc. Loops stay sample-exact the way the original does it, by streaming with `JASAramStream`'s ADPCM history handling, so no RAM cache is needed.
+2. **Later: Opus.** This happens once a benchmark on the Vita confirms the decode cost; it's expected to be a few percent of one core for the single stereo stream. The benchmark is the stream benchmark in [tools/vita-bench](../../tools/vita-bench/README.md#stream-benchmark). libopus 1.6.1 with NEON, at 444 MHz, decoding `demo01_01` (stereo) on SDL3's audio thread, compared with the disc's AFC ADPCM decoded the same way. Playback was clean in every run. Opus at a 128 kbit/s target sounded effectively indistinguishable from AFC, and a 96 kbit/s target sounded practically identical to 128 (the developer listened to all of them). libopus's VBR runs above its target on this track:
+
+   | Decoder | Bitrate | Share of one core | Mean / worst per packet | Longest callback (1024-frame buffer) |
+   |---|---:|---:|---:|---:|
+   | **Opus, float, 96k target** | 106 kbit/s | **5.31%** | 1.06 / 1.46 ms per 20 ms | 2.6 ms |
+   | Opus, float, 128k target (`opus_decode_float`) | 140 kbit/s | 5.96% | 1.19 / 1.65 ms per 20 ms | 2.9 ms |
+   | Opus, fixed point, 128k target (`opus_decode`) | 140 kbit/s | 8.75% | 1.75 / 2.34 ms per 20 ms | 4.3 ms |
+   | AFC ADPCM, as on disc (`afc.h`) | 397 kbit/s | 0.49% | 0.11 / 0.19 ms per 21.8 ms | 0.3 ms |
+
+   Decoding flat out on the main thread gives the same shares (5.23%, 5.86%, 8.67% and 0.48%), so the audio thread adds no measurable overhead. The float build is about a third cheaper, so it is the one to use. Its output also suits a float mixer. Decode cost falls only a little with bitrate: 96k costs 11% less than 128k for 24% fewer bytes. At the rates measured here, the 134.8 minutes of streams would take about 105 MiB at a 96k target and 138 MiB at 128k, against 381 MiB of AFC; other tracks may encode at different rates. Float Opus costs about twice the few percent first estimated and roughly 11 times as much as AFC, some 5% of one core more.
+   * **Size:** the bake uses a 96 kbit/s target (decided 2026-11-11), which came out at 106 kbit/s on `demo01_01` and sounded practically identical to 128k and to AFC. At that rate the 381 MiB of streams shrink to about 105 MiB.
    * **One decoder everywhere:** libopus (BSD licence, NEON-optimised for ARMv7) runs on the dev PC, the Mac and the Vita alike.
    * **Sample rate:** libopus outputs only 8/12/16/24/48 kHz, so the bake resamples to 48 kHz and scales the loop points. It resamples the loop body as a circular signal, so the end runs straight into the loop start. The software mixer resamples anyway.
    * **Exact loops:** after a seek, Opus needs about 80 ms of decoding before its output is correct (RFC 7845's recommended pre-roll). The bake stores, per track, the packet to restart from and how many samples to discard to reach `loop_start` exactly.
@@ -86,7 +95,7 @@ Nothing needs more than stereo; `JASAramStream`'s `CHANNEL_MAX = 6` is never use
    | Track kept resident as | Worst case | Median |
    |---|---:|---:|
    | 16-bit stereo PCM, fully decoded | 54.8 MiB | 13.6 MiB |
-   | DSP-ADPCM (as on disc) | 15.4 MiB | ~4 MiB |
+   | AFC ADPCM (as on disc) | 15.4 MiB | ~4 MiB |
    | Opus at 128 kbit/s | ~5 MiB | ~1.3 MiB |
 
    The next largest looping tracks as PCM are 30.9, 30.1 and 26.2 MiB. Keeping the track compressed and decoding while playing costs a fraction of the memory of a PCM cache and still loops exactly.
@@ -222,7 +231,7 @@ The bake and the engine move one format at a time. Each step ends with the engin
 | **3. Stage and collision** | `.dzs`/`.dzr` chunks, `.dzb`, `.kcl`, `.plc`, map paths, BG parts, event `.dat`. | Stage chunk handlers, `cBgS`/`dBgW`, `dBgWKCol`, `dMpath_c`, `d_event_data` on offsets instead of relocated pointers (fixes pattern B and `StaffWork`). | A full stage (`F_SP103`, Ordon Village) loads without asserts. |
 | **4. J3D** | `.bmd`/`.bdl` blocks, all animation types, `.bls`. Display lists (`SHP1`) and vertex arrays converted to little-endian. Whether to decode them into native buffers instead depends on the GX layer design. | `J3DModelLoader` and friends on `u32` offsets (fixes pattern A). | Every model and animation on the disc loads; joint/material counts match a disc-side parse. |
 | **5. The rest** | `.jpc`, `.stb`, the unidentified formats (`.csw`, `.bct`, …). | `JPA*`, `JStudio`. | The bake report shows no raw files outside audio. |
-| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast` (headers little-endian; stream samples stay DSP-ADPCM in the MVP, Opus later, see *Audio streams* above). Wave-bank samples stay DSP-ADPCM; the mixer decodes them while playing ([memory-design.md](memory-design.md#resident-set-and-cache-tier)). | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
+| **6. Audio** | `.baa`, `.bms`, `.aw`, `.ast` (headers little-endian; stream samples stay AFC ADPCM in the MVP, Opus later, see *Audio streams* above). Wave-bank samples stay DSP-ADPCM; the mixer decodes them while playing ([memory-design.md](memory-design.md#resident-set-and-cache-tier)). | JAudio2 parsers. | Part of the audio phase in [roadmap.md](roadmap.md). |
 
 ## Testing
 
@@ -236,6 +245,6 @@ The bake and the engine move one format at a time. Each step ends with the engin
 
 1. **Pack layer details** (see *Pack files and the index*): how many packs, and the threshold below which an entry stays uncompressed. Also whether a Vita bake swizzles textures (`SCE_GXM_TEXTURE_SWIZZLED`). These are per-target options on top of the one format; the layout rule stays.
 2. **J3D display lists:** keep GX command streams (little-endian) for a GX-compatible layer, or decode them into vertex and index buffers in the bake. This is decided with the GX layer.
-3. **Audio:** streams stay DSP-ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Wave-bank samples stay DSP-ADPCM, decoded by the mixer while playing (decided 2026-11-11). Still open: whether the stream is kept resident (loop cache), decided with the software mixer.
+3. **Audio:** streams stay AFC ADPCM in the MVP, with Opus planned after a Vita benchmark (see *Audio streams*). Wave-bank samples stay DSP-ADPCM, decoded by the mixer while playing (decided 2026-11-11). Still open: whether the stream is kept resident (loop cache), decided with the software mixer.
 4. **Memory model:** the container's load policy (preload to main RAM/ARAM/DVD) and the `ResourceSlot` heaps depend on the planned memory-model survey and design.
 5. **Unidentified formats** (`.csw`, `.bct`, the `.dat`/`.bin` tables): identify their loaders before step 5.

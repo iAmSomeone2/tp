@@ -27,3 +27,28 @@ The corpus is 28 archives (11.5 MiB): the logo scene's ARAM set, the Ordon stage
 ## memcheck
 
 Two tiny VPKs from the same build, `memcheck_default.vpk` (title `NFBN00002`, default memory budget) and `memcheck_extended.vpk` (`NFBN00003`, `ATTRIBUTE2=12` for the extended memory mode). Each writes its free user, CDRAM and physically contiguous memory to `ux0:data/nfbench/memory-<title>.txt` and exits at once, with newlib's heap kept to 1 MiB so the numbers are close to the full budget. Install both through VitaShell rather than copying files over FTP, so the system is sure to read each `param.sfo`. Run each once, and compare the two files.
+
+## Stream benchmark
+
+Measures what decoding the music streams as Opus would cost, against the disc's own AFC ADPCM ([bake.md](../../docs/port/bake.md#audio-streams)). `make_stream_samples.py` takes `demo01_01.ast` (1:59, stereo) from the disc and writes two samples in the same packet container:
+
+* **Opus:** ffmpeg resamples to 48 kHz and encodes with libopus in 20 ms frames, VBR with a 96 kbit/s target, the bake's choice (this track comes out at 106 kbit/s, or 140 with `--bitrate 128k`; the app prints the actual rate). The raw packets are stored with a size table and no Ogg, as the bake would store them.
+* **AFC:** the stream's own data without its block headers, cut into packets of 960 samples (21.8 ms at 44.1 kHz). The decoder (`src/afc.h`) is checked by the script against ffmpeg's decode of the whole track, and must match bit for bit.
+
+Each app (`src/streambench.cpp`) plays its sample through SDL3's audio stream as soon as it starts, decoding on SDL's audio thread, and times every decode call. Then it decodes the whole track again flat out on the main thread, as a cross-check, and exits.
+
+| VPK | Title | Decoder | Into SDL | Results |
+|---|---|---|---|---|
+| `opusbench_float.vpk` | `NFBN00004` | libopus, float | F32 | `opus-float.txt` |
+| `opusbench_fixed.vpk` | `NFBN00005` | libopus, fixed point | S16 | `opus-fixed.txt` |
+| `afcbench.vpk` | `NFBN00006` | AFC ADPCM, `afc.h` | S16 | `afc.txt` |
+
+Both libopus builds presume NEON, since the Vita has no run-time CPU detection. The fixed build replaces one assembly-only routine with libopus's C version (`src/opus_fixed_xcorr.c`); the decoder uses that routine only for packet-loss concealment.
+
+```sh
+python3 tools/vita-bench/make_stream_samples.py  # build/vita-bench/stream/{opus,afc}.bin [--track X.ast] [--bitrate 128k]
+cmake -S tools/vita-bench -B build/vita-bench/app -DNFBENCH_SAMPLES=$PWD/build/vita-bench/stream
+cmake --build build/vita-bench/app               # opusbench_float.vpk, opusbench_fixed.vpk, afcbench.vpk
+```
+
+Listen for glitches while it plays. Results, at 444 MHz: the share of one core spent decoding, mean and worst time per packet, and the longest audio callback. They are shown on screen and written to `ux0:data/nfbench/<results file>`. SDL3 and libopus are fetched by CMake at configure time. The samples are disc audio, so they stay under `build/`.
