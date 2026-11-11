@@ -49,7 +49,17 @@ One core, best of 3, throughput of decompressed output. Every entry is compresse
 
 ## Memory
 
-With the extended memory mode (`ATTRIBUTE2=12` in `param.sfo`) requested and a 96 MiB newlib heap, `sceKernelGetFreeMemorySize` still reported 153 MiB of user memory, 110 MiB of CDRAM and 26 MiB of physically contiguous memory free. Whether the mode was active (the `param.sfo` was replaced over FTP, not installed) is not yet confirmed; a build with `-DNFBENCH_EXTENDED_MEM=OFF` gives the default budget for comparison.
+Measured with `memcheck` (`tools/vita-bench/src/memcheck.cpp`), installed through VitaShell, with a 1 MiB newlib heap so the numbers are close to the app's whole budget:
+
+| | Default | Extended memory mode (`ATTRIBUTE2=12`) |
+|---|---|---|
+| User (`*_USER_RW`) | 249 MiB | **358 MiB** |
+| CDRAM | 112 MiB | 112 MiB |
+| Physically contiguous | 26 MiB | 26 MiB |
+
+* **The extended mode adds 109 MiB of user memory** and changes nothing else. The engine's Vita build sets it (`-d ATTRIBUTE2=12` in `VITA_MKSFOEX_FLAGS`).
+* **It is read from the installed `param.sfo`.** The storage benchmark above had its `param.sfo` replaced over FTP and got the default budget (153 MiB free beside its 96 MiB heap, 249 MiB in total), so a changed SFO needs a reinstall.
+* CDRAM (video memory) is separate from the user budget: textures, vertex buffers and render targets can live there without counting against the 358 MiB.
 
 ## Not measured
 

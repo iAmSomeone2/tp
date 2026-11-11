@@ -23,3 +23,7 @@ Leaving out `-DNFBENCH_CORPUS` gives a VPK without the `app0:` corpus. For the o
 Install the VPK, reboot the Vita (so the first reads are not cached), and run it. Results are shown on screen and written to `ux0:data/nfbench/results.txt`; START exits.
 
 The corpus is 28 archives (11.5 MiB): the logo scene's ARAM set, the Ordon stage and common object archives, with all members decompressed. It contains game data from your disc, so it and the VPK stay under `build/`.
+
+## memcheck
+
+Two tiny VPKs from the same build, `memcheck_default.vpk` (title `NFBN00002`, default memory budget) and `memcheck_extended.vpk` (`NFBN00003`, `ATTRIBUTE2=12` for the extended memory mode). Each writes its free user, CDRAM and physically contiguous memory to `ux0:data/nfbench/memory-<title>.txt` and exits at once, with newlib's heap kept to 1 MiB so the numbers are close to the full budget. Install both through VitaShell rather than copying files over FTP, so the system is sure to read each `param.sfo`. Run each once, and compare the two files.
