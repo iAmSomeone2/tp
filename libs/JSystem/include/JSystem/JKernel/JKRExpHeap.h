@@ -1,12 +1,12 @@
 #ifndef JKREXPHEAP_H
 #define JKREXPHEAP_H
 
-#include "JSystem/JKernel/JKRHeap.h"
 #include <stdint.h>
+#include "JSystem/JKernel/JKRHeap.h"
 
 /**
  * @ingroup jsystem-jkernel
- * 
+ *
  */
 class JKRExpHeap : public JKRHeap {
 public:
@@ -14,7 +14,7 @@ public:
         ALLOC_MODE_1 = 1,
     };
 
-    class CMemBlock {
+    class alignas(MIN_ALLOC_ALIGN) CMemBlock {
         friend class JKRExpHeap;
 
     public:
@@ -35,7 +35,9 @@ public:
         CMemBlock* getNextBlock() const { return mNext; }
         u32 getSize() const { return size; }
         u8 getGroupId() const { return mGroupId; }
-        static CMemBlock* getBlock(void* data) { return (CMemBlock*)((uintptr_t)data + -sizeof(CMemBlock)); }
+        static CMemBlock* getBlock(void* data) {
+            return (CMemBlock*)((uintptr_t)data + -sizeof(CMemBlock));
+        }
 
     private:
         /* 0x0 */ u16 mMagic;
@@ -66,11 +68,9 @@ public:
     BOOL isEmpty();
     s32 getUsedSize(u8 groupId) const;
     s32 getTotalUsedSize(void) const;
-    
+
     CMemBlock* getUsedFirst() { return mHeadUsedList; }
-    void setAllocationMode(EAllocMode mode) {
-        mAllocMode = mode;
-    }
+    void setAllocationMode(EAllocMode mode) { mAllocMode = mode; }
 
 public:
     /* vt[04] */ virtual u32 getHeapType();                                     /* override */
@@ -122,5 +122,8 @@ inline JKRExpHeap* JKRCreateExpHeap(u32 size, JKRHeap* parent, bool errorFlag) {
 inline void JKRDestroyExpHeap(JKRExpHeap* heap) {
     heap->destroy();
 }
+
+static_assert(sizeof(JKRExpHeap::CMemBlock) % MIN_ALLOC_ALIGN == 0,
+              "CMemBlock should be aligned to MIN_ALLOC_ALIGN");
 
 #endif /* JKREXPHEAP_H */

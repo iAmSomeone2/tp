@@ -90,15 +90,15 @@ void* JKRSolidHeap::do_alloc(u32 size, int alignment) {
 
     lock();
 
-    if (size < 4) {
-        size = 4;
+    if (size < MIN_ALLOC_ALIGN) {
+        size = MIN_ALLOC_ALIGN;
     }
 
     void* ptr;
     if (alignment >= 0) {
-        ptr = allocFromHead(size, alignment < 4 ? 4 : alignment);
+        ptr = allocFromHead(size, alignment < MIN_ALLOC_ALIGN ? MIN_ALLOC_ALIGN : alignment);
     } else {
-        ptr = allocFromTail(size, -alignment < 4 ? 4 : -alignment);
+        ptr = allocFromTail(size, -alignment < MIN_ALLOC_ALIGN ? MIN_ALLOC_ALIGN : -alignment);
     }
 
     unlock();

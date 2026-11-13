@@ -18,6 +18,13 @@ extern s32 fillcheck_dispcount;
 extern bool data_8074A8D0_debug;
 
 /**
+ * Minimum allocation alignment
+ *
+ * Block sizes must all be multiples of this value.
+ */
+static constexpr size_t MIN_ALLOC_ALIGN = alignof(std::max_align_t);
+
+/**
  * @ingroup jsystem-jkernel
  * 
  */
