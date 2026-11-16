@@ -1,5 +1,5 @@
 # Tests for JKernel: archive mount sharing, the decompression thread, the async-load callback and
-# JKRExpHeap block merging, JKRHeap as a std::pmr::memory_resource and the heaps' minimum alignment.
+# JKRExpHeap block merging, JKRHeap as a std::pmr::memory_resource, the heaps' minimum alignment and keeping the current heap on the main thread.
 #
 # These link the real JKernel code (see tests/JSystem/CMakeLists.txt).
 tp_add_test(JKernel_JKRArchivePub_test
@@ -34,6 +34,12 @@ tp_add_test(JKernel_JKRHeap_resource_test
 
 tp_add_test(JKernel_JKRHeap_alignment_test
     SOURCES JKRHeap_alignment_test.cpp
+    LIBRARIES tp_test_jsystem_libs
+    LENIENT_LINK
+)
+
+tp_add_test(JKernel_JKRHeap_thread_test
+    SOURCES JKRHeap_thread_test.cpp
     LIBRARIES tp_test_jsystem_libs
     LENIENT_LINK
 )

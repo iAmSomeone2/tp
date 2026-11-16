@@ -23,7 +23,8 @@
 //
 // How it is built: the real JKernel code is linked (through tp::engine). Test archives are small
 // JKRArchive subclasses that register themselves in the volume list without reading any data.
-// Heaps are made-up addresses: check_mount_already only compares them, never dereferences them.
+// heapA is a made-up address: check_mount_already only compares it. heapB is a real parentless heap,
+// because it becomes the current heap, and setting or reading that checks the heap's owner thread.
 
 #include <gtest/gtest.h>
 
@@ -32,6 +33,7 @@
 #include <vector>
 
 #include "JSystem/JKernel/JKRArchive.h"
+#include "JSystem/JKernel/JKRExpHeap.h"
 #include "JSystem/JKernel/JKRHeap.h"
 
 #include "support/load_time_stubs.hpp"
@@ -60,6 +62,28 @@ public:
 
 JKRHeap* FakeHeap(uintptr_t address) { return reinterpret_cast<JKRHeap*>(address); }
 
+struct TestExpHeap : JKRExpHeap {
+    TestExpHeap(void* data, u32 size) : JKRExpHeap(data, size, nullptr, false) {}
+};
+
+// A parentless heap over a static buffer, which makes this thread its owner. A null parent makes it
+// the system and current heap, so the previous ones are put back. It is never destroyed (~JKRHeap
+// unlinks from a parent it does not have).
+JKRHeap* RealHeap() {
+    constexpr u32 kSize = 0x1000;
+    alignas(32) static u8 buffer[kSize];
+    static JKRHeap* const heap = [] {
+        JKRHeap* const prevSystem = JKRHeap::getSystemHeap();
+        JKRHeap* const prevCurrent = JKRHeap::getCurrentHeap();
+        constexpr u32 kHeapObj = (sizeof(TestExpHeap) + 0x1F) & ~0x1F;
+        JKRHeap* h = new (buffer) TestExpHeap(buffer + kHeapObj, kSize - kHeapObj);
+        JKRHeap::setSystemHeap(prevSystem);
+        JKRHeap::setCurrentHeap(prevCurrent);
+        return h;
+    }();
+    return heap;
+}
+
 bool AddressFitsInAPointer(uintptr_t address) {
     return reinterpret_cast<uintptr_t>(reinterpret_cast<void*>(address)) == address;
 }
@@ -73,7 +97,7 @@ protected:
     }
 
     JKRHeap* heapA = FakeHeap(0x1000);
-    JKRHeap* heapB = FakeHeap(0x2000);
+    JKRHeap* heapB = RealHeap();
 
 private:
     std::vector<std::unique_ptr<TestArchive>> archives_;

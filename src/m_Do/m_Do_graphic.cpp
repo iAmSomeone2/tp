@@ -285,7 +285,7 @@ void mDoGph_gInf_c::create() {
     #endif
 
     #if PLATFORM_GCN
-    JFWDisplay::createManager(JKRHeap::sCurrentHeap, JUTXfb::UNK_2, true);
+    JFWDisplay::createManager(JKRHeap::getCurrentHeap(), JUTXfb::UNK_2, true);
     #else
     JFWDisplay::createManager(JKRHeap::getRootHeap2(), JUTXfb::UNK_2, true);
     #endif

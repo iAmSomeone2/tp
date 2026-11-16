@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <memory_resource>
 #include <new>
+#include <optional>
+#include <thread>
 #include <os.h>
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "global.h"
@@ -74,10 +76,10 @@ public:
     JKRHeap* find(void* ptr) const;
     JKRHeap* findAllHeap(void* ptr) const;
 
-    void dispose_subroutine(uintptr_t start, uintptr_t end);
-    bool dispose(void* ptr, u32 size);
-    void dispose(void* begin, void* end);
-    void dispose();
+    void dispose_subroutine(uintptr_t start, uintptr_t end) const;
+    bool dispose(void* ptr, u32 size) const;
+    void dispose(void* begin, void* end) const;
+    void dispose() const;
 
     bool setErrorFlag(bool errorFlag);
     bool isSubHeap(JKRHeap* heap) const;
@@ -117,7 +119,7 @@ public:
         }
     }
 
-    JKRHeap* getParent() { return mChildTree.getParent()->getObject(); }
+    [[nodiscard]] JKRHeap* getParent() const;
 
     JSUTree<JKRHeap>& getHeapTree() { return mChildTree; }
     void appendDisposer(JKRDisposer* disposer) { mDisposerList.append(&disposer->mLink); }
@@ -141,6 +143,7 @@ protected:
     /* 0x5C */ JSUList<JKRDisposer> mDisposerList;
     /* 0x68 */ bool mErrorFlag;
     /* 0x69 */ bool mInitFlag;
+    std::optional<std::thread::id> mHomeThread;
 
 public:
     static bool initArena(char** memory, u32* size, int maxHeaps);
@@ -171,9 +174,11 @@ public:
     static JKRHeap* getRootHeap2() { return sRootHeap2; }
 
     static JKRHeap* getSystemHeap() { return sSystemHeap; }
-    static JKRHeap* getCurrentHeap() { return sCurrentHeap; }
+    // static JKRHeap* getCurrentHeap() { return sCurrentHeap; }
+    static JKRHeap* getCurrentHeap();
     static void setSystemHeap(JKRHeap* heap) { sSystemHeap = heap; }
-    static void setCurrentHeap(JKRHeap* heap) { sCurrentHeap = heap; }
+    // static void setCurrentHeap(JKRHeap* heap) { sCurrentHeap = heap; }
+    static void setCurrentHeap(JKRHeap* heap);
 
     static void setState_u32ID_(TState* state, u32 id) { state->mId = id; }
     static void setState_uUsedSize_(TState* state, u32 usedSize) { state->mUsedSize = usedSize; }
@@ -205,6 +210,17 @@ private:
     void* do_allocate(std::size_t _bytes, std::size_t _alignment) override;
     void do_deallocate(void* _ptr, std::size_t _bytes, std::size_t _alignment) noexcept override;
     [[nodiscard]] bool do_is_equal(const memory_resource& _other) const noexcept override;
+    /**
+     * Recursively work through the heap tree until the root heap node is located.
+     * @param heap node to begin searching from
+     * @return a pointer to the located root heap node
+     */
+    [[nodiscard]] static const JKRHeap* getRoot(const JKRHeap* heap) noexcept;
+    /**
+     * Check whether the current thread is the same one that this heap was allocated from
+     * @return `true` if this is the 'home' thread; otherwise, `false`
+     */
+    [[nodiscard]] bool current_thread_is_home() const noexcept;
 };
 
 void* operator new(size_t size);
