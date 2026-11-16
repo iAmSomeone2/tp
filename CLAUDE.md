@@ -54,6 +54,7 @@ Port-analysis scripts (host clang, no disc image needed); each takes a minute or
 ```sh
 python3 tools/utilities/clang_sweep.py --report docs/port/compile-sweep.md        # how many of the CMake build's TUs parse with stock clang (--all-files: every .cpp)
 python3 tools/utilities/dup_symbol_check.py --report docs/port/duplicate-symbols.md  # symbols that would collide in a static link
+python3 tools/utilities/implicit_alloc_check.py --report docs/port/implicit-allocations.md  # new/delete/current-heap switches still relying on the current heap, per module (clang-query; needs a configured CMake build)
 python3 tools/utilities/ptr_trunc_check.py --report docs/port/pointer-truncation.md  # pointer-sized ints narrowed to 32 bits (needs a configured CMake build)
 python3 tools/utilities/port_survey.py                                            # writes docs/port/survey-data.md
 python3 tools/utilities/gen_actor_index.py                                        # writes docs/actor-index.md
