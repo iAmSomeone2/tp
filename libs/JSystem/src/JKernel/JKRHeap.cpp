@@ -661,3 +661,86 @@ s32 JKRHeap::do_changeGroupID(u8 param_0) {
 u8 JKRHeap::do_getCurrentGroupId() {
     return 0;
 }
+
+u32 JKRHeap::TState::getUsedSize() const { return mUsedSize; }
+u32 JKRHeap::TState::getCheckCode() const { return mCheckCode; }
+JKRHeap* JKRHeap::TState::getHeap() const { return mHeap; }
+u32 JKRHeap::TState::getId() const { return mId; }
+
+bool JKRHeap::dump_sort() { return true; }
+
+void JKRHeap::setDebugFill(bool debugFill) { mDebugFill = debugFill; }
+bool JKRHeap::getDebugFill() const { return mDebugFill; }
+void* JKRHeap::getStartAddr() { return mStart; }
+void* JKRHeap::getEndAddr() { return mEnd; }
+u32 JKRHeap::getSize() const { return mSize; }
+bool JKRHeap::getErrorFlag() const { return mErrorFlag; }
+
+void JKRHeap::callErrorHandler(void* heap, u32 size, int alignment) {
+    if (mErrorHandler) {
+        (*mErrorHandler)(heap, size, alignment);
+    }
+}
+
+JSUTree<JKRHeap>& JKRHeap::getHeapTree() { return mChildTree; }
+void JKRHeap::appendDisposer(JKRDisposer* disposer) { mDisposerList.append(&disposer->mLink); }
+void JKRHeap::removeDisposer(JKRDisposer* disposer) { mDisposerList.remove(&disposer->mLink); }
+void JKRHeap::lock() const { OSLockMutex(const_cast<OSMutex*>(&mMutex)); }
+void JKRHeap::unlock() const { OSUnlockMutex(const_cast<OSMutex*>(&mMutex)); }
+u32 JKRHeap::getHeapSize() { return mSize; }
+
+bool JKRHeap::isDefaultDebugFill() { return sDefaultFillFlag; }
+void JKRHeap::setDefaultDebugFill(bool status) { sDefaultFillFlag = status; }
+void* JKRHeap::getCodeStart() { return mCodeStart; }
+void* JKRHeap::getCodeEnd() { return mCodeEnd; }
+void* JKRHeap::getUserRamStart() { return mUserRamStart; }
+void* JKRHeap::getUserRamEnd() { return mUserRamEnd; }
+u32 JKRHeap::getMemorySize() { return mMemorySize; }
+JKRHeap* JKRHeap::getRootHeap() { return sRootHeap; }
+#if PLATFORM_WII || PLATFORM_SHIELD
+JKRHeap* JKRHeap::getRootHeap2() { return sRootHeap2; }
+#endif
+JKRHeap* JKRHeap::getSystemHeap() { return sSystemHeap; }
+void JKRHeap::setSystemHeap(JKRHeap* heap) { sSystemHeap = heap; }
+
+void JKRHeap::setState_u32ID_(TState* state, u32 id) { state->mId = id; }
+void JKRHeap::setState_uUsedSize_(TState* state, u32 usedSize) { state->mUsedSize = usedSize; }
+void JKRHeap::setState_u32CheckCode_(TState* state, u32 checkCode) { state->mCheckCode = checkCode; }
+void* JKRHeap::getState_buf_(TState* state) { return &state->mBuf; }
+
+void* JKRAllocFromHeap(JKRHeap* heap, u32 size, int alignment) {
+    return JKRHeap::alloc(size, alignment, heap);
+}
+
+void* JKRAllocFromSysHeap(u32 size, int alignment) {
+    return JKRHeap::getSystemHeap()->alloc(size, alignment);
+}
+
+void JKRFreeToHeap(JKRHeap* heap, void* ptr) { JKRHeap::free(ptr, heap); }
+void JKRFreeToSysHeap(void* ptr) { JKRHeap::getSystemHeap()->free(ptr); }
+void JKRFree(void* ptr) { JKRHeap::free(ptr, nullptr); }
+void JKRFillMemory(u8* dst, u32 size, u8 val) { JKRHeap::fillMemory(dst, size, val); }
+JKRHeap* JKRGetSystemHeap() { return JKRHeap::getSystemHeap(); }
+JKRHeap* JKRGetCurrentHeap() { return JKRHeap::getCurrentHeap(); }
+JKRHeap* JKRSetCurrentHeap(JKRHeap* heap) { return heap->becomeCurrentHeap(); }
+u32 JKRGetMemBlockSize(JKRHeap* heap, void* block) { return JKRHeap::getSize(block, heap); }
+u32 JKRGetFreeSize(JKRHeap* heap) { return heap->getFreeSize(); }
+void* JKRAlloc(u32 size, int alignment) { return JKRHeap::alloc(size, alignment, nullptr); }
+s32 JKRResizeMemBlock(JKRHeap* heap, void* ptr, u32 size) { return JKRHeap::resize(ptr, size, heap); }
+JKRHeap* JKRFindHeap(void* ptr) { return JKRHeap::findFromRoot(ptr); }
+JKRHeap* JKRGetRootHeap() { return JKRHeap::getRootHeap(); }
+
+JKRErrorHandler JKRSetErrorHandler(JKRErrorHandler errorHandler) {
+    return JKRHeap::setErrorHandler(errorHandler);
+}
+
+bool JKRSetErrorFlag(JKRHeap* heap, bool flag) { return heap->setErrorFlag(flag); }
+#if PLATFORM_WII || PLATFORM_SHIELD
+JKRHeap* JKRGetRootHeap2() { return JKRHeap::getRootHeap2(); }
+#endif
+
+#if DEBUG
+void JKRSetDebugFillNotuse(u8 status) { JKRValue_DEBUGFILL_NOTUSE = status; }
+void JKRSetDebugFillNew(u8 status) { JKRValue_DEBUGFILL_NEW = status; }
+void JKRSetDebugFillDelete(u8 status) { JKRValue_DEBUGFILL_DELETE = status; }
+#endif

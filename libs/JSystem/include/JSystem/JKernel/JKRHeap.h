@@ -45,10 +45,10 @@ public:
         /* 0x14 */ u32 mId;
 
     public:
-        u32 getUsedSize() const { return mUsedSize; }
-        u32 getCheckCode() const { return mCheckCode; }
-        JKRHeap* getHeap() const { return mHeap; }
-        u32 getId() const { return mId; }
+        u32 getUsedSize() const;
+        u32 getCheckCode() const;
+        JKRHeap* getHeap() const;
+        u32 getId() const;
     };
 
 public:
@@ -88,7 +88,7 @@ public:
     /* vt[03] */ virtual void callAllDisposer();
     /* vt[04] */ virtual u32 getHeapType() = 0;
     /* vt[05] */ virtual bool check() = 0;
-    /* vt[06] */ virtual bool dump_sort() { return true; }
+    /* vt[06] */ virtual bool dump_sort();
     /* vt[07] */ virtual bool dump() = 0;
     /* vt[08] */ virtual void do_destroy() = 0;
     /* vt[09] */ virtual void* do_alloc(u32 size, int alignment) = 0;
@@ -107,26 +107,22 @@ public:
     /* vt[22] */ virtual bool state_compare(JKRHeap::TState const& r1, JKRHeap::TState const& r2) const;
     /* vt[23] */ virtual void state_dump(JKRHeap::TState const& p) const;
 
-    void setDebugFill(bool debugFill) { mDebugFill = debugFill; }
-    bool getDebugFill() const { return mDebugFill; }
-    void* getStartAddr() { return (void*)mStart; }
-    void* getEndAddr() { return (void*)mEnd; }
-    u32 getSize() const { return mSize; }
-    bool getErrorFlag() const { return mErrorFlag; }
-    void callErrorHandler(void* heap, u32 size, int alignment) {
-        if (mErrorHandler) {
-            (*mErrorHandler)(heap, size, alignment);
-        }
-    }
+    void setDebugFill(bool debugFill);
+    bool getDebugFill() const;
+    void* getStartAddr();
+    void* getEndAddr();
+    u32 getSize() const;
+    bool getErrorFlag() const;
+    void callErrorHandler(void* heap, u32 size, int alignment);
 
     [[nodiscard]] JKRHeap* getParent() const;
 
-    JSUTree<JKRHeap>& getHeapTree() { return mChildTree; }
-    void appendDisposer(JKRDisposer* disposer) { mDisposerList.append(&disposer->mLink); }
-    void removeDisposer(JKRDisposer* disposer) { mDisposerList.remove(&disposer->mLink); }
-    void lock() const { OSLockMutex(const_cast<OSMutex*>(&mMutex)); }
-    void unlock() const { OSUnlockMutex(const_cast<OSMutex*>(&mMutex)); }
-    u32 getHeapSize() { return mSize; }
+    JSUTree<JKRHeap>& getHeapTree();
+    void appendDisposer(JKRDisposer* disposer);
+    void removeDisposer(JKRDisposer* disposer);
+    void lock() const;
+    void unlock() const;
+    u32 getHeapSize();
 
 protected:
     /* 0x00 */  // vtable
@@ -162,30 +158,26 @@ public:
     static void fillMemory(u8*, u32, u8);
     static bool checkMemoryFilled(u8*, u32, u8);
 
-    static bool isDefaultDebugFill() { return sDefaultFillFlag; }
-    static void setDefaultDebugFill(bool status) { sDefaultFillFlag = status; }
-    static void* getCodeStart(void) { return mCodeStart; }
-    static void* getCodeEnd(void) { return mCodeEnd; }
-    static void* getUserRamStart(void) { return mUserRamStart; }
-    static void* getUserRamEnd(void) { return mUserRamEnd; }
-    static u32 getMemorySize(void) { return mMemorySize; }
-    static JKRHeap* getRootHeap() { return sRootHeap; }
+    static bool isDefaultDebugFill();
+    static void setDefaultDebugFill(bool status);
+    static void* getCodeStart();
+    static void* getCodeEnd();
+    static void* getUserRamStart();
+    static void* getUserRamEnd();
+    static u32 getMemorySize();
+    static JKRHeap* getRootHeap();
 
-    static JKRHeap* getRootHeap2() { return sRootHeap2; }
+    static JKRHeap* getRootHeap2();
 
-    static JKRHeap* getSystemHeap() { return sSystemHeap; }
-    // static JKRHeap* getCurrentHeap() { return sCurrentHeap; }
+    static JKRHeap* getSystemHeap();
     static JKRHeap* getCurrentHeap();
-    static void setSystemHeap(JKRHeap* heap) { sSystemHeap = heap; }
-    // static void setCurrentHeap(JKRHeap* heap) { sCurrentHeap = heap; }
+    static void setSystemHeap(JKRHeap* heap);
     static void setCurrentHeap(JKRHeap* heap);
 
-    static void setState_u32ID_(TState* state, u32 id) { state->mId = id; }
-    static void setState_uUsedSize_(TState* state, u32 usedSize) { state->mUsedSize = usedSize; }
-    static void setState_u32CheckCode_(TState* state, u32 checkCode) {
-        state->mCheckCode = checkCode;
-    }
-    static void* getState_buf_(TState* state) { return &state->mBuf; }
+    static void setState_u32ID_(TState* state, u32 id);
+    static void setState_uUsedSize_(TState* state, u32 usedSize);
+    static void setState_u32CheckCode_(TState* state, u32 checkCode);
+    static void* getState_buf_(TState* state);
 
     static void* mCodeStart;
     static void* mCodeEnd;
@@ -236,80 +228,27 @@ void operator delete[](void* ptr);
 
 void JKRDefaultMemoryErrorRoutine(void* heap, u32 size, int alignment);
 
-inline void* JKRAllocFromHeap(JKRHeap* heap, u32 size, int alignment) {
-    return JKRHeap::alloc(size, alignment, heap);
-}
-
-inline void* JKRAllocFromSysHeap(u32 size, int alignment) {
-    return JKRHeap::getSystemHeap()->alloc(size, alignment);
-}
-
-inline void JKRFreeToHeap(JKRHeap* heap, void* ptr) {
-    JKRHeap::free(ptr, heap);
-}
-
-inline void JKRFreeToSysHeap(void* ptr) {
-    JKRHeap::getSystemHeap()->free(ptr);
-}
-
-inline void JKRFree(void* ptr) {
-    JKRHeap::free(ptr, NULL);
-}
-
-inline void JKRFillMemory(u8* dst, u32 size, u8 val) {
-    JKRHeap::fillMemory(dst, size, val);
-}
-
-inline JKRHeap* JKRGetSystemHeap() {
-    return JKRHeap::getSystemHeap();
-}
-
-inline JKRHeap* JKRGetCurrentHeap() {
-    return JKRHeap::getCurrentHeap();
-}
-
-inline JKRHeap* JKRSetCurrentHeap(JKRHeap* heap) {
-    return heap->becomeCurrentHeap();
-}
-
-inline u32 JKRGetMemBlockSize(JKRHeap* heap, void* block) {
-    return JKRHeap::getSize(block, heap);
-}
-
-inline u32 JKRGetFreeSize(JKRHeap* heap) {
-    return heap->getFreeSize();
-}
-
-inline void* JKRAlloc(u32 size, int alignment) {
-    return JKRHeap::alloc(size, alignment, NULL);
-}
-
-inline s32 JKRResizeMemBlock(JKRHeap* heap, void* ptr, u32 size) {
-    return JKRHeap::resize(ptr, size, heap);
-}
-
-inline JKRHeap* JKRFindHeap(void* ptr) {
-    return JKRHeap::findFromRoot(ptr);
-}
-
-inline JKRHeap* JKRGetRootHeap() {
-    return JKRHeap::getRootHeap();
-}
-
-inline JKRErrorHandler JKRSetErrorHandler(JKRErrorHandler errorHandler) {
-    return JKRHeap::setErrorHandler(errorHandler);
-}
-
-inline bool JKRSetErrorFlag(JKRHeap* heap, bool flag) {
-    return heap->setErrorFlag(flag);
-}
-
-inline JKRHeap* JKRGetRootHeap2() {
-    return JKRHeap::getRootHeap2();
-}
+void* JKRAllocFromHeap(JKRHeap* heap, u32 size, int alignment);
+void* JKRAllocFromSysHeap(u32 size, int alignment);
+void JKRFreeToHeap(JKRHeap* heap, void* ptr);
+void JKRFreeToSysHeap(void* ptr);
+void JKRFree(void* ptr);
+void JKRFillMemory(u8* dst, u32 size, u8 val);
+JKRHeap* JKRGetSystemHeap();
+JKRHeap* JKRGetCurrentHeap();
+JKRHeap* JKRSetCurrentHeap(JKRHeap* heap);
+u32 JKRGetMemBlockSize(JKRHeap* heap, void* block);
+u32 JKRGetFreeSize(JKRHeap* heap);
+void* JKRAlloc(u32 size, int alignment);
+s32 JKRResizeMemBlock(JKRHeap* heap, void* ptr, u32 size);
+JKRHeap* JKRFindHeap(void* ptr);
+JKRHeap* JKRGetRootHeap();
+JKRErrorHandler JKRSetErrorHandler(JKRErrorHandler errorHandler);
+bool JKRSetErrorFlag(JKRHeap* heap, bool flag);
+JKRHeap* JKRGetRootHeap2();
 
 #if DEBUG
-inline void JKRSetDebugFillNotuse(u8 status) { JKRValue_DEBUGFILL_NOTUSE = status; }
-inline void JKRSetDebugFillNew(u8 status) { JKRValue_DEBUGFILL_NEW = status; }
-inline void JKRSetDebugFillDelete(u8 status) { JKRValue_DEBUGFILL_DELETE = status; }
+void JKRSetDebugFillNotuse(u8 status);
+void JKRSetDebugFillNew(u8 status);
+void JKRSetDebugFillDelete(u8 status);
 #endif
