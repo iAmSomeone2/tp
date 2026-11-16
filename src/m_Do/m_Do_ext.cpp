@@ -3797,7 +3797,11 @@ int DummyCheckHeap_init() {
 int DummyCheckHeap_create() {
     if (dch != NULL) {
         if (dch->mHeap == NULL) {
+#if PLATFORM_WII || PLATFORM_SHIELD
             JKRHeap* rootHeap = JKRGetRootHeap2();
+#else
+            JKRHeap* rootHeap = JKRGetRootHeap();
+#endif
             JKRHeap* heap = JKRCreateExpHeap(0x60000, rootHeap, false);
             if (heap == NULL) {
                 // "DummyCheckHeap allocation failure"

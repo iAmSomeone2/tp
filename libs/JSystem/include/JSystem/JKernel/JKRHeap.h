@@ -167,7 +167,9 @@ public:
     static u32 getMemorySize();
     static JKRHeap* getRootHeap();
 
+#if PLATFORM_WII || PLATFORM_SHIELD
     static JKRHeap* getRootHeap2();
+#endif
 
     static JKRHeap* getSystemHeap();
     static JKRHeap* getCurrentHeap();
@@ -191,7 +193,9 @@ public:
 
     static JKRHeap* sRootHeap;
 
+#if PLATFORM_WII || PLATFORM_SHIELD
     static JKRHeap* sRootHeap2;
+#endif
 
     static JKRHeap* sSystemHeap;
     static JKRHeap* sCurrentHeap;
@@ -245,7 +249,9 @@ JKRHeap* JKRFindHeap(void* ptr);
 JKRHeap* JKRGetRootHeap();
 JKRErrorHandler JKRSetErrorHandler(JKRErrorHandler errorHandler);
 bool JKRSetErrorFlag(JKRHeap* heap, bool flag);
+#if PLATFORM_WII || PLATFORM_SHIELD
 JKRHeap* JKRGetRootHeap2();
+#endif
 
 #if DEBUG
 void JKRSetDebugFillNotuse(u8 status);
