@@ -1323,7 +1323,6 @@ config.libs = [
             Object(NonMatching, "JSystem/JKernel/JKRStdHeap.cpp"),
             Object(MatchingFor(ALL_GCN), "JSystem/JKernel/JKRExpHeap.cpp"),
             Object(MatchingFor(ALL_GCN), "JSystem/JKernel/JKRSolidHeap.cpp"),
-            Object(MatchingFor(ALL_GCN), "JSystem/JKernel/JKRAssertHeap.cpp"),
             Object(MatchingFor(ALL_GCN, "Shield"), "JSystem/JKernel/JKRDisposer.cpp"),
             Object(MatchingFor(ALL_GCN), "JSystem/JKernel/JKRThread.cpp"),
             Object(MatchingFor(ALL_GCN), "JSystem/JKernel/JKRAram.cpp"),

@@ -4,15 +4,15 @@ Hand-written work list for the `task/std-compiler-fixes` branch. Each item gives
 
 **Targets.** The GameCube retail configuration (USA, PAL, JPN) built with stock Clang and GCC on **64-bit Linux (LP64)** is a real target, alongside macOS on Apple silicon and, later, the 32-bit Vita. So LP64 problems (64-bit pointers, 64-bit `long`) are requirements here, not nice-to-haves. **ShieldD (`DEBUG=1`) and the Wii/Shield versions are not targets**; their items in section D are kept for reference and are not planned.
 
-First measured with Apple clang 21 (`-std=c++20 -fsyntax-only`, no Metrowerks/MSL headers); the current numbers are from Clang 22.1 and GCC 16.2 on Fedora, which agree.
+First measured with Apple clang 21 (`-std=c++20 -fsyntax-only`, no Metrowerks/MSL headers); the current numbers are from Clang 23.1 and GCC 16.2 on Fedora, which agree.
 
 ## Where things stand
 
-For the GameCube file set (what the CMake build compiles: 1,280 files for USA):
+For the GameCube file set (what the CMake build compiles: 1,279 files for USA):
 
 * **Before the integer-typedef change, 1,275 of 1,280 compiled.** Every source item in sections A–C was done; the five that failed (`d_a_grass`, `d_a_mant`, `d_a_player`, `d_error_msg`, `m_Do_ext`) need generated `assets/*.h` from a disc image and no source change.
 * **After `libs/dolphin/include/dolphin/types.h` was switched to `<cstdint>` types, 313 compiled and 967 failed** (85 error sites, section F). That was the expected fallout of making `u32`/`s32` 32-bit on a 64-bit host, not a regression elsewhere.
-* **Now: 1,275 compile and 5 fail** without a disc image, with both Clang 22.1 and GCC 16.2. The pointer casts and type mismatches of section F are fixed (except `d_a_movie_player`). Four of the five failing files (`d_a_grass`, `d_a_mant`, `d_a_player`, `m_Do_ext`) need generated `assets/*.h`, which needs no source change; with a disc image they compile (1,279 of 1,280). `d_error_msg` no longer needs assets since its disc-error screen was removed. The fifth, `d_a_movie_player`, has six `(u32)&(h->maxCode)` sites that exist only in the PPC-asm path and are intentionally skipped.
+* **Now: 1,274 compile and 5 fail** without a disc image, with both Clang 23.1 and GCC 16.2. The pointer casts and type mismatches of section F are fixed (except `d_a_movie_player`). Four of the five failing files (`d_a_grass`, `d_a_mant`, `d_a_player`, `m_Do_ext`) need generated `assets/*.h`, which needs no source change; with a disc image they compile (1,278 of 1,279). `d_error_msg` no longer needs assets since its disc-error screen was removed. The fifth, `d_a_movie_player`, has six `(u32)&(h->maxCode)` sites that exist only in the PPC-asm path and are intentionally skipped.
 
 History, as failing files in the CMake build: 65 at the first build, 32 after the math macros, 15 after the narrowing and `case`-label fixes, 5, then 967 once the typedefs changed, 45, then 6.
 

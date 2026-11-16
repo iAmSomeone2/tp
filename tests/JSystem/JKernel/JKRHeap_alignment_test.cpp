@@ -10,65 +10,17 @@
 
 #include <gtest/gtest.h>
 
-#include <sys/mman.h>
-
 #include <cstdint>
-#include <cstdlib>
 #include <new>
 #include <vector>
 
-#include "JSystem/JKernel/JKRExpHeap.h"
-#include "JSystem/JKernel/JKRSolidHeap.h"
-
 #include "support/load_time_stubs.hpp"
 #include "support/os_stubs.hpp"
+#include "support/owned_heap.hpp"
 
 namespace {
 
-constexpr u32 kHeapSize = 0x10000;
 constexpr u32 kSizes[] = {1, 3, 17, 100, 5, 33, 7, 250, 2, 64, 12, 1000};
-
-// The heap constructors are protected. A null parent makes a heap the system and current heap,
-// so the previous ones are put back at once (gtest allocates through the global operator new).
-struct TestExpHeap : JKRExpHeap {
-    TestExpHeap(void* data, u32 size) : JKRExpHeap(data, size, nullptr, false) {}
-};
-struct TestSolidHeap : JKRSolidHeap {
-    TestSolidHeap(void* data, u32 size) : JKRSolidHeap(data, size, nullptr, false) {}
-};
-
-// A heap over its own buffer, placed at the start of it like JKR*Heap::create() does. Its
-// destructor is not run: ~JKRHeap unlinks from the parent, which these heaps do not have.
-//
-// The buffer comes from mmap, which on a 64-bit host places it above 4 GiB even when the test is
-// not a PIE (malloc's heap then sits low), so pointer truncation in the heaps shows up here.
-template <class Heap>
-class OwnedHeap {
-public:
-    OwnedHeap()
-        : mBuffer(static_cast<u8*>(mmap(nullptr, kHeapSize, PROT_READ | PROT_WRITE,
-                                        MAP_PRIVATE | MAP_ANONYMOUS, -1, 0))) {
-        if (mBuffer == MAP_FAILED) {
-            std::abort();
-        }
-        constexpr u32 kHeapObj = (sizeof(Heap) + 0x1F) & ~0x1F;
-        JKRHeap* const prevSystem = JKRHeap::getSystemHeap();
-        JKRHeap* const prevCurrent = JKRHeap::getCurrentHeap();
-        mHeap = new (mBuffer) Heap(mBuffer + kHeapObj, kHeapSize - kHeapObj);
-        JKRHeap::setSystemHeap(prevSystem);
-        JKRHeap::setCurrentHeap(prevCurrent);
-    }
-    ~OwnedHeap() { munmap(mBuffer, kHeapSize); }
-    OwnedHeap(const OwnedHeap&) = delete;
-    OwnedHeap& operator=(const OwnedHeap&) = delete;
-
-    Heap* operator->() const { return mHeap; }
-    Heap* get() const { return mHeap; }
-
-private:
-    u8* mBuffer;
-    Heap* mHeap;
-};
 
 std::uintptr_t addr(const void* p) {
     return reinterpret_cast<std::uintptr_t>(p);

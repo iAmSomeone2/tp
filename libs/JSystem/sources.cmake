@@ -181,7 +181,6 @@ set(TP_JSYSTEM_JKERNEL_SOURCES
     src/JKernel/JKRHeap.cpp
     src/JKernel/JKRExpHeap.cpp
     src/JKernel/JKRSolidHeap.cpp
-    src/JKernel/JKRAssertHeap.cpp
     src/JKernel/JKRDisposer.cpp
     src/JKernel/JKRThread.cpp
     src/JKernel/JKRAram.cpp

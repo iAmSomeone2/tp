@@ -14,44 +14,23 @@
 
 #include <gtest/gtest.h>
 
-#include <sys/mman.h>
-
 #include <cstdint>
-#include <new>
-
-#include "JSystem/JKernel/JKRExpHeap.h"
 
 #include "support/load_time_stubs.hpp"
 #include "support/os_stubs.hpp"
+#include "support/owned_heap.hpp"
 
 namespace {
-
-// JKRExpHeap's constructor is protected. A null parent makes it the system and current heap; the
-// test puts the previous ones back straight away so that the global operator new (which allocates
-// from the current JKR heap) keeps using the host allocator for gtest's own allocations.
-struct TestExpHeap : JKRExpHeap {
-    TestExpHeap(void* data, u32 size) : JKRExpHeap(data, size, nullptr, false) {}
-};
 
 TEST(JKRExpHeap, FreeBelowA4GiBBoundaryWithFreeSpaceAboveIt) {
     if constexpr (sizeof(void*) < 8) {
         GTEST_SKIP() << "needs a 64-bit address space";
     }
     constexpr uintptr_t kBoundary = uintptr_t{2} << 32;  // 8 GiB
-    constexpr size_t kMapSize = 0x10000;
-    void* hint = reinterpret_cast<void*>(kBoundary - 0x4000);
-    void* map = mmap(hint, kMapSize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (map == MAP_FAILED || map != hint) {
-        if (map != MAP_FAILED) munmap(map, kMapSize);
+    OwnedHeap heap(0x10000, reinterpret_cast<void*>(kBoundary - 0x4000));
+    if (heap.get() == nullptr) {
         GTEST_SKIP() << "could not map memory across the 4 GiB boundary";
     }
-
-    constexpr u32 kHeapObj = (sizeof(TestExpHeap) + 0xF) & ~0xF;
-    JKRHeap* const prevSystem = JKRHeap::getSystemHeap();
-    JKRHeap* const prevCurrent = JKRHeap::getCurrentHeap();
-    auto* heap = new (map) TestExpHeap(static_cast<u8*>(map) + kHeapObj, kMapSize - kHeapObj);
-    JKRHeap::setSystemHeap(prevSystem);
-    JKRHeap::setCurrentHeap(prevCurrent);
     const s32 total = heap->getTotalFreeSize();
 
     void* below = heap->alloc(0x1000, 0x10);  // well below the boundary
@@ -68,8 +47,6 @@ TEST(JKRExpHeap, FreeBelowA4GiBBoundaryWithFreeSpaceAboveIt) {
     heap->free(across);  // everything merges back into one block
     EXPECT_EQ(heap->getFreeSize(), total);  // the largest free block is the whole heap again
     EXPECT_EQ(heap->getTotalFreeSize(), total);
-
-    munmap(map, kMapSize);
 }
 
 }  // namespace

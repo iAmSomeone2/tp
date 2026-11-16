@@ -12,53 +12,14 @@
 
 #include <csignal>
 #include <cstdint>
-#include <cstdlib>
 #include <new>
 #include <thread>
 
-#include "JSystem/JKernel/JKRExpHeap.h"
-
 #include "support/load_time_stubs.hpp"
 #include "support/os_stubs.hpp"
+#include "support/owned_heap.hpp"
 
 namespace {
-
-constexpr u32 kHeapSize = 0x10000;
-
-struct TestExpHeap : JKRExpHeap {
-    TestExpHeap(void* data, u32 size) : JKRExpHeap(data, size, nullptr, false) {}
-};
-
-// A root-like ExpHeap over its own buffer. Constructing it records the calling thread as the main
-// thread; the previous system and current heaps are put back so gtest keeps using the host
-// allocator. Its destructor is not run (~JKRHeap unlinks from a parent it does not have).
-class OwnedHeap {
-public:
-    OwnedHeap() : mBuffer(static_cast<u8*>(std::aligned_alloc(32, kHeapSize))) {
-        constexpr u32 kHeapObj = (sizeof(TestExpHeap) + 0x1F) & ~0x1F;
-        JKRHeap* const prevSystem = JKRHeap::getSystemHeap();
-        JKRHeap* const prevCurrent = JKRHeap::getCurrentHeap();
-        mHeap = new (mBuffer) TestExpHeap(mBuffer + kHeapObj, kHeapSize - kHeapObj);
-        JKRHeap::setSystemHeap(prevSystem);
-        JKRHeap::setCurrentHeap(prevCurrent);
-    }
-    ~OwnedHeap() { std::free(mBuffer); }
-    OwnedHeap(const OwnedHeap&) = delete;
-    OwnedHeap& operator=(const OwnedHeap&) = delete;
-
-    JKRExpHeap* get() const { return mHeap; }
-    JKRExpHeap* operator->() const { return mHeap; }
-
-    bool contains(const void* p) const {
-        auto a = reinterpret_cast<std::uintptr_t>(p);
-        return a >= reinterpret_cast<std::uintptr_t>(mHeap->getStartAddr()) &&
-               a < reinterpret_cast<std::uintptr_t>(mHeap->getEndAddr());
-    }
-
-private:
-    u8* mBuffer;
-    TestExpHeap* mHeap;
-};
 
 // Makes `heap` the root and current heap for the scope (on the main thread), and puts the previous
 // ones back. Everything allocated meanwhile through the global operator new comes from `heap`,
@@ -87,7 +48,7 @@ void onWorkerThread(F f) {
 }
 
 TEST(JKRHeapThread, MainThreadAllocatesFromTheCurrentHeap) {
-    OwnedHeap heap;
+    OwnedHeap<> heap;
     CurrentHeapScope scope(heap.get());
     EXPECT_EQ(JKRHeap::getCurrentHeap(), heap.get());
 
@@ -101,7 +62,7 @@ TEST(JKRHeapThread, MainThreadAllocatesFromTheCurrentHeap) {
 }
 
 TEST(JKRHeapThread, WorkerAllocatesFromANamedHeap) {
-    OwnedHeap heap;
+    OwnedHeap<> heap;
     const s32 total = heap->getTotalFreeSize();
     CurrentHeapScope scope(heap.get());  // a current heap exists, but the worker does not use it
 
@@ -135,7 +96,7 @@ protected:
 TEST_F(JKRHeapThreadDeathTest, WorkerImplicitNewAborts) {
     EXPECT_EXIT(
         {
-            OwnedHeap heap;
+            OwnedHeap<> heap;
             CurrentHeapScope scope(heap.get());
             onWorkerThread([] { delete new int(1); });
         },
@@ -145,7 +106,7 @@ TEST_F(JKRHeapThreadDeathTest, WorkerImplicitNewAborts) {
 TEST_F(JKRHeapThreadDeathTest, WorkerAllocWithANullHeapAborts) {
     EXPECT_EXIT(
         {
-            OwnedHeap heap;
+            OwnedHeap<> heap;
             CurrentHeapScope scope(heap.get());
             onWorkerThread([] { JKRAllocFromHeap(nullptr, 64, 0); });
         },
@@ -155,7 +116,7 @@ TEST_F(JKRHeapThreadDeathTest, WorkerAllocWithANullHeapAborts) {
 TEST_F(JKRHeapThreadDeathTest, WorkerReadingTheCurrentHeapAborts) {
     EXPECT_EXIT(
         {
-            OwnedHeap heap;
+            OwnedHeap<> heap;
             CurrentHeapScope scope(heap.get());
             onWorkerThread([] { (void)JKRHeap::getCurrentHeap(); });
         },
@@ -165,7 +126,7 @@ TEST_F(JKRHeapThreadDeathTest, WorkerReadingTheCurrentHeapAborts) {
 TEST_F(JKRHeapThreadDeathTest, WorkerSetCurrentHeapAborts) {
     EXPECT_EXIT(
         {
-            OwnedHeap heap;
+            OwnedHeap<> heap;
             onWorkerThread([&] { JKRHeap::setCurrentHeap(heap.get()); });
         },
         ::testing::KilledBySignal(SIGABRT), "");
@@ -174,7 +135,7 @@ TEST_F(JKRHeapThreadDeathTest, WorkerSetCurrentHeapAborts) {
 TEST_F(JKRHeapThreadDeathTest, WorkerBecomeCurrentHeapAborts) {
     EXPECT_EXIT(
         {
-            OwnedHeap heap;
+            OwnedHeap<> heap;
             onWorkerThread([&] { heap->becomeCurrentHeap(); });
         },
         ::testing::KilledBySignal(SIGABRT), "");
