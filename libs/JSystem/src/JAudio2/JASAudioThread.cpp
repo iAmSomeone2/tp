@@ -29,9 +29,6 @@ void JASAudioThread::create(s32 threadPriority) {
 #endif
     JASAudioThread* pAudioThread = new (JASDram, 0) JASAudioThread(threadPriority, 0x10, size);
     JUT_ASSERT(46, pAudioThread);
-    JKRHeap* pCurrentHeap = JKRGetSystemHeap();
-    JUT_ASSERT(48, pCurrentHeap);
-    pAudioThread->setCurrentHeap(pCurrentHeap);
     pAudioThread->resume();
 }
 

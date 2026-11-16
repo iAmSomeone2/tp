@@ -882,7 +882,6 @@ int mDoMch_Create() {
     JFWSystem::firstInit();
     JKRExpHeap* dbPrintHeap = mDoExt_createDbPrintHeap(dbPrintHeapSize, JKRGetRootHeap());
     JUTDbPrint::start(NULL, dbPrintHeap);
-    mDoExt_createAssertHeap(JKRGetRootHeap());
     JFWSystem::init();
 
     if (mDoMain::developmentMode == 0) {

@@ -73,12 +73,6 @@ public:
     OSThread* getThreadRecord() const { return mThreadRecord; }
     void* getStack() const { return mStackMemory; }
     TLoad* getLoadInfo() { return &mLoadInfo; }
-    JKRHeap* getCurrentHeap() const { return mCurrentHeap; }
-    s32 getCurrentHeapError() const { return mCurrentHeapError; }
-
-    void setCurrentHeap(JKRHeap* heap) {
-        mCurrentHeap = heap ? heap : JKRHeap::getCurrentHeap();
-    }
 
     void resume() { OSResumeThread(mThreadRecord); }
     BOOL sendMessage(OSMessage message) {
@@ -122,8 +116,6 @@ private:
     /* 0x58 */ void* mStackMemory;
     /* 0x5C */ u32 mStackSize;
     /* 0x60 */ TLoad mLoadInfo;
-    /* 0x74 */ JKRHeap* mCurrentHeap;
-    /* 0x78 */ s32 mCurrentHeapError;
 
 public:
     static void* start(void* param_1);
@@ -175,8 +167,6 @@ private:
 private:
     /* 0x00 */  // vtable
     /* 0x04 */ JKRHeap* mHeap;
-    /* 0x08 */ bool mSetNextHeap;
-    /* 0x09 */ u8 field_0x9[3];
     /* 0x0C */ u32 field_0xC;
     /* 0x10 */ u32 field_0x10;
     /* 0x14 */ u8 field_0x14[4];

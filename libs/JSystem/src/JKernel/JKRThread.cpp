@@ -71,9 +71,6 @@ void JKRThread::setCommon_mesgQueue(JKRHeap* heap, int message_count) {
 
     OSInitMessageQueue(&mMessageQueue, mMesgBuffer, mMessageCount);
     sThreadList.append(&mThreadListLink);
-
-    mCurrentHeap = NULL;
-    mCurrentHeapError = 0;
 }
 
 void JKRThread::setCommon_heapSpecified(JKRHeap* heap, u32 stack_size, int param_3) {
@@ -117,7 +114,6 @@ JKRThreadSwitch::JKRThreadSwitch(JKRHeap* param_0) {
     sTotalStart = 0;
     this->field_0x20 = 0;
     this->field_0x24 = 0;
-    mSetNextHeap = true;
 }
 
 JKRThreadSwitch* JKRThreadSwitch::createManager(JKRHeap* heap) {
@@ -166,12 +162,12 @@ void JKRThreadSwitch::callback(OSThread* current, OSThread* next) {
 
     sTotalCount = sTotalCount + 1;
 
-    JKRHeap* next_heap = NULL;
+    // The console swapped the current heap per thread here. The current heap now belongs to the main
+    // thread alone and other threads name their heap (docs/port/memory-design.md, step 0).
     for (JSUListIterator<JKRThread> iterator = JKRThread::getList().getFirst(); iterator != JKRThread::getList().getEnd(); ++iterator) {
         JKRThread* thread = iterator.getObject();
 
         if (thread->getThreadRecord() == current) {
-            thread->setCurrentHeap(JKRHeap::getCurrentHeap());
             if (thread->getLoadInfo()->isValid()) {
                 thread->getLoadInfo()->addCurrentCost();
             }
@@ -182,40 +178,7 @@ void JKRThreadSwitch::callback(OSThread* current, OSThread* next) {
                 thread->getLoadInfo()->setCurrentTime();
                 thread->getLoadInfo()->incCount();
             }
-
-            if (sManager->mSetNextHeap) {
-                next_heap = thread->getCurrentHeap();
-                if (!next_heap) {
-                    next_heap = JKRHeap::getCurrentHeap();
-                } else if (JKRHeap::getRootHeap()->isSubHeap(next_heap)) {
-                    continue;
-                #if PLATFORM_WII || PLATFORM_SHIELD
-                } else if (JKRHeap::getRootHeap2()->isSubHeap(next_heap)) {
-                    continue;
-                #endif
-                } else {
-                    switch (thread->getCurrentHeapError()) {
-                    case 0:
-                        JUT_PANIC(508, "JKRThreadSwitch: currentHeap destroyed.");
-                        break;
-                    case 1:
-                        JUTWarningConsole("JKRThreadSwitch: currentHeap destroyed.\n");
-                        next_heap = JKRHeap::getCurrentHeap();
-                        break;
-                    case 2:
-                        next_heap = JKRHeap::getCurrentHeap();
-                        break;
-                    case 3:
-                        next_heap = JKRHeap::getSystemHeap();
-                        break;
-                    }
-                }
-            }
         }
-    }
-
-    if (next_heap) {
-        next_heap->becomeCurrentHeap();
     }
 
     if (mUserPostCallback) {

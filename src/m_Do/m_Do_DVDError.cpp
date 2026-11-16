@@ -6,7 +6,6 @@
 #include "m_Do/machine.h" // IWYU pragma: keep
 
 #include "m_Do/m_Do_DVDError.h"
-#include "JSystem/JKernel/JKRAssertHeap.h"
 #include "JSystem/JKernel/JKRThread.h"
 #include <os.h>
 #include "m_Do/m_Do_dvd_thread.h"
@@ -60,8 +59,6 @@ static void mDoDvdErr_Watch(void*) {
     OSDisableInterrupts();
 #endif
     JKRThread(OSGetCurrentThread(), 0);
-
-    JKRSetCurrentHeap(mDoExt_getAssertHeap());
 
     s32 status;
     do {

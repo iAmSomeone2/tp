@@ -18,11 +18,6 @@ bool JASDvd::createThread(s32 priority, int msgCount, u32 stackSize) {
 
     sThread = new (JASDram, 0) JASTaskThread(priority, msgCount, stackSize);
     JUT_ASSERT(36, sThread);
-
-    JKRHeap* pCurrentHeap = JKRGetSystemHeap();
-    JUT_ASSERT(38, pCurrentHeap);
-
-    sThread->setCurrentHeap(pCurrentHeap);
     sThread->resume();
 	return true;
 }

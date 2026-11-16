@@ -9,7 +9,6 @@
 #include "m_Do/m_Do_mtx.h"
 
 class JKRArchive;
-class JKRAssertHeap;
 class JKRExpHeap;
 class JKRHeap;
 class JKRSolidHeap;
@@ -794,14 +793,12 @@ JKRHeap* mDoExt_setCurrentHeap(JKRHeap* i_heap);
 JKRExpHeap* mDoExt_getArchiveHeap();
 JKRExpHeap* mDoExt_getArchiveHeapPtr();
 void mDoExt_destroyExpHeap(JKRExpHeap* i_heap);
-JKRAssertHeap* mDoExt_getAssertHeap();
 JKRExpHeap* mDoExt_getCommandHeap();
 JKRExpHeap* mDoExt_getZeldaHeap();
 JKRExpHeap* mDoExt_getJ2dHeap();
 JKRExpHeap* mDoExt_getHostIOHeap();
 JKRExpHeap* mDoExt_getDbPrintHeap();
 JKRExpHeap* mDoExt_createDbPrintHeap(u32 heapSize, JKRHeap* parentHeap);
-JKRAssertHeap* mDoExt_createAssertHeap(JKRHeap* parentHeap);
 JKRExpHeap* mDoExt_createCommandHeap(u32 heapSize, JKRHeap* parentHeap);
 JKRExpHeap* mDoExt_createArchiveHeap(u32 heapSize, JKRHeap* parentHeap);
 JKRExpHeap* mDoExt_createJ2dHeap(u32 heapSize, JKRHeap* parentHeap);

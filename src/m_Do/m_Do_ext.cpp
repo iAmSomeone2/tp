@@ -11,7 +11,6 @@
 #include "JSystem/J3DGraphBase/J3DDrawBuffer.h"
 #include "JSystem/J3DGraphBase/J3DMaterial.h"
 #include "JSystem/J3DGraphLoader/J3DMaterialFactory.h"
-#include "JSystem/JKernel/JKRAssertHeap.h"
 #include "JSystem/JKernel/JKRExpHeap.h"
 #include "JSystem/JKernel/JKRSolidHeap.h"
 #include "JSystem/JUtility/JUTCacheFont.h"
@@ -651,18 +650,6 @@ void mDoExt_setupStageTexture(J3DModelData* i_modelData) {
             }
         }
     }
-}
-
-static JKRAssertHeap* AssertHeap;
-
-JKRAssertHeap* mDoExt_createAssertHeap(JKRHeap* parentHeap) {
-    JUT_ASSERT(1666, AssertHeap == NULL);
-    AssertHeap = JKRAssertHeap::create(parentHeap);
-    return AssertHeap;
-}
-
-JKRAssertHeap* mDoExt_getAssertHeap() {
-    return AssertHeap;
 }
 
 static JKRExpHeap* DbPrintHeap;

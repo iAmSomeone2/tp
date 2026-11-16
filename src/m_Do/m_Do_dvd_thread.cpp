@@ -9,7 +9,6 @@
 #include "JSystem/JAudio2/JASDvdThread.h"
 #include "JSystem/JAudio2/JASTaskThread.h"
 #include "JSystem/JKernel/JKRAramArchive.h"
-#include "JSystem/JKernel/JKRAssertHeap.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "JSystem/JKernel/JKRExpHeap.h"
 #include "JSystem/JKernel/JKRMemArchive.h"
@@ -20,7 +19,6 @@
 
 s32 mDoDvdThd::main(void* param_0) {
     JKRThread(OSGetCurrentThread(), 0);
-    JKRSetCurrentHeap(mDoExt_getAssertHeap());
     mDoDvdThd_param_c* param = static_cast<mDoDvdThd_param_c*>(param_0);
     param->mainLoop();
     return 0;

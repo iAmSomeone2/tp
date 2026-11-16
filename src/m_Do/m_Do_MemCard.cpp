@@ -7,7 +7,6 @@
 
 #include <card.h>
 #include "m_Do/m_Do_MemCard.h"
-#include "JSystem/JKernel/JKRAssertHeap.h"
 #include "JSystem/JKernel/JKRThread.h"
 #include "m_Do/m_Do_ext.h"
 #include "m_Do/m_Do_MemCardRWmng.h"
@@ -862,8 +861,6 @@ mDoMemCd_Ctrl_c g_mDoMemCd_control;
 
 static int mDoMemCd_main(void*) {
     JKRThread(OSGetCurrentThread(), 0);
-
-    JKRSetCurrentHeap(mDoExt_getAssertHeap());
 
     g_mDoMemCd_control.main();
     return 0;
