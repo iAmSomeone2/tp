@@ -41,6 +41,7 @@ New code lives in `include/nightfall/memory/`, `src/nightfall/memory/`, tests in
 | `nf::BoxArray<T>` | `Box<[T], A>` | Owning, fixed-length array from a resource. It replaces `HeapArray`. |
 | `nf::make_box<T>(resource, args…)` | `Box::new_in` | Allocates and constructs in one step, so a raw pointer is never exposed. |
 | `nf::Arena` | a bump arena with a lifetime (`bumpalo`) | Chunked bump allocator, described below. |
+| `nf::BlockPool` | a page allocator | Fixed-size 4 KiB blocks with an out-of-line owner table and bitmap: chunks for the arenas, O(1) lookup of a pointer's owner, guard blocks in debug builds on the hosts. See *Step 4 plan*. |
 | `nf::GeneralHeap` | a general allocator | Free-list allocator with individual frees, allocation from either end, and group IDs, i.e. what `JKRExpHeap` does today. |
 | `nf::Budget` | none | Wrapper that counts bytes against a limit and reports the peak. |
 | `nf::start_lifetime_as<T>(p)`, `nf::start_lifetime_as_array<T>(p, n)` | `bytemuck::from_bytes` | Calls `std::start_lifetime_as` when `__cpp_lib_start_lifetime_as` is defined. Otherwise it falls back to the C++20 way of creating objects in place, `std::memmove(p, p, size)` followed by `std::launder`. Restricted to trivially copyable `T` with a `static_assert`. |
@@ -81,7 +82,7 @@ The Vita needs 8, measured with `tools/vita-bench` `abiprobe` on 2026-11-11. `ld
 
 ### Arenas instead of "take all, then shrink"
 
-`nf::Arena` takes chunks from its parent resource as it needs them, frees them all at once, and can return the unused end of its last chunk ("shrink"). It is not contiguous across chunks; none of the current solid-heap users need contiguity. This:
+`nf::Arena` takes chunks from a source as it needs them, frees them all at once, and can return the unused end of its last chunk ("shrink"). The source is `nf::BlockPool`: chunks are runs of 4 KiB blocks whose owner is recorded in a table outside the blocks, so looking up which heap owns a pointer takes constant time (see *Step 4 plan*). It is not contiguous across chunks; none of the current solid-heap users need contiguity. This:
 
 * Stops one open heap from blocking its parent (R6). Today a size-0 solid heap takes all of the parent's free space until it is shrunk.
 * **Turns sizes measured on the console into hints** (R4). An actor's literal estimate becomes the size of its first chunk. The actor heap's retry logic (`fopAcM_entrySolidHeap_`'s fallback to the largest free block) goes away, and with it the need for heap callbacks to be safe to run twice.
@@ -165,14 +166,14 @@ What this buys, and what it doesn't:
 | **1. Checker** | `tools/utilities/implicit_alloc_check.py` (`clang-query`): every `new` without a heap argument, every `delete`, and every current-heap switch in engine code, per module. It writes the generated page `docs/port/implicit-allocations.md`. | The page exists, and its count is the progress measure for step 2. |
 | **2. Explicit selection** | Module by module (JSystem → `f_*`/`m_Do`/`SSystem`/`Z2AudioLib` → `d_*` → actors): inside each "make current … restore" pair, `new T` becomes `new (heap) T` with the heap that pair made current, so behaviour doesn't change. This is partly a clang-based rewrite, and the rest is done by hand. The module's switch pairs are then removed. | The checker reports 0 for the module, its tests pass, and step 2a passes for it. |
 | **2a. Rewrite verification** | Its own check for each module's rewrite, before the switch pairs go. The current heap still exists during step 2, so in debug builds every rewritten `new (heap) T` asserts that `heap` is the current heap. A wrong rewrite then fails at the first allocation it makes, in tests or a play session. The hand-edited parts get a diff review. | No assertion fires across the module's tests and a play session through the module's code paths. |
-| **3. Separation** | One reservation for all game heaps. Global `operator new`/`delete` go to the host allocator; `delete` is routed by address. | The checker reports 0 for the whole engine. A test shows that standard-library allocations made while a game heap is in use stay outside the reservation. |
-| **4. New heap classes** | `nf::Arena` (chunked) and `nf::GeneralHeap`; `JKRSolidHeap`/`JKRExpHeap` rebuilt on them. The "take all, then shrink" sites move to growing arenas, and the actor heap's estimate becomes a first-chunk hint without the retry. Can run in parallel with step 2. | Unit tests for both classes; existing `JKRExpHeap` tests (including the 4 GiB boundary test) pass on the new implementation. |
+| **3. Separation** | One reservation for all game heaps; the block pool from step 4 grows into it. Global `operator new`/`delete` go to the host allocator; `delete` is routed by address through the pool's owner table. | The checker reports 0 for the whole engine. A test shows that standard-library allocations made while a game heap is in use stay outside the reservation. |
+| **4. New heap classes** | `nf::Arena` (chunked), `nf::BlockPool` (fixed-size blocks with an owner table; the arenas' source) and `nf::GeneralHeap`; `JKRSolidHeap`/`JKRExpHeap` rebuilt on them. The "take all, then shrink" sites move to growing arenas, and the actor heap's estimate becomes a first-chunk hint without the retry. Can run in parallel with step 2. | Unit tests for both classes; existing `JKRExpHeap` tests (including the 4 GiB boundary test) pass on the new implementation. |
 | **5. Owners and budgets** | Lifetime owners per tier, debug fill and generation checks, the per-platform budget table, console-budget mode on the hosts. | A tier's memory is freed by destroying its owner only; a debug build catches use of a freed arena in a test. |
 | **6. ARAM and the cache tier** | Graphics archives move from the ARAM pool to pinned cache entries in main memory (R8), then the cache tier (budget, eviction) in front of archive mounting. Audio keeps the emulated pool, sized from the budget table, with wave banks read from the packs straight into it. | The logo scene's archives load into main memory and every menu and Link animation still loads; revisiting a stage reads nothing from storage. |
 
 ### Step 4 plan
 
-> **Status: phase A done 2026-11-17** (`JKRHeap::contains`, used by `find`/`findAllHeap`/`findFromRoot`; `JKRExpHeap::do_free` asserts the pointer is one of its blocks and ignores null; tested in `tests/JSystem/JKernel/JKRHeap_find_test.cpp`). Phase B next. Open decisions are at the end of this section.
+> **Status: phase A done 2026-11-17** (`JKRHeap::contains`, used by `find`/`findAllHeap`/`findFromRoot`; `JKRExpHeap::do_free` asserts the pointer is one of its blocks and ignores null; tested in `tests/JSystem/JKernel/JKRHeap_find_test.cpp`). Phase B next: the arena and a block pool (B1, B2). Phase E is deferred to step 6. All decisions are made; they are listed at the end of this section.
 
 **What the code shows.**
 
@@ -193,46 +194,99 @@ What this buys, and what it doesn't:
 3. **Test:** a child heap whose memory lies in a non-first chunk resolves to the child, not the parent. Write it against a fake heap with two ranges now and reuse it in phase C.
 4. **Optional:** in debug builds, `JKRExpHeap::do_free` asserts that the block is `isValid()` and on its used list. That catches a wrong lookup when it happens instead of when the heap is already corrupt.
 
-**Phase B: `nf::Arena`** (in `nf_memory`, with no engine dependency).
+**Phase B: `nf::Arena` and `nf::BlockPool`** (in `nf_memory`, with no engine dependency; decided with the developer 2026-11-17).
+
+A bump arena alone would leave three problems: looking up a pointer's heap walks the heap tree and each arena's chunks; actor heaps of mixed sizes fragment the game heap; and in-line headers (`CMemBlock`, chunk headers) can be overwritten by a buffer overrun. So the arenas get their memory from a pool of fixed-size blocks whose bookkeeping is kept outside the blocks, as a filesystem keeps its allocation table outside the clusters.
+
+| Concern | Bump arena from an exp heap | Arena from a block pool |
+|---|---|---|
+| Lookup | Tree walk plus a walk over each arena's chunks | O(1): range check on the pool, then `owner[(p - base) >> 12]` |
+| Fragmentation of the parent | Rounding chunks to blocks helps a little | Arenas no longer allocate from the game heap; what remains is fragmentation between runs of whole blocks |
+| Overruns | Hit in-line headers | Metadata is out of line; debug builds on the hosts put a guard block after each run |
+
+Why not `std::pmr::monotonic_buffer_resource`: it can't answer whether it owns a pointer, can't give back the unused end of its last chunk, doesn't report what it uses, and its growth factor is up to the implementation.
+
+**B1: `nf::Arena`.**
 
 * **Interface:**
-  * It is a `std::pmr::memory_resource` over an upstream `memory_resource*`, so a `JKRHeap*` works as the upstream as it is.
-  * Construction takes `first_chunk` (the hint) and `growth` (the minimum size of later chunks).
-  * Operations: `allocate` (bump within the current chunk, or grow), `release()` (free everything), `shrink_to_fit()` (give back the unused end of the last chunk), `contains(p)`, `used()`, `reserved()` and `chunk_count()`.
-* **Chunks:** each chunk starts with a header aligned to `MIN_ALLOC_ALIGN`. A request larger than `growth` gets its own chunk.
-* **Allocating from the tail:** `JKRSolidHeap` supports it, and `freeTail` relies on it. A source search on 2026-11-17 found no tail allocation that reaches a solid heap, so the arena drops it:
+  * `class Arena final : public std::pmr::memory_resource`. Not copyable or movable, since containers hold pointers to their resource.
+  * Construction takes a `ChunkSource&`, `first_chunk` (the hint) and `growth` (the minimum size of later chunks). The first chunk is taken at construction, so a failure shows up at creation as with today's `create()`.
+  * `try_allocate(n, align)` bumps within the current chunk or grows, and returns null on failure. `do_allocate` calls it and aborts on null (failure policy for `std::pmr`). `do_deallocate` does nothing, and `do_is_equal` is identity.
+  * `release()` resets into the first chunk and gives back the others, matching `JKRSolidHeap::freeAll`, which keeps its memory. The destructor gives back everything.
+  * `shrink_to_fit()` gives back the unused whole blocks at the end of the last chunk and returns how many bytes it released.
+  * `contains(p)` asks the source when the source can answer, and walks the chunk list otherwise.
+  * Statistics: `used()`, `reserved()`, `available()` (free in the current chunk; becomes `getFreeSize` in phase C) and `chunk_count()`.
+  * No locking. `JKRSolidHeap::lock()` wraps every call in phase C.
+* **`ChunkSource`:** an interface with `try_allocate(n, align)` (null on failure), `deallocate(p, n, align)`, `shrink_in_place(p, old_n, new_n)` (default: false) and `owner_of(p)` (default: unknown). It is needed because `JKRHeap`'s `pmr` path aborts on failure, while `JKRSolidHeap::alloc` must return NULL and call the error handler.
+* **Chunks:**
+  * Chunk sizes are rounded up to the block size, 4 KiB. Across the 341 literal actor heap estimates (median 9 KiB) that wastes 4.3 %, against 23 % for 16 KiB blocks.
+  * Chunks are requested at `alignof(std::max_align_t)`. Larger alignments are padded inside the chunk, and any power of two is accepted.
+  * A request that doesn't fit in `growth` gets a chunk of exactly the size it needs, linked behind the current chunk so the current chunk's remaining space isn't wasted.
+  * The newest chunk is at the head of the list.
+  * `n` plus padding is checked for overflow, since `size_t` is 32 bits on the Vita.
+* **Allocating from the tail:** dropped. A source search on 2026-11-17 found no tail allocation that reaches a solid heap:
   * **Tail allocations by direct heap:** every allocation with a negative alignment literal goes to a `JKRExpHeap`: the game, archive or system heap, the DbPrint heap, or the heap of an archive mounted from the tail.
   * **Tail mounts and DVD reads to the tail:** `setStageRes`, `mDoDvdThd_mountArchive_c` direction 2 and `mDoDvdThd_toMainRam_c` direction 2 all land in exp heaps: room memory blocks, the archive heap, the J2D heap and the menu's `JKRExpHeap`.
   * **`Z2AudioArcLoader::readBFCA`:** it mounts on the current heap from the tail. At that point the current heap is the Zelda heap (`m_Do_machine.cpp:938`); the section heap's `TPushCurrentHeap` is scoped and has already been restored.
   * **`JAUSection::finishBuild`:** the only `freeTail` call on a solid heap (the audio section heap). Its allocations (`newCopy` and the parsers) are all from the head, so the call does nothing in practice.
   * **Not traced:** alignments that arrive through variables rather than literals or mount directions. Phase C's debug abort on a negative alignment is the run-time check for them, and `freeTail` on an arena becomes a no-op.
-* **Shrink:** needs an optional "resize in place" callback, which `JKRHeap::resize` provides. Without one, the arena keeps the slack.
-* **Tests** in `tests/nightfall/memory/arena_test.cpp`:
-  * It grows across chunks.
-  * Alignment is honoured in every chunk.
-  * `release` returns every chunk to a counting upstream.
-  * `shrink_to_fit` hands the slack back.
-  * `contains` is correct for every chunk.
-  * Running out upstream aborts, as the failure policy requires for `std::pmr`.
+* **Debug fill:** not in the arena. The pool fills freed blocks, and `JKRSolidHeap` keeps its own fill flags.
+
+**B2: `nf::BlockPool`** (a `ChunkSource`).
+
+* **Region:** one fixed range given to the pool at construction. In phase C it is carved from the root heap at boot. In step 3 it grows into the single reservation for all game heaps.
+* **Blocks:** 4 KiB. A free-block bitmap, and an owner table with one entry per block (the owning arena; 8 bytes per block, 0.2 %). Both are kept outside the blocks.
+* **Runs:** an allocation is a run of adjacent free blocks, because an object larger than a block must be contiguous. Small runs come from the low end and large runs from the high end, the same head/tail split JKRExpHeap uses, here to keep large runs from fragmenting the pool.
+* **Operations:**
+  * `owner_of(p)` is O(1): check that `p` is in the region, then index the table.
+  * `shrink_in_place` releases trailing blocks of a run.
+  * `deallocate` clears the run's bitmap bits and owner entries.
+* **Debug builds:**
+  * Freed blocks get a fill pattern.
+  * On the hosts each run is followed by a guard block made inaccessible with `mprotect`. It costs address space but no physical memory, and turns an overrun into an immediate fault.
+  * The Vita gets no guard blocks: a whole kernel memory block can't be protected one page at a time from user code.
+* **Size:** fixed by a constant until step 5's budget table. The game heap shrinks by the same amount.
+* **Tests** in `tests/nightfall/memory/` (`arena_test.cpp`, `block_pool_test.cpp`):
+  * **Arena:**
+    * It grows across chunks, and chunk sizes are multiples of 4 KiB.
+    * Alignment is honoured in every chunk, up to the block size.
+    * An oversized request gets its own chunk without wasting the current one.
+    * `release` keeps only the first chunk; the destructor gives back everything.
+    * `shrink_to_fit` gives back whole trailing blocks.
+    * `contains` is correct for every chunk, both through the source and through the chunk walk.
+    * A source that refuses makes `try_allocate` return null and leaves the arena unchanged; `allocate` aborts (death test).
+  * **Pool:**
+    * `owner_of` is correct for every block of every run and null for free blocks and for addresses outside the region.
+    * Allocating runs and freeing them in a mixed order leaves no blocks behind, so the region can be allocated in full again.
+    * Small runs are placed low and large runs high.
+    * `shrink_in_place` frees trailing blocks.
+    * Writing one byte past a run faults in a debug build on the hosts (death test).
+* **Build:** `nf_memory` turns from an `INTERFACE` library into a `STATIC` one (`src/nightfall/memory/arena.cpp`, `block_pool.cpp`).
 
 **Phase C: `JKRSolidHeap` rebuilt on `nf::Arena`.**
 
-1. **The class:** `JKRSolidHeap` owns an arena whose upstream is its parent heap.
-   * `do_alloc` → the arena. A failure returns NULL and calls the error handler, as today.
+1. **The class:** `JKRSolidHeap` owns an arena whose source is the block pool. Its logical parent in the heap tree stays the heap it was created from, for accounting and for the tree.
+   * `do_alloc` → `try_allocate`. A failure returns NULL and calls the error handler, as today. A negative alignment aborts in debug builds.
    * `do_freeAll` → run the disposers, then `release`.
    * `adjustSize` → `shrink_to_fit`.
    * `contains` → the arena.
    * `mStart` and `mEnd` describe only the first chunk; the debug tools still use them.
+   * The heap object is its own block in the parent, separate from the first chunk.
    * Delete `field_0x78`.
-2. **Sizes in `create()`:** `size` becomes the first-chunk hint. `0` and `-1` mean the default first chunk instead of all of the parent's free space.
-3. **Accounting:** `getHeapSize` returns the bytes reserved and `getFreeSize` the bytes free in the current chunk.
+2. **Lookup:** `findFromRoot` asks the pool first (range check, then the owner table) and walks the tree only for pointers outside the pool.
+   * Phase A's invariant, that a child heap's memory lies inside its parent's `contains()`, now applies only to heaps outside the pool, because a pool-backed arena's blocks are not inside its logical parent.
+   * `find` and `findAllHeap` keep walking the tree for the exp heaps.
+   * The heap object must leave the tree before its arena gives back its blocks, in `do_destroy`; the arena member is destroyed before `~JKRHeap` unlinks the heap.
+3. **The pool:** created at boot over a block carved from the root heap, before the game heap (`mDoMch_Create`).
+4. **Sizes in `create()`:** `size` becomes the first-chunk hint. `0` and `-1` mean the default first chunk, one block (4 KiB), instead of all of the parent's free space. Later chunks are at least one block as well.
+5. **Accounting:** `getHeapSize` returns the bytes reserved and `getFreeSize` the bytes free in the current chunk.
    * Check that `heapSize - freeSize` in `fopAcM_entrySolidHeap_` (`f_op_actor_mng:470`) still means "bytes used". If it doesn't, add `getUsedSize()` and switch that site to it.
-4. **`DCStoreRangeNoSync` calls:** delete the three. The hosts have no cache to flush, and the Vita goes through GXM.
-5. **Debug views:** `JUTProcBar` and `m_Do_graphic` may show only the first chunk; a comment says so.
-6. **Done when:**
+6. **`DCStoreRangeNoSync` calls:** delete the three. The hosts have no cache to flush, and the Vita goes through GXM.
+7. **Debug views:** `JUTProcBar` and `m_Do_graphic` may show only the first chunk; a comment says so.
+8. **Done when:**
    * The existing `JKRHeap_*` tests pass.
-   * New test: a heap created with a hint and then overfilled grows, and `find` still returns the right heap for every pointer.
-   * New test: `adjustSize` returns the slack to the parent.
+   * New test: a heap created with a hint and then overfilled grows, and `findFromRoot` returns the right heap for every pointer, including for a `JKRDisposer` in a later chunk.
+   * New test: `adjustSize` gives whole blocks back to the pool.
 
 **Phase D: call sites.**
 
@@ -241,27 +295,30 @@ What this buys, and what it doesn't:
    * Remove the fallback to the largest free block, so the heap callback runs exactly once.
    * The estimate becomes the first-chunk hint.
    * Keep the verbose report of estimate against actual size as a tuning aid.
-3. **`mDoExt_adjustSolidHeap`:** drop its requirement of an `'EXPH'` parent, since shrinking now works with any resize hook.
-4. **Room heaps:** in `d_bg_parts`, `d_a_bg` and `d_resorce`, the `MEMA` room-block sizes become first-chunk hints instead of hard limits.
+3. **`mDoExt_adjustSolidHeap`:** drop its requirement of an `'EXPH'` parent.
+4. **Room heaps:** the solid heaps that `d_a_bg`, `d_bg_parts` and `d_resorce` create in room memory blocks also take their memory from the pool. The `MEMA` room-block sizes become per-room budgets, counted by step 5's `Budget`, instead of hard limits.
 
 **Phase E: `nf::GeneralHeap`, then `JKRExpHeap` on top of it.**
 
 * **What it is:** a code move, not a new design. `JKRExpHeap`'s free-list algorithm moves into `nf::GeneralHeap` over a `std::span<std::byte>`: `CMemBlock`, allocation from either end, joining blocks, group IDs and the allocation mode. `JKRExpHeap` becomes an adapter over it.
 * **`CMemBlock` keeps its layout,** with `JKRExpHeap::CMemBlock` as an alias, because `JKRAram.cpp` and the debug views reach into it.
 * **Done when:** `JKRExpHeap_test` passes unchanged, including the 4 GiB boundary test, and `GeneralHeap` has unit tests that don't need the engine.
-* **Can wait for step 6:** its first user outside the JKR heaps is the cache tier, and nothing else in step 4 depends on it.
+* **Deferred to step 6** (decided 2026-11-17): its first user outside the JKR heaps is the cache tier, and nothing else in step 4 depends on it.
 
 **Order and risk.**
 
-* **Order:** A → B → C → D → E, with one commit per phase (C and D may need several). Every commit builds with clang and GCC and passes `ctest`.
+* **Order:** A → B (B1, then B2) → C → D; E comes with step 6, with one commit per part (C and D may need several). Every commit builds with clang and GCC and passes `ctest`.
 * **Matching:** this breaks the matching build for `JKRSolidHeap` and `JKRExpHeap`, which is accepted.
-* **Biggest risk:** callers that size their next allocation from `getFreeSize()` on a solid heap (`d_resorce`, `d_particle`, `fopAcM`) change meaning in phases C and D. Review each of them before phase C lands.
+* **Biggest risks:**
+  * Callers that size their next allocation from `getFreeSize()` on a solid heap (`d_resorce`, `d_particle`, `fopAcM`) change meaning in phases C and D. Review each of them before phase C lands.
+  * The pool's size on console-like budgets. Actors and room heaps used to share the game heap and room memory blocks with everything else. Until step 5, size the pool from a play session's peak use.
 
-**Open decisions.**
+**Decisions.**
 
-1. ~~**Allocating from the tail on solid heaps**~~: checked 2026-11-17; nothing reaches a solid heap, so it is dropped (see phase B).
-2. **Default first-chunk and growth sizes** for the "take all" sites: one constant for now (for example 64 KiB) until step 5's budget table, or a size per site.
-3. **Phase E now or with step 6.** The proposal is to defer it.
+1. ~~**Allocating from the tail on solid heaps**~~: checked 2026-11-17; nothing reaches a solid heap, so it is dropped (see B1).
+2. ~~**Bookkeeping**~~: decided 2026-11-17. A block pool (B2) is built in phase B, with 4 KiB blocks; room-heap arenas use the pool; there are guard blocks in debug builds on the hosts.
+3. ~~**Default first-chunk and growth sizes**~~: decided 2026-11-17. One block (4 KiB) is the default for the "take all" sites and for growth, until step 5's budget table.
+4. ~~**Phase E now or with step 6**~~: decided 2026-11-17. Deferred to step 6.
 
 ## Interplay with the bake
 
