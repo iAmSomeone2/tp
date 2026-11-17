@@ -106,6 +106,16 @@ public:
     /* vt[21] */ virtual void state_register(JKRHeap::TState* p, u32 id) const;
     /* vt[22] */ virtual bool state_compare(JKRHeap::TState const& r1, JKRHeap::TState const& r2) const;
     /* vt[23] */ virtual void state_dump(JKRHeap::TState const& p) const;
+    /**
+     * Tests whether the given pointer falls within this heap
+     *
+     * @remark Some methods, such as `find()`, only descend into a node that contains `ptr`. This only
+     * stays correct if `contains()` returns `true` for a child heap and its parent.
+     *
+     * @param ptr pointer to check
+     * @return `true` if this heap contains the pointer. `false` otherwise
+     */
+    [[nodiscard]] virtual bool contains(const void* ptr) const noexcept;
 
     void setDebugFill(bool debugFill);
     bool getDebugFill() const;

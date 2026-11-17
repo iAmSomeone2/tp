@@ -440,16 +440,17 @@ void* JKRExpHeap::allocFromTail(u32 size) {
 }
 
 void JKRExpHeap::do_free(void* ptr) {
+    if (!ptr) return;
     lock();
-    if (mStart <= ptr && ptr <= mEnd) {
-        CMemBlock* block = CMemBlock::getHeapBlock(ptr);
-        if (block) {
-            block->free(this);
-        }
+    const auto inBlock = contains(ptr);
+    auto* block = inBlock ? CMemBlock::getHeapBlock(ptr) : nullptr;
+    if (block) {
+        block->free(this);
     } else {
         JUT_WARN(921, "free: memblock %x not in heap %x", ptr, this);
     }
     unlock();
+    assert(block != nullptr);
 }
 
 static void dummy() {
@@ -508,7 +509,7 @@ s32 JKRExpHeap::do_changeGroupID(const u8 newGroupID) {
 s32 JKRExpHeap::do_resize(void* ptr, u32 size) {
     lock();
     CMemBlock* block = CMemBlock::getHeapBlock(ptr);
-    if (block == nullptr || ptr < mStart || mEnd < ptr) {
+    if (block == nullptr || !contains(ptr)) {
         unlock();
         return -1;
     }
@@ -566,7 +567,7 @@ s32 JKRExpHeap::do_resize(void* ptr, u32 size) {
 s32 JKRExpHeap::do_getSize(void* ptr) {
     lock();
     const CMemBlock* block = CMemBlock::getHeapBlock(ptr);
-    if (!block || ptr < mStart || mEnd < ptr) {
+    if (!block || !contains(ptr)) {
         unlock();
         return -1;
     }

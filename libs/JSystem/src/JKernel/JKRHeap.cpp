@@ -356,24 +356,24 @@ JKRHeap* JKRHeap::findFromRoot(void* ptr) {
         return nullptr;
     }
 
-    if (sRootHeap->mStart <= ptr && ptr < sRootHeap->mEnd) {
+    if (sRootHeap->contains(ptr)) {
         return sRootHeap->find(ptr);
     }
 #if PLATFORM_WII || PLATFORM_SHIELD
-    if (sRootHeap2->mStart <= ptr && ptr < sRootHeap2->mEnd) {
+    if (sRootHeap2->contains(ptr)) {
         return sRootHeap2->find(ptr);
     }
 #endif
     return sRootHeap->findAllHeap(ptr);
 }
 
-JKRHeap* JKRHeap::find(void* memory) const {
-    if (mStart <= memory && memory < mEnd) {
+JKRHeap* JKRHeap::find(void* ptr) const {
+    if (contains(ptr)) {
         if (mChildTree.getNumChildren() != 0) {
             for (JSUTreeIterator iterator(mChildTree.getFirstChild());
                  iterator != mChildTree.getEndChild(); ++iterator)
             {
-                if (JKRHeap* result = iterator->find(memory)) {
+                if (JKRHeap* result = iterator->find(ptr)) {
                     return result;
                 }
             }
@@ -396,7 +396,7 @@ JKRHeap* JKRHeap::findAllHeap(void* ptr) const {
         }
     }
 
-    if (mStart <= ptr && ptr < mEnd) {
+    if (contains(ptr)) {
         return const_cast<JKRHeap*>(this);
     }
 
@@ -648,6 +648,10 @@ void JKRHeap::state_dump(const JKRHeap::TState& p) const {
     JUT_LOG(1246, "check-code : 0x%08x", p.getCheckCode());
     JUT_LOG(1247, "id         : 0x%08x", p.getId());
     JUT_LOG(1248, "used size  : %u", p.getUsedSize());
+}
+
+bool JKRHeap::contains(const void* ptr) const noexcept {
+    return mStart <= ptr && ptr < mEnd;
 }
 
 static auto ARALT_AramStartAdr = reinterpret_cast<void*>(0x90000000);

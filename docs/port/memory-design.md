@@ -1,6 +1,6 @@
 # Memory model: design
 
-> **Status: steps 0 and 1 done; steps 2 and 4 next.** Step 1's checker (`tools/utilities/implicit_alloc_check.py`, page [implicit-allocations.md](implicit-allocations.md)) counts 1,912 implicit allocations, 988 deletes and 166 current-heap switches (2026-11-16). Step 0 built: `nf_memory` (header-only: `Box`/`make_box` in `box.hpp`, the `start_lifetime_as` wrapper in `lifetime.hpp`) with tests in `tests/nightfall/memory/`; `JKRHeap` is a `std::pmr::memory_resource` (`do_allocate` aborts on a null result, a size over `UINT32_MAX` or an alignment of 128 or more; `do_is_equal` is identity), tested in `tests/JSystem/JKernel/JKRHeap_resource_test.cpp`; JKRExpHeap and JKRSolidHeap align every default allocation to `MIN_ALLOC_ALIGN` (`alignof(std::max_align_t)`, in `JKRHeap.h`; `CMemBlock` is `alignas` it and block sizes are rounded to it), tested in `tests/JSystem/JKernel/JKRHeap_alignment_test.cpp`; a parentless heap records the thread that constructs it as its owner, and in builds with assertions `getCurrentHeap`, `setCurrentHeap`, `becomeCurrentHeap` and the null-heap path of `JKRHeap::alloc` (the global `operator new`, `JKRAllocFromHeap(nullptr, …)`) abort on any other thread once a current heap is set, tested in `tests/JSystem/JKernel/JKRHeap_thread_test.cpp`; `JKRThreadSwitch` no longer swaps the current heap per thread, and the worker threads no longer set one (the JAS threads' `setCurrentHeap`, the assert heap that `mDoDvdThd`, the memory card and DVD error threads installed). Decisions recorded here were made with the developer on 2026-11-10. The survey this builds on is [memory-model.md](memory-model.md); its requirements are referred to as R1–R8. Open questions are listed at the end.
+> **Status: steps 0 and 1 done; steps 2 and 4 next (step 4 phase A done; [Step 4 plan](#step-4-plan)).** Step 1's checker (`tools/utilities/implicit_alloc_check.py`, page [implicit-allocations.md](implicit-allocations.md)) counts 1,912 implicit allocations, 988 deletes and 166 current-heap switches (2026-11-16). Step 0 built: `nf_memory` (header-only: `Box`/`make_box` in `box.hpp`, the `start_lifetime_as` wrapper in `lifetime.hpp`) with tests in `tests/nightfall/memory/`; `JKRHeap` is a `std::pmr::memory_resource` (`do_allocate` aborts on a null result, a size over `UINT32_MAX` or an alignment of 128 or more; `do_is_equal` is identity), tested in `tests/JSystem/JKernel/JKRHeap_resource_test.cpp`; JKRExpHeap and JKRSolidHeap align every default allocation to `MIN_ALLOC_ALIGN` (`alignof(std::max_align_t)`, in `JKRHeap.h`; `CMemBlock` is `alignas` it and block sizes are rounded to it), tested in `tests/JSystem/JKernel/JKRHeap_alignment_test.cpp`; a parentless heap records the thread that constructs it as its owner, and in builds with assertions `getCurrentHeap`, `setCurrentHeap`, `becomeCurrentHeap` and the null-heap path of `JKRHeap::alloc` (the global `operator new`, `JKRAllocFromHeap(nullptr, …)`) abort on any other thread once a current heap is set, tested in `tests/JSystem/JKernel/JKRHeap_thread_test.cpp`; `JKRThreadSwitch` no longer swaps the current heap per thread, and the worker threads no longer set one (the JAS threads' `setCurrentHeap`, the assert heap that `mDoDvdThd`, the memory card and DVD error threads installed). Decisions recorded here were made with the developer on 2026-11-10. The survey this builds on is [memory-model.md](memory-model.md); its requirements are referred to as R1–R8. Open questions are listed at the end.
 
 The goal is memory management that is strict by default, in the spirit of Rust: every allocation names the heap it comes from, every heap has an owner that decides its lifetime, and the host program's own allocations never mix with the game's. Budgets become per-platform configuration instead of constants tuned for a 24 MiB console. The game keeps running at every step along the way.
 
@@ -169,6 +169,99 @@ What this buys, and what it doesn't:
 | **4. New heap classes** | `nf::Arena` (chunked) and `nf::GeneralHeap`; `JKRSolidHeap`/`JKRExpHeap` rebuilt on them. The "take all, then shrink" sites move to growing arenas, and the actor heap's estimate becomes a first-chunk hint without the retry. Can run in parallel with step 2. | Unit tests for both classes; existing `JKRExpHeap` tests (including the 4 GiB boundary test) pass on the new implementation. |
 | **5. Owners and budgets** | Lifetime owners per tier, debug fill and generation checks, the per-platform budget table, console-budget mode on the hosts. | A tier's memory is freed by destroying its owner only; a debug build catches use of a freed arena in a test. |
 | **6. ARAM and the cache tier** | Graphics archives move from the ARAM pool to pinned cache entries in main memory (R8), then the cache tier (budget, eviction) in front of archive mounting. Audio keeps the emulated pool, sized from the budget table, with wave banks read from the packs straight into it. | The logo scene's archives load into main memory and every menu and Link animation still loads; revisiting a stage reads nothing from storage. |
+
+### Step 4 plan
+
+> **Status: phase A done 2026-11-17** (`JKRHeap::contains`, used by `find`/`findAllHeap`/`findFromRoot`; `JKRExpHeap::do_free` asserts the pointer is one of its blocks and ignores null; tested in `tests/JSystem/JKernel/JKRHeap_find_test.cpp`). Phase B next. Open decisions are at the end of this section.
+
+**What the code shows.**
+
+* `JKRHeap` treats every heap as one contiguous range `[mStart, mEnd)`. `find`, `findAllHeap` and `findFromRoot` (`JKRHeap.cpp:354–404`) use that range and recurse into child heaps. `operator delete` relies on them, and so do `dispose(begin, end)` (used by `freeTail`) and `getMaxAllocatableSize`.
+* **The hazard:** a chunked arena breaks the range check without any error. A pointer from an arena's second chunk would resolve to the **parent** `JKRExpHeap`, which would then free something that isn't one of its blocks. So the lookup has to change first.
+* **"Take all" sites:** 12 create a solid heap with size `0` or `-1`: `d_bg_parts:758`, `d_ky_thunder:24`, `d_resorce:593/608`, `d_particle:1197/1222`, `d_com_inf_game:990`, `d_a_bg:533`, `m_Do_ext:869`, `f_op_actor_mng:408/514` and `m_Do_graphic:2119`. There are 54 solid-heap creates in all.
+* **`adjustSize`:** 9 call sites, including `mDoExt_adjustSolidHeap`, which requires the parent to be an `'EXPH'` heap.
+* **Code that reads a heap's address range directly:**
+  * `DCStoreRangeNoSync(getStartAddr(), getHeapSize())` in `d_attention:246`, `d_ky_thunder:38` and `d_resorce:636`.
+  * The debug views in `JUTProcBar:273` and `m_Do_graphic:129`.
+* **`CMemBlock` outside `JKRExpHeap`:** `m_Do_main:232`, `m_Do_graphic:134` and `JKRAram.cpp:124` use it.
+* **Dead code:** `JKRSolidHeap::field_0x78` (`Unknown`) is never set to anything but null.
+
+**Phase A: address lookup that works without one contiguous range** (prerequisite).
+
+1. Add a virtual `bool contains(const void*) const` to `JKRHeap`. The default is the current range check.
+2. Rewrite `find`, `findAllHeap` and `findFromRoot` on top of it. Child heaps are still checked first.
+3. **Test:** a child heap whose memory lies in a non-first chunk resolves to the child, not the parent. Write it against a fake heap with two ranges now and reuse it in phase C.
+4. **Optional:** in debug builds, `JKRExpHeap::do_free` asserts that the block is `isValid()` and on its used list. That catches a wrong lookup when it happens instead of when the heap is already corrupt.
+
+**Phase B: `nf::Arena`** (in `nf_memory`, with no engine dependency).
+
+* **Interface:**
+  * It is a `std::pmr::memory_resource` over an upstream `memory_resource*`, so a `JKRHeap*` works as the upstream as it is.
+  * Construction takes `first_chunk` (the hint) and `growth` (the minimum size of later chunks).
+  * Operations: `allocate` (bump within the current chunk, or grow), `release()` (free everything), `shrink_to_fit()` (give back the unused end of the last chunk), `contains(p)`, `used()`, `reserved()` and `chunk_count()`.
+* **Chunks:** each chunk starts with a header aligned to `MIN_ALLOC_ALIGN`. A request larger than `growth` gets its own chunk.
+* **Allocating from the tail:** `JKRSolidHeap` supports it, and `freeTail` relies on it. A source search on 2026-11-17 found no tail allocation that reaches a solid heap, so the arena drops it:
+  * **Tail allocations by direct heap:** every allocation with a negative alignment literal goes to a `JKRExpHeap`: the game, archive or system heap, the DbPrint heap, or the heap of an archive mounted from the tail.
+  * **Tail mounts and DVD reads to the tail:** `setStageRes`, `mDoDvdThd_mountArchive_c` direction 2 and `mDoDvdThd_toMainRam_c` direction 2 all land in exp heaps: room memory blocks, the archive heap, the J2D heap and the menu's `JKRExpHeap`.
+  * **`Z2AudioArcLoader::readBFCA`:** it mounts on the current heap from the tail. At that point the current heap is the Zelda heap (`m_Do_machine.cpp:938`); the section heap's `TPushCurrentHeap` is scoped and has already been restored.
+  * **`JAUSection::finishBuild`:** the only `freeTail` call on a solid heap (the audio section heap). Its allocations (`newCopy` and the parsers) are all from the head, so the call does nothing in practice.
+  * **Not traced:** alignments that arrive through variables rather than literals or mount directions. Phase C's debug abort on a negative alignment is the run-time check for them, and `freeTail` on an arena becomes a no-op.
+* **Shrink:** needs an optional "resize in place" callback, which `JKRHeap::resize` provides. Without one, the arena keeps the slack.
+* **Tests** in `tests/nightfall/memory/arena_test.cpp`:
+  * It grows across chunks.
+  * Alignment is honoured in every chunk.
+  * `release` returns every chunk to a counting upstream.
+  * `shrink_to_fit` hands the slack back.
+  * `contains` is correct for every chunk.
+  * Running out upstream aborts, as the failure policy requires for `std::pmr`.
+
+**Phase C: `JKRSolidHeap` rebuilt on `nf::Arena`.**
+
+1. **The class:** `JKRSolidHeap` owns an arena whose upstream is its parent heap.
+   * `do_alloc` → the arena. A failure returns NULL and calls the error handler, as today.
+   * `do_freeAll` → run the disposers, then `release`.
+   * `adjustSize` → `shrink_to_fit`.
+   * `contains` → the arena.
+   * `mStart` and `mEnd` describe only the first chunk; the debug tools still use them.
+   * Delete `field_0x78`.
+2. **Sizes in `create()`:** `size` becomes the first-chunk hint. `0` and `-1` mean the default first chunk instead of all of the parent's free space.
+3. **Accounting:** `getHeapSize` returns the bytes reserved and `getFreeSize` the bytes free in the current chunk.
+   * Check that `heapSize - freeSize` in `fopAcM_entrySolidHeap_` (`f_op_actor_mng:470`) still means "bytes used". If it doesn't, add `getUsedSize()` and switch that site to it.
+4. **`DCStoreRangeNoSync` calls:** delete the three. The hosts have no cache to flush, and the Vita goes through GXM.
+5. **Debug views:** `JUTProcBar` and `m_Do_graphic` may show only the first chunk; a comment says so.
+6. **Done when:**
+   * The existing `JKRHeap_*` tests pass.
+   * New test: a heap created with a hint and then overfilled grows, and `find` still returns the right heap for every pointer.
+   * New test: `adjustSize` returns the slack to the parent.
+
+**Phase D: call sites.**
+
+1. **The 12 "take all" sites** change behaviour through `create()` alone. Review each one for code that reads `getFreeSize()` or `getHeapSize()` right after creating the heap and expects "everything".
+2. **`fopAcM_entrySolidHeap_`:**
+   * Remove the fallback to the largest free block, so the heap callback runs exactly once.
+   * The estimate becomes the first-chunk hint.
+   * Keep the verbose report of estimate against actual size as a tuning aid.
+3. **`mDoExt_adjustSolidHeap`:** drop its requirement of an `'EXPH'` parent, since shrinking now works with any resize hook.
+4. **Room heaps:** in `d_bg_parts`, `d_a_bg` and `d_resorce`, the `MEMA` room-block sizes become first-chunk hints instead of hard limits.
+
+**Phase E: `nf::GeneralHeap`, then `JKRExpHeap` on top of it.**
+
+* **What it is:** a code move, not a new design. `JKRExpHeap`'s free-list algorithm moves into `nf::GeneralHeap` over a `std::span<std::byte>`: `CMemBlock`, allocation from either end, joining blocks, group IDs and the allocation mode. `JKRExpHeap` becomes an adapter over it.
+* **`CMemBlock` keeps its layout,** with `JKRExpHeap::CMemBlock` as an alias, because `JKRAram.cpp` and the debug views reach into it.
+* **Done when:** `JKRExpHeap_test` passes unchanged, including the 4 GiB boundary test, and `GeneralHeap` has unit tests that don't need the engine.
+* **Can wait for step 6:** its first user outside the JKR heaps is the cache tier, and nothing else in step 4 depends on it.
+
+**Order and risk.**
+
+* **Order:** A → B → C → D → E, with one commit per phase (C and D may need several). Every commit builds with clang and GCC and passes `ctest`.
+* **Matching:** this breaks the matching build for `JKRSolidHeap` and `JKRExpHeap`, which is accepted.
+* **Biggest risk:** callers that size their next allocation from `getFreeSize()` on a solid heap (`d_resorce`, `d_particle`, `fopAcM`) change meaning in phases C and D. Review each of them before phase C lands.
+
+**Open decisions.**
+
+1. ~~**Allocating from the tail on solid heaps**~~: checked 2026-11-17; nothing reaches a solid heap, so it is dropped (see phase B).
+2. **Default first-chunk and growth sizes** for the "take all" sites: one constant for now (for example 64 KiB) until step 5's budget table, or a size per site.
+3. **Phase E now or with step 6.** The proposal is to defer it.
 
 ## Interplay with the bake
 
