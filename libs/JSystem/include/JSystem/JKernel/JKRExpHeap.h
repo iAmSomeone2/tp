@@ -57,7 +57,7 @@ protected:
     void* allocFromHead(u32 size);
     void* allocFromTail(u32 size, int align);
     void* allocFromTail(u32 size);
-    void appendUsedList(CMemBlock* newblock);
+    void appendUsedList(CMemBlock* newBlock);
     void setFreeBlock(CMemBlock* block, CMemBlock* prev, CMemBlock* next);
     void removeFreeBlock(CMemBlock* block);
     void removeUsedBlock(CMemBlock* block);
@@ -65,7 +65,7 @@ protected:
     void joinTwoBlocks(CMemBlock* block);
 
 public:
-    BOOL isEmpty();
+    BOOL isEmpty() const;
     s32 getUsedSize(u8 groupId) const;
     s32 getTotalUsedSize(void) const;
 
