@@ -12,10 +12,10 @@ target_link_libraries(nf_platform
 # Not in TP_LIBRARIES: tp::dolphin links it, which already puts it after every engine library, and
 # as a member of tp::engine's RESCAN group that dependency would form a cycle CMake rejects.
 
-# Memory management (docs/port/memory-design.md). Header-only so far; no engine dependency.
-add_library(nf_memory INTERFACE)
+# Memory management (docs/port/memory-design.md).
+# No engine dependency; tp::config gives it the project's include path, C++23 and ABI flags.
+add_library(nf_memory STATIC memory/arena.cpp)
 add_library(nf::memory ALIAS nf_memory)
-target_include_directories(nf_memory INTERFACE ${PROJECT_SOURCE_DIR}/include)
-target_compile_features(nf_memory INTERFACE cxx_std_23)
+target_link_libraries(nf_memory PUBLIC tp::config PRIVATE tp::warnings)
 
 add_subdirectory(movie)

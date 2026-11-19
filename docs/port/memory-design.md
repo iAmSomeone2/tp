@@ -210,14 +210,19 @@ Why not `std::pmr::monotonic_buffer_resource`: it can't answer whether it owns a
 
 * **Interface:**
   * `class Arena final : public std::pmr::memory_resource`. Not copyable or movable, since containers hold pointers to their resource.
-  * Construction takes a `ChunkSource&`, `first_chunk` (the hint) and `growth` (the minimum size of later chunks). The first chunk is taken at construction, so a failure shows up at creation as with today's `create()`.
+  * Creation (decided 2026-11-19): `static Arena* create(std::optional<Arena>& slot, ChunkSource&, first_chunk, growth)`, where `first_chunk` is the hint and `growth` the minimum size of later chunks. It emplaces the arena in the caller's slot (destroying any arena already there), then takes the first chunk with the arena's final address as its owner. On failure, including a `first_chunk` that overflows when rounded, it resets the slot and returns null, so a failure shows up at creation as with today's `create()`. A factory returning `std::optional<Arena>` can't work: the chunk's owner must be known when it is taken, and a non-movable arena can't be returned after construction. The constructor is public but takes a private key type, so only `create` can call it. `JKRSolidHeap` holds the slot as a member in phase C.
   * `try_allocate(n, align)` bumps within the current chunk or grows, and returns null on failure. `do_allocate` calls it and aborts on null (failure policy for `std::pmr`). `do_deallocate` does nothing, and `do_is_equal` is identity.
   * `release()` resets into the first chunk and gives back the others, matching `JKRSolidHeap::freeAll`, which keeps its memory. The destructor gives back everything.
   * `shrink_to_fit()` gives back the unused whole blocks at the end of the last chunk and returns how many bytes it released.
-  * `contains(p)` asks the source when the source can answer, and walks the chunk list otherwise.
+  * `contains(p)` is `source.owner_of(p) == this` when the source can answer, and walks the chunk list otherwise.
   * Statistics: `used()`, `reserved()`, `available()` (free in the current chunk; becomes `getFreeSize` in phase C) and `chunk_count()`.
   * No locking. `JKRSolidHeap::lock()` wraps every call in phase C.
-* **`ChunkSource`:** an interface with `try_allocate(n, align)` (null on failure), `deallocate(p, n, align)`, `shrink_in_place(p, old_n, new_n)` (default: false) and `owner_of(p)` (default: unknown). It is needed because `JKRHeap`'s `pmr` path aborts on failure, while `JKRSolidHeap::alloc` must return NULL and call the error handler.
+* **`ChunkSource`:** an interface (decided 2026-11-19), needed because `JKRHeap`'s `pmr` path aborts on failure, while `JKRSolidHeap::alloc` must return NULL and call the error handler:
+  * `try_allocate(n, align, const void* owner)` returns null on failure. `owner` is the arena the chunk is for; the pool writes it into its owner table.
+  * `deallocate(p, n, align)`.
+  * `shrink_in_place(const void* p, old_n, new_n)` releases the end of a chunk. Default: false.
+  * `owner_of(const void* p) const` returns `std::optional<const void*>`: `std::nullopt` when the source can't tell (the arena then walks its chunks), `nullptr` when nobody owns `p` (a free block or an address outside the source), and otherwise the `owner` passed to `try_allocate`. It answers for any address inside a chunk, not only its start. Default: `std::nullopt`.
+  * A test fake (`tests/nightfall/memory/support/FakeChunkSource`) records each chunk's range and owner, can refuse allocations and can decline to answer `owner_of`.
 * **Chunks:**
   * Chunk sizes are rounded up to the block size, 4 KiB. Across the 341 literal actor heap estimates (median 9 KiB) that wastes 4.3 %, against 23 % for 16 KiB blocks.
   * Chunks are requested at `alignof(std::max_align_t)`. Larger alignments are padded inside the chunk, and any power of two is accepted.
