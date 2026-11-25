@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 700" width="960" height="700" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#dfe1e5">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b4b8bf"/></marker><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#3a3c40"/><line x1="0" y1="0" x2="0" y2="6" stroke="#6f737a" stroke-width="2"/></pattern></defs>
+<rect width="960" height="700" fill="#1e1f22"/>
+<text x="20" y="32" font-size="17" font-weight="bold">nf::Arena over nf::BlockPool (memory design step 4, phases B–C)</text>
+<text x="40" y="66" font-weight="bold">Heap tree (logical parents)</text>
+<rect x="40" y="78" width="240" height="34" rx="4" fill="#2b2d30" stroke="#9da0a8"/><text x="160" y="100" text-anchor="middle">Root heap (JKRExpHeap)</text>
+<rect x="40" y="128" width="240" height="34" rx="4" fill="#2b2d30" stroke="#9da0a8"/><text x="160" y="150" text-anchor="middle">Game heap (JKRExpHeap)</text>
+<line x1="160" y1="112" x2="160" y2="127" stroke="#b4b8bf" marker-end="url(#ar)"/>
+<rect x="40" y="178" width="240" height="34" rx="4" fill="#2b2d30" stroke="#9da0a8"/><text x="160" y="200" text-anchor="middle">Actor heap (JKRSolidHeap)</text>
+<line x1="160" y1="162" x2="160" y2="177" stroke="#b4b8bf" marker-end="url(#ar)"/>
+<text x="160" y="228" text-anchor="middle" font-size="11" fill="#9da0a8">holds the arena in a std::optional&lt;Arena&gt; slot</text>
+<line x1="280" y1="195" x2="378" y2="160" stroke="#b4b8bf" marker-end="url(#ar)"/><text x="322" y="168" font-size="12" fill="#9da0a8">owns</text>
+<rect x="380" y="78" width="540" height="150" rx="6" fill="#1f2a38" stroke="#6aa0d8"/>
+<text x="396" y="100" font-weight="bold">Arena A (nf::Arena)</text>
+<text x="396" y="122" font-size="12" fill="#b4b8bf">chunk list, newest first; an oversized chunk is linked behind the current one</text>
+<rect x="396" y="134" width="130" height="40" rx="4" fill="#2e4a6b" stroke="#6aa0d8"/><text x="461" y="151" text-anchor="middle">chunk 2</text><text x="461" y="167" text-anchor="middle" font-size="11" fill="#b4b8bf">current</text>
+<line x1="527" y1="154" x2="566" y2="154" stroke="#b4b8bf" marker-end="url(#ar)"/>
+<rect x="568" y="134" width="130" height="40" rx="4" fill="#2e4a6b" stroke="#6aa0d8"/><text x="633" y="151" text-anchor="middle">chunk 3</text><text x="633" y="167" text-anchor="middle" font-size="11" fill="#b4b8bf">oversized</text>
+<line x1="699" y1="154" x2="738" y2="154" stroke="#b4b8bf" marker-end="url(#ar)"/>
+<rect x="740" y="134" width="130" height="40" rx="4" fill="#2e4a6b" stroke="#6aa0d8"/><text x="805" y="151" text-anchor="middle">chunk 1</text><text x="805" y="167" text-anchor="middle" font-size="11" fill="#b4b8bf">first = hint</text>
+<text x="396" y="196" font-size="12" fill="#b4b8bf">each chunk is a run of whole blocks taken from its source</text>
+<text x="396" y="215" font-size="12" fill="#b4b8bf">used() · reserved() · available() · chunk_count()</text>
+<text x="40" y="270" font-weight="bold">BlockPool region (carved from the root heap at boot), 16 of its 4 KiB blocks shown</text>
+<rect x="680" y="281" width="14" height="14" fill="#2e4a6b" stroke="#6aa0d8"/><text x="700" y="293" font-size="12">Arena A</text>
+<rect x="762" y="281" width="14" height="14" fill="#5a4325" stroke="#e0a050"/><text x="782" y="293" font-size="12">Arena B</text>
+<rect x="844" y="281" width="14" height="14" fill="#3a3c40" stroke="#5f6268"/><text x="864" y="293" font-size="12">free</text>
+<text x="150" y="314" font-size="12" fill="#9da0a8">small runs from the low end →</text>
+<text x="818" y="314" font-size="12" fill="#9da0a8" text-anchor="end">← large runs from the high end</text>
+<text x="40" y="351">blocks</text>
+<rect x="150" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="174.0" y="351" text-anchor="middle" font-size="12">A·1</text>
+<rect x="198" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="222.0" y="351" text-anchor="middle" font-size="12">A·1</text>
+<rect x="246" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="270.0" y="351" text-anchor="middle" font-size="12">A·1</text>
+<rect x="294" y="326" width="48" height="40" fill="#5a4325" stroke="#e0a050"/>
+<text x="318.0" y="351" text-anchor="middle" font-size="12">B·1</text>
+<rect x="342" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="366.0" y="351" text-anchor="middle" font-size="12">A·2</text>
+<rect x="390" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="438" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="486" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="534" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="582" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="630" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="678" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="726" y="326" width="48" height="40" fill="#3a3c40" stroke="#5f6268"/>
+<rect x="774" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="798.0" y="351" text-anchor="middle" font-size="12">A·3</text>
+<rect x="822" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="846.0" y="351" text-anchor="middle" font-size="12">A·3</text>
+<rect x="870" y="326" width="48" height="40" fill="#2e4a6b" stroke="#6aa0d8"/>
+<text x="894.0" y="351" text-anchor="middle" font-size="12">A·3</text>
+<rect x="150" y="326" width="144" height="40" fill="none" stroke="#6aa0d8" stroke-width="2.5"/>
+<rect x="294" y="326" width="48" height="40" fill="none" stroke="#e0a050" stroke-width="2.5"/>
+<rect x="342" y="326" width="48" height="40" fill="none" stroke="#6aa0d8" stroke-width="2.5"/>
+<rect x="774" y="326" width="144" height="40" fill="none" stroke="#6aa0d8" stroke-width="2.5"/>
+<text x="40" y="397">owner table</text>
+<rect x="150" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="174.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="198" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="222.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="246" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="270.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="294" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="318.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">2</text>
+<rect x="342" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="366.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="390" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="414.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="438" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="462.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="486" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="510.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="534" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="558.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="582" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="606.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="630" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="654.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="678" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="702.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="726" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="750.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">0</text>
+<rect x="774" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="798.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="822" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="846.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<rect x="870" y="380" width="48" height="26" fill="#26282b" stroke="#4a4d52"/><text x="894.0" y="398" text-anchor="middle" font-family="Menlo, monospace" font-size="12">1</text>
+<text x="150" y="470" font-size="12" fill="#9da0a8">The table lives outside the blocks (2 B of owner ID per block: 1 = A, 2 = B, 0 = free), so an overrun can't corrupt it.</text>
+<text x="846.0" y="320" text-anchor="middle" font-size="12" fill="#ff6b5e" font-weight="bold">p</text>
+<path d="M864.0,338 C906.0,350 906.0,388 872.0,393" fill="none" stroke="#ff6b5e" marker-end="url(#ar)"/>
+<text x="918" y="488" text-anchor="end" font-size="12" fill="#ff6b5e">owner_of(p): range check, then owners[owner_id[(p − base) &gt;&gt; 12]] → &amp;A, O(1)</text>
+<line x1="342" y1="498" x2="150" y2="554" stroke="#6aa0d8" stroke-dasharray="4 3"/><line x1="390" y1="498" x2="918" y2="554" stroke="#6aa0d8" stroke-dasharray="4 3"/>
+<text x="40" y="516" font-weight="bold">Inside A's current chunk</text><text x="40" y="533" font-size="12" fill="#9da0a8">(chunk 2, 4 KiB)</text>
+<rect x="150" y="554" width="150" height="44" fill="#3d6694" stroke="#6aa0d8"/>
+<text x="225.0" y="581" text-anchor="middle" font-size="12">alloc 1</text>
+<rect x="300" y="554" width="30" height="44" fill="url(#hatch)" stroke="#6aa0d8"/>
+<text x="315.0" y="581" text-anchor="middle" font-size="12">pad</text>
+<rect x="330" y="554" width="210" height="44" fill="#3d6694" stroke="#6aa0d8"/>
+<text x="435.0" y="581" text-anchor="middle" font-size="12">alloc 2 (aligned)</text>
+<rect x="540" y="554" width="110" height="44" fill="#3d6694" stroke="#6aa0d8"/>
+<text x="595.0" y="581" text-anchor="middle" font-size="12">alloc 3</text>
+<rect x="650" y="554" width="268" height="44" fill="#26282b" stroke="#6aa0d8"/>
+<line x1="650" y1="544" x2="650" y2="608" stroke="#ff6b5e" stroke-width="2.5"/><text x="656" y="548" font-size="12" fill="#ff6b5e">bump pointer</text>
+<path d="M150,616 v6 h500 v-6" fill="none" stroke="#b4b8bf"/><text x="400" y="637" text-anchor="middle" font-size="12">used()</text>
+<path d="M650,616 v6 h268 v-6" fill="none" stroke="#b4b8bf"/><text x="784.0" y="637" text-anchor="middle" font-size="12">available(): bumps from here, else a new chunk</text>
+<text x="40" y="670" font-size="12" fill="#b4b8bf"><tspan font-weight="bold">release()</tspan> rewinds chunk 1 and gives back the rest · <tspan font-weight="bold">~Arena()</tspan> gives back every chunk · <tspan font-weight="bold">shrink_to_fit()</tspan> gives back the whole free blocks</text>
+<text x="40" y="688" font-size="12" fill="#b4b8bf">at the end of the current chunk · individual deallocation does nothing.</text>
+<line x1="630" y1="228" x2="630" y2="322" stroke="#6aa0d8" stroke-width="2" marker-end="url(#ar)"/><text x="638" y="246" font-size="12" fill="#6aa0d8" font-weight="bold">source</text><text x="638" y="261" font-size="12" fill="#6aa0d8">(BlockPool is a ChunkSource)</text>
+</svg>

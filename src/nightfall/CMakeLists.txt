@@ -14,7 +14,8 @@ target_link_libraries(nf_platform
 
 # Memory management (docs/port/memory-design.md).
 # No engine dependency; tp::config gives it the project's include path, C++23 and ABI flags.
-add_library(nf_memory STATIC memory/arena.cpp)
+add_library(nf_memory STATIC memory/arena.cpp
+        memory/block_pool.cpp)
 add_library(nf::memory ALIAS nf_memory)
 target_link_libraries(nf_memory PUBLIC tp::config PRIVATE tp::warnings)
 

@@ -34,8 +34,9 @@ The game runs in a single contiguous block of memory (the *arena*), which boot c
 | J2D | 0x7D000 (500 KiB) | 2D/menu resources loaded from ARAM archives | `mDoExt_createJ2dHeap` |
 | Command | 0x1000 (4 KiB) | DVD thread command objects (`mDoDvdThd_*`, allocated at the tail) | `mDoExt_createCommandHeap` |
 | Debug print | 0x1800 (6 KiB) | `JUTDbPrint` | `mDoExt_createDbPrintHeap` |
-| Assert | small | `JUTAssertion` | `mDoExt_createAssertHeap` |
 | Dynamic link | 0x180000 (`DEBUG` only) | REL modules | `DynamicModuleControlBase::createHeap` |
+
+   The console build also had an assert heap (`JKRAssertHeap`, `mDoExt_createAssertHeap`), which made implicit allocations on worker threads assert. The memory work removed both (2026-11-16); the owner-thread check in `JKRHeap` replaces them.
 
 4. The **Zelda heap** takes the system heap's free space minus 64 KiB (`mDoExt_createZeldaHeap`) and becomes the current heap. It holds process-lifetime state (managers, global objects) and every process object, actors included: `fpcBs_Create` and the create requests allocate them with `cMl::memalignB(-4, …)`, i.e. from the tail of the Zelda heap (`cMl::init(mDoExt_getZeldaHeap())`). An actor's *heap* (models, buffers) is separate and lives in the game heap.
 5. ARAM is set up by `JKRAram::create`: 0xA00000 (10 MiB) audio buffer, the rest graphics (`setAramGraphBufSize(-1)`). The GX FIFO is 0xA0000.
@@ -48,7 +49,6 @@ The sizes are built from dozens of `+=`/`-=` constants, with a separate correcti
 |---|---|---|
 | `JKRExpHeap` | General allocator: free list, allocations from the head or the tail (negative alignment), `free`, `freeAll`, group IDs. Each block has a `CMemBlock` header (two pointers, a size and flags: 16 bytes on the console, 24 on 64-bit hosts). | Root, system, Zelda, archive, game, J2D, command; room memory blocks; menu and message heaps |
 | `JKRSolidHeap` | Bump allocator from the head or tail. No individual `free`; only `freeAll`, `freeTail` and `adjustSize` (shrink to what's used). | Per-actor heaps, per-resource data heaps, effect and model heaps |
-| `JKRAssertHeap` | Heap for assertion output. | Assertions |
 | `JKRAramHeap` | Allocator over ARAM addresses (`u32`). | Audio buffers, ARAM-mounted archives |
 
 `JKRUnitHeap` exists in JKernel but the game doesn't use it.
